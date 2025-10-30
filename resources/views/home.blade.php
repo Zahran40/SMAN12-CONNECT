@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMA NEGERI 12 MEDAN</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite('resources/css/app.css')
 </head>
 <body class="bg-[#60aaff] min-h-screen">
     <!-- Header -->
     <header class="w-full bg-white rounded-b-3xl shadow px-4 py-3 mt-2 mx-auto max-w-5xl flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <img src="../../public/images/logo_sman12.png" alt="Logo SMA 12" class="w-12 h-12 rounded-full border-2 border-white shadow" />
+            <img src="images/logo_sman12.png" alt="Logo SMA 12" class="w-12 h-12 rounded-full border-2 border-white shadow" />
             <span class="font-semibold text-lg text-gray-800">SMA NEGERI 12 MEDAN</span>
         </div>
         <div class="flex gap-3">
