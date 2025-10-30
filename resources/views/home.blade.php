@@ -13,8 +13,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SMA NEGERI 12 MEDAN</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/fonts.css">
 </head>
-<body class="bg-[url('/images/bg_sman12.jpg')] bg-cover bg-center min-h-screen flex flex-col">
+<body class="bg-blue-500">
   <!-- Header -->
   <header class="w-full bg-white/90 backdrop-blur-sm rounded-b-3xl shadow px-4 py-3 mt-2 mx-auto max-w-5xl flex items-center justify-between">
     <div class="flex items-center gap-3">
