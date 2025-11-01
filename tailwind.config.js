@@ -1,22 +1,12 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
-    ],
-});
-
-// tailwind.config.js
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
+  // Tailwind v4 primarily uses @source in CSS; keep content as a fallback for tooling.
+  content: [
+    './resources/views/**/*.blade.php',
+    './resources/js/**/*.js',
+  ],
   theme: {
-    extend: {
-      fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
-      },
-    },
+    extend: {},
   },
+  plugins: [],
 };
