@@ -52,3 +52,52 @@ sebagai bahasa pemrograman framework laravel khususnay backend
 sebagai software manajemen sistem database
 - Tailwind CSS (versi belum fix)
 dipakai untuk framework CSS
+
+## Instalasi & Menjalankan (Laragon + Tailwind/Vite)
+
+Langkah singkat untuk menjalankan proyek ini di Windows menggunakan Laragon dan Tailwind CSS (Vite):
+
+### 1) Clone repository ke folder Laragon
+```powershell
+cd C:\laragon\www
+git clone https://github.com/Zahran40/SMAN12-CONNECT.git
+cd SMAN12-CONNECT
+```
+Setelah di-clone, proyek berada di `C:\laragon\www\SMAN12-CONNECT` sehingga Laragon dapat membuat virtual host otomatis (`.test`).
+
+### 2) Siapkan aplikasi Laravel
+```powershell
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
+```
+
+### 3) Atur database di `.env`
+Contoh pengaturan default Laragon:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=Nama_Database
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Buat database `Nama_Database` (via HeidiSQL/PhpMyAdmin), lalu jalankan migrasi:
+
+```powershell
+php artisan migrate
+```
+
+### 4) Jalankan Tailwind (Vite) dan akses lewat Laragon
+```powershell
+npm install
+npm run dev
+```
+
+Di Laragon, klik Start All dan aktifkan Auto virtual hosts. Akses aplikasi melalui:
+
+- http://SMAN12-CONNECT.test
+
+Biarkan `npm run dev` tetap berjalan selama pengembangan untuk kompilasi Tailwind CSS dan auto-refresh.
