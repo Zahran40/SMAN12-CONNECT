@@ -42,9 +42,13 @@ Melihat pengumuman terbaru yang dibuat oleh admin atau guru.
 Mengubah data profil pribadi seperti alamat dan tanggal lahir.
 
 ## Tech Stack
-Laravel v12.14.1 dipakai untuk framework utama aplikasi
-Composer v2.4.1 untuk package laravel
-PHP v8.3.22 sebagai bahasa pemrograman framework laravel khususnay backend
-MySQL v10.11 sebagai software manajemen sistem database
-Tailwind CSS (versi belum fix)
-
+- Laravel v12.14.1
+dipakai untuk framework utama aplikasi
+- Composer v2.4.1 
+untuk package laravel
+- PHP v8.3.22 
+sebagai bahasa pemrograman framework laravel khususnay backend
+- MySQL v10.11 
+sebagai software manajemen sistem database
+- Tailwind CSS (versi belum fix)
+dipakai untuk framework CSS
