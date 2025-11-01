@@ -19,8 +19,7 @@
         <span class="font-semibold text-lg text-gray-800">SMA NEGERI 12 MEDAN</span>
       </div>
       <div class="flex gap-3">
-        <a href="#" class="bg-white/80 border border-blue-500 text-blue-400 px-4 py-1.5 rounded-full font-medium shadow hover:bg-blue-50 transition">Daftar</a>
-        <a href="#" class="bg-blue-400 text-white px-4 py-1.5 rounded-full font-medium shadow hover:bg-blue-500 transition">Masuk</a>
+        <a href="{{ route('login') }}" class="bg-blue-400 text-white px-4 py-1.5 rounded-full font-medium shadow hover:bg-blue-500 transition">Masuk</a>
       </div>
     </header>
 

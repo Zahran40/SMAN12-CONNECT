@@ -5,13 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Siswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Opsi: Menambahkan font default yang mirip, seperti Inter */
-        @import url('https://rsms.me/inter/inter.css');
-        html { font-family: 'Inter', sans-serif; }
-    </style>
+    
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-100 font-sans">
 
     <div class="flex flex-col h-screen">
         
