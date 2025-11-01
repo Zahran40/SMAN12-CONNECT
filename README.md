@@ -1,11 +1,11 @@
 # APLIKASI SISTEM INFORMASI AKADEMIK SMA NEGERI 12 MEDAN
 
-## Kelompok 3 KOM C '24
-Abbil Rizki Abdillah - 241402033 (UI/UX, Backend)
-Daniele Christian Hasiholland Siahaan - 241402060 (Backend)	
-Reagan Brian Siahaan -241402099 (Frontend)
-Andre Al Farizi Sebayang - 241402105 (Backend)	
-Yeremia Nicolas Purba - 241402140 (Frontend)
+## Kelompok 3 MSBD KOM C '24
+- Abbil Rizki Abdillah - 241402033 (UI/UX, Backend)
+- Daniele Christian Hasiholland Siahaan - 241402060 (Backend)	
+- Reagan Brian Siahaan -241402099 (Frontend)
+- Andre Al Farizi Sebayang - 241402105 (Backend)	
+- Yeremia Nicolas Purba - 241402140 (Frontend)
 
 ## Deskripsi Aplikasi
 Aplikasi ini adalah Sistem Informasi Akademik (SIAKAD) berbasis web yang dirancang untuk mengotomatisasi dan mengintegrasikan seluruh proses pengelolaan data akademik dan administrasi di SMA Negeri 12 Medan. SMA Negeri 12 Medan adalah salah satu Sekolah Menengah Atas Negeri yang berlokasi di Kota Medan, Provinsi Sumatera Utara, Indonesia tepatnya di Jalan Cempaka No. 75, Kelurahan Helvetia Tengah, Kecamatan Medan Helvetia.
@@ -33,10 +33,18 @@ Fitur-fitur Guru difokuskan pada kegiatan belajar mengajar dan administrasi kela
 
 ### 3. Siswa
 Fitur-fitur Siswa difokuskan pada akses transparan terhadap informasi akademik dan administrasi pribadi meliputi :
-- Dapat loginke sistem dan melihat tampilan dashboard siswa.
+- Dapat login ke sistem dan melihat tampilan dashboard siswa.
 - Melihat jadwal pelajaran berdasarkan kelas dan tahun ajaran aktif.
 - Melihat nilai (tugas, UTS, UAS, dan nilai akhir) untuk setiap mata pelajaran.
 - Melihat rekap absensi pribadi berdasarkan tanggal dan Mata Pelajaran.
 - Melihat status pembayaran SPP (lunas/belum lunas).
 Melihat pengumuman terbaru yang dibuat oleh admin atau guru.
 Mengubah data profil pribadi seperti alamat dan tanggal lahir.
+
+## Tech Stack
+Laravel v12.14.1 dipakai untuk framework utama aplikasi
+Composer v2.4.1 untuk package laravel
+PHP v8.3.22 sebagai bahasa pemrograman framework laravel khususnay backend
+MySQL v10.11 sebagai software manajemen sistem database
+Tailwind CSS (versi belum fix)
+
