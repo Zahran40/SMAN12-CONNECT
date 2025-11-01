@@ -61,7 +61,7 @@
   <h2 class="text-3xl md:text-4xl font-bold mb-16">
     Mulai Pembelajaran dengan <br> E-Learning Sekarang
   </h2>
-  <a href="#" 
+  <a href="{{ route('login') }}" 
      class="bg-blue-500 text-white px-12 py-4 rounded-full shadow-lg hover:bg-blue-600 transition font-semibold text-lg">
      Mulai
   </a>
