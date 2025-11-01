@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* Global font override to use Poppins across the app */
-body, html, * {
-  font-family: 'Poppins', sans-serif !important;
+* {
+  font-family: 'Poppins', sans-serif;
 }
