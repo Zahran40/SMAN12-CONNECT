@@ -4,7 +4,7 @@
 - Abbil Rizki Abdillah - 241402033 (UI/UX, Backend)
 - Daniele Christian Hasiholland Siahaan - 241402060 (Backend)	
 - Reagan Brian Siahaan -241402099 (Frontend)
-- Andre Al Farizi Sebayang - 241402105 (Backend)	
+- Andre Al Farizi Sebayang - 241402105 (Project Manager, Frontend, Backend)	
 - Yeremia Nicolas Purba - 241402140 (Frontend)
 
 ## Deskripsi Aplikasi
