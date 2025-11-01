@@ -6,7 +6,13 @@ export default {
     './resources/js/**/*.js',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 };
+
+

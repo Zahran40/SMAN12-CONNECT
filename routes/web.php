@@ -1,10 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+
 
 Route::get('/', function () {
     return view('home');
 });
+
+// Route GET untuk menampilkan halaman login
+Route::get('/login', [LoginController::class, 'login'])->name('login');
 
 // Routes untuk Siswa
 Route::prefix('siswa')->group(function () {
