@@ -1,8 +1,12 @@
+ <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    html, body, * { font-family: 'Poppins', sans-serif !important; }
+  </style>
 <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:#e6f0fa;">
     <div style="background:#fff; border-radius:32px; box-shadow:0 6px 16px 0 rgba(0,0,0,0.10); display:flex; max-width:980px; width:90%;">
         <div style="flex:1; padding:48px 40px 48px 40px; border-radius:32px 0 0 32px;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
-                <img src="/images/logo_sman12.png" alt="Logo" style="height:36px;">
+                <img src="/images/logo_sman12.png" alt="Logo" style="height:68px; width:68px;">
                 <div style="background:#4eaaff; color:white; font-weight:500; border-radius:24px; padding:4px 18px; font-size:16px;">
                     SMA NEGERI 12 MEDAN
                 </div>
