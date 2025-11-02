@@ -39,11 +39,11 @@
                         Nama Guru
                     </td>
                     <td class="px-6 py-4">
-                        <button class="w-9 h-9 flex items-center justify-center text-white rounded-lg">
+                        <a href="{{ route('siswa.detail_presensi') }}" class="w-9 h-9 flex items-center justify-center text-white rounded-lg" aria-label="Lihat detail presensi" title="Lihat detail presensi">
                             <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-14 h-10">
                               <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                             </img>
-                        </button>
+                        </a>
                     </td>
                 </tr>
 
@@ -60,11 +60,11 @@
                         Nama Guru
                     </td>
                     <td class="px-6 py-4">
-                        <button class="w-9 h-9 flex items-center justify-center text-white rounded-lg">
+                        <a href="{{ route('siswa.detail_presensi') }}" class="w-9 h-9 flex items-center justify-center text-white rounded-lg" aria-label="Lihat detail presensi" title="Lihat detail presensi">
                             <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-14 h-10">
                               <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                             </img>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 
@@ -81,11 +81,11 @@
                         Nama Guru
                     </td>
                     <td class="px-6 py-4">
-                        <button class="w-9 h-9 flex items-center justify-center  text-white rounded-lg">
+                        <a href="{{ route('siswa.detail_presensi') }}" class="w-9 h-9 flex items-center justify-center  text-white rounded-lg" aria-label="Lihat detail presensi" title="Lihat detail presensi">
                             <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-14 h-10">
                               <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                             </img>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 
@@ -102,11 +102,11 @@
                         Nama Guru
                     </td>
                     <td class="px-6 py-4">
-                        <button class="w-9 h-9 flex items-center justify-center  text-white rounded-lg ">
+                        <a href="{{ route('siswa.detail_presensi') }}" class="w-9 h-9 flex items-center justify-center  text-white rounded-lg " aria-label="Lihat detail presensi" title="Lihat detail presensi">
                             <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-14 h-10">
                               <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                             </img>
-                        </button>
+                        </a>
                     </td>
                 </tr>
 
@@ -123,11 +123,11 @@
                         Nama Guru
                     </td>
                     <td class="px-6 py-4">
-                        <button class="w-9 h-9 flex items-center justify-center  text-white rounded-lg ">
+                        <a href="{{ route('siswa.detail_presensi') }}" class="w-9 h-9 flex items-center justify-center  text-white rounded-lg " aria-label="Lihat detail presensi" title="Lihat detail presensi">
                             <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-14 h-10">
                               <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                             </img>
-                        </button>
+                        </a>
                     </td>
                 </tr>
 
@@ -144,11 +144,11 @@
                         Nama Guru
                     </td>
                     <td class="px-6 py-4">
-                        <button class="w-9 h-9 flex items-center justify-center  text-white rounded-lg ">
+                        <a href="{{ route('siswa.detail_presensi') }}" class="w-9 h-9 flex items-center justify-center  text-white rounded-lg " aria-label="Lihat detail presensi" title="Lihat detail presensi">
                             <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-14 h-10">
                               <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                             </img>
-                        </button>
+                        </a>
                     </td>
                 </tr>
 
@@ -165,11 +165,11 @@
                         Nama Guru
                     </td>
                     <td class="px-6 py-4">
-                        <button class="w-9 h-9 flex items-center justify-center  text-white rounded-lg ">
+                        <a href="{{ route('siswa.detail_presensi') }}" class="w-9 h-9 flex items-center justify-center  text-white rounded-lg " aria-label="Lihat detail presensi" title="Lihat detail presensi">
                             <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-14 h-10">
                               <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                             </img>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 

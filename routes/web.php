@@ -43,5 +43,33 @@ Route::prefix('siswa')->group(function () {
       Route::get('/profil', function () {
         return view('siswa.profil');
     })->name('siswa.profil');
+        // Tambahan routes untuk tampilan lain di folder siswa
+    Route::get('/detail-materi', function () {
+        return view('siswa.detailMateri');
+    })->name('siswa.detail_materi');
+
+    Route::get('/detail-presensi', function () {
+        return view('siswa.detailpresensi');
+    })->name('siswa.detail_presensi');
+
+    Route::get('/detail-raport', function () {
+        return view('siswa.detailRaport');
+    })->name('siswa.detail_raport');
+
+    Route::get('/detail-tagihan', function () {
+        return view('siswa.detailTagihan');
+    })->name('siswa.detail_tagihan');
+
+    Route::get('/detail-tagihan-sudah-dibayar', function () {
+        return view('siswa.detailTagihanSudahDibayar');
+    })->name('siswa.detail_tagihan_sudah_dibayar');
+
+    Route::get('/tagihan-sudah-dibayar', function () {
+        return view('siswa.tagihanSudahDibayar');
+    })->name('siswa.tagihan_sudah_dibayar');
+
+    Route::get('/upload-tugas', function () {
+        return view('siswa.uploadTugas');
+    })->name('siswa.upload_tugas');
 });
 
