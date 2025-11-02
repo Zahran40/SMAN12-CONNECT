@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.siswa.app')
 
 @section('content')
 
