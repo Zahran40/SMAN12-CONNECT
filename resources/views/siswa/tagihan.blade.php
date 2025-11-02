@@ -40,7 +40,7 @@
                 
                 <div>
                     <div class="flex items-center space-x-2 mb-3">
-                        <span class="w-1 h-4 bg-yellow-400 rounded-sm"></span>
+                        <span class="w-6 h-2 bg-yellow-400 rounded-sm"></span>
                         <h4 class="text-sm font-semibold text-slate-600 uppercase">Detail Siswa</h4>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
@@ -61,7 +61,7 @@
 
                 <div>
                     <div class="flex items-center space-x-2 mb-3">
-                        <span class="w-1 h-4 bg-yellow-400 rounded-sm"></span>
+                        <span class="w-6 h-2 bg-yellow-400 rounded-sm"></span>
                         <h4 class="text-sm font-semibold text-slate-600 uppercase">Detail Tagihan</h4>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
@@ -83,9 +83,9 @@
             </div>
 
             <div class="p-5 flex justify-end border-t border-slate-200 bg-slate-50/50">
-                <button data-action="mark-paid" class="bg-blue-600 text-white font-medium px-10 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                <a href="{{ route('siswa.detail_tagihan') }}" class="bg-blue-600 text-white font-medium px-10 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
                     Bayar
-                </button>
+                </a>
             </div>
 
         </div>
