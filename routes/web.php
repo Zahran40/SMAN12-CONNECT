@@ -33,6 +33,10 @@ Route::prefix('siswa')->group(function () {
         return view('siswa.tagihan');
     })->name('siswa.tagihan');
 
+    Route::get('/tagihan/sudah', function () {
+        return view('siswa.tagihanSudahDibayar');
+    })->name('siswa.tagihan_sudah_dibayar');
+
     Route::get('/pengumuman', function () {
         return view('siswa.pengumuman');
     })->name('siswa.pengumuman');
