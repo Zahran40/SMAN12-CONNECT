@@ -30,7 +30,7 @@
 
         <div class="flex flex-1 overflow-hidden">
             
-            @include('layouts.sidebar')
+            @include('layouts.siswa.sidebar')
 
             <main class="flex-1 p-6 md:p-8 overflow-y-auto">
                 @yield('content')

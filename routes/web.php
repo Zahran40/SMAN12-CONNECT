@@ -73,3 +73,53 @@ Route::prefix('siswa')->group(function () {
     })->name('siswa.upload_tugas');
 });
 
+    // Routes untuk Admin
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/tahun-ajaran', function () {
+            return view('Admin.tahunAjaran');
+        })->name('tahun_ajaran');
+
+        Route::get('/data-master', function () {
+            return view('Admin.dataMaster');
+        })->name('data_master');
+
+        Route::get('/akademik', function () {
+            return view('Admin.akademik');
+        })->name('akademik');
+
+        Route::get('/pengumuman', function () {
+            return view('Admin.pengumuman');
+        })->name('pengumuman');
+
+        Route::get('/pembayaran', function () {
+            return view('Admin.pembayaran');
+        })->name('pembayaran');
+    });
+
+    // Routes untuk Guru
+    Route::prefix('guru')->name('guru.')->group(function () {
+        Route::get('/beranda', function () {
+            return view('Guru.beranda');
+        })->name('beranda');
+
+        Route::get('/presensi', function () {
+            return view('Guru.presensi');
+        })->name('presensi');
+
+        Route::get('/materi', function () {
+            return view('Guru.materi');
+        })->name('materi');
+
+        Route::get('/nilai', function () {
+            return view('Guru.nilai');
+        })->name('nilai');
+
+        Route::get('/pengumuman', function () {
+            return view('Guru.pengumuman');
+        })->name('pengumuman');
+
+        Route::get('/profil', function () {
+            return view('Guru.profil');
+        })->name('profil');
+    });
+
