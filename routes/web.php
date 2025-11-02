@@ -36,5 +36,8 @@ Route::prefix('siswa')->group(function () {
     Route::get('/pengumuman', function () {
         return view('siswa.pengumuman');
     })->name('siswa.pengumuman');
+      Route::get('/profil', function () {
+        return view('siswa.profil');
+    })->name('siswa.profil');
 });
 
