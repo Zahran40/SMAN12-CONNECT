@@ -14,7 +14,7 @@
 
     <div class="flex flex-col h-screen">
         
-        <header class="bg-blue-400 text-white p-4 flex justify-between items-center shadow-md z-10">
+        <header class="bg-blue-400 text-white p-2.5 flex justify-between items-center shadow-md z-10">
             <div class="flex items-center gap-3">
                 <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA Negeri 12 Medan" class="h-16 md:h-16 lg:h-16 w-auto object-contain" />
                 <h1 class="text-xl font-semibold">SMA NEGERI 12 MEDAN</h1>
