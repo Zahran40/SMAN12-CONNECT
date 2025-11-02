@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-slate-800 mb-6">Nilai Raport</h2>
+    <h2 class="text-3xl font-bold text-blue-500 mb-6">Nilai Raport</h2>
 
     <div class="space-y-8">
 
