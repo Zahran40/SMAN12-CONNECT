@@ -6,17 +6,21 @@
   <title>SMA NEGERI 12 MEDAN</title>
   <script src="https://cdn.tailwindcss.com"></script>
   @vite('resources/css/app.css')
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    html, body, * { font-family: 'Poppins', sans-serif !important; }
+  </style>
 </head>
-<body class="font-[Poppins] text-gray-800">
+<body class="font-sans">
 
   <!-- Section 1-->
   <section class="bg-cover bg-center min-h-screen flex flex-col justify-center items-center"
            style="background-image: url('{{ asset('images/bg_sman12.png') }}');">
             <div class="absolute inset-0 bg-black/40"></div>
-    <header class="absolute top-0 w-full bg-white/90 backdrop-blur-sm rounded-b-3xl shadow px-4 py-4 mx-auto max-w-7xl flex items-center justify-between">
+    <header class="absolute top-0 w-full bg-white/90 backdrop-blur-sm rounded-b-3xl shadow px-4 py-4 mx-auto max-w-8xl flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA 12" class="w-12 h-12 rounded-full border-2 border-white shadow" />
-        <span class="font-semibold text-lg text-gray-800">SMA NEGERI 12 MEDAN</span>
+        <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA 12" class="w-16 h-16 rounded-full border-2 border-white shadow" />
+        <span class="font-semibold text-xl text-gray-800">SMA NEGERI 12 MEDAN</span>
       </div>
       <div class="flex gap-3">
         <a href="{{ route('login') }}" class="bg-blue-400 text-white px-4 py-1.5 rounded-full font-medium shadow hover:bg-blue-500 transition">Masuk</a>
