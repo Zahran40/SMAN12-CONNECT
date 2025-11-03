@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Siswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @vite('resources/css/app.css')
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     html, body, * { font-family: 'Poppins', sans-serif !important; }
