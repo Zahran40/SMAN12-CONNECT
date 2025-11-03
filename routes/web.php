@@ -79,9 +79,61 @@ Route::prefix('siswa')->group(function () {
             return view('Admin.tahunAjaran');
         })->name('tahun_ajaran');
 
+        Route::get('/buat-tahun-ajaran', function () {
+            return view('Admin.buatTahunAjaran');
+        })->name('buat_tahun_ajaran');
+
+        Route::get('/buat-mapel', function () {
+            return view('Admin.buatMapel');
+        })->name('buat_mapel');
+
+        Route::get('/buat-pengumuman', function () {
+            return view('Admin.buatPengumuman');
+        })->name('buat_pengumuman');
+
         Route::get('/data-master', function () {
             return view('Admin.dataMaster');
         })->name('data_master');
+
+        Route::get('/data-master-siswa', function () {
+            return view('Admin.dataMaster_Siswa');
+        })->name('data_master_siswa');
+
+        Route::get('/data-master-guru', function () {
+            return view('Admin.dataMaster_Guru');
+        })->name('data_master_guru');
+
+        Route::get('/data-master-mapel', function () {
+            return view('Admin.dataMaster_Mapel');
+        })->name('data_master_mapel');
+
+        Route::get('/data-master-siswa1', function () {
+            return view('Admin.dataMasterSiswa');
+        })->name('data_master_siswa1');
+
+        Route::get('/data-master-guru1', function () {
+            return view('Admin.dataMasterGuru');
+        })->name('data_master_guru1');
+
+        Route::get('/data-master-mapel1', function () {
+            return view('Admin.dataMasterMapel');
+        })->name('data_master_mapel1');
+
+        Route::get('/detail-mapel', function () {
+            return view('Admin.detailMapel');
+        })->name('detail_mapel');
+
+        Route::get('/detail-guru', function () {
+            return view('Admin.detailGuru');
+        })->name('detail_guru');
+
+        Route::get('/detail-pembayaran', function () {
+            return view('Admin.detailPembayaran');
+        })->name('detail_pembayaran');
+
+        Route::get('/detail-siswa', function () {
+            return view('Admin.detailSiswa');
+        })->name('detail_siswa');
 
         Route::get('/akademik', function () {
             return view('Admin.akademik');
