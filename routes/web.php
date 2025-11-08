@@ -158,6 +158,10 @@ Route::prefix('siswa')->group(function () {
             return view('Guru.presensi');
         })->name('presensi');
 
+        Route::get('/detail-presensi-guru', function () {
+        return view('Guru.detailpresensi');
+        })->name('Guru.detail_presensi');
+
         Route::get('/materi', function () {
             return view('Guru.materi');
         })->name('materi');
@@ -173,5 +177,7 @@ Route::prefix('siswa')->group(function () {
         Route::get('/profil', function () {
             return view('Guru.profil');
         })->name('profil');
+
+        
     });
 
