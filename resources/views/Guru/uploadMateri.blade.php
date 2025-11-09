@@ -20,99 +20,95 @@
 
             <!-- Pilih Pertemuan -->
             <div>
-                <label for="pertemuan" class="block text-base font-semibold text-slate-800 mb-2">Pilih Pertemuan</label>
-                <select id="pertemuan" name="pertemuan" class="block w-full max-w-sm border-blue-300 rounded-xl shadow-sm focus:ring-blue-400 focus:border-blue-400 py-3 px-4">
-                    <option>Pertemuan 1</option>
-                    <option>Pertemuan 2</option>
-                    <option selected>Pertemuan 3</option>
-                    <option>Pertemuan 4</option>
-                </select>
+                <label for="pertemuan" class="block text-xl font-bold text-slate-900 mb-4">Pilih Pertemuan</label>
+                <div class="relative w-full max-w-xs">
+                    <select id="pertemuan" name="pertemuan" class="block w-full appearance-none bg-white border-2 border-blue-300 text-slate-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500">
+                        <option>Pertemuan 1</option>
+                        <option>Pertemuan 2</option>
+                        <option selected>Pertemuan 3</option>
+                        <option>Pertemuan 4</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-600">
+                        <svg class="fill-current h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
             </div>
 
-            <h3 class="text-xl font-semibold text-blue-600 !mt-8 mb-6">Upload Berkas Berisi Materi atau Tugas</h3>
+            <h3 class="text-2xl font-bold text-blue-600">Upload Berkas Berisi Materi atau Tugas</h3>
 
             <!-- Pilih Berkas (Radio) -->
             <div>
-                <label class="block text-base font-semibold text-slate-800 mb-3">Pilih Berkas</label>
-                <div class="flex items-center space-x-6">
-                    <label for="tipe_materi" class="flex items-center space-x-3 cursor-pointer">
-                        <input id="tipe_materi" name="tipe_berkas" type="radio" class="w-5 h-5 text-blue-500 focus:ring-blue-400" checked>
-                        <span class="text-slate-700 font-medium">Materi</span>
+                <label class="block text-lg font-bold text-slate-900 mb-4">Pilih Berkas</label>
+                <div class="space-y-3">
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <div class="w-6 h-6 rounded-full border-2 border-blue-400 flex items-center justify-center">
+                            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                        </div>
+                        <span class="text-slate-800 font-medium text-lg">Materi</span>
+                        <input type="radio" name="tipe_berkas" value="materi" class="hidden" checked>
                     </label>
-                    <label for="tipe_tugas" class="flex items-center space-x-3 cursor-pointer">
-                        <input id="tipe_tugas" name="tipe_berkas" type="radio" class="w-5 h-5 text-slate-400 focus:ring-blue-400">
-                        <span class="text-slate-700 font-medium">Tugas</span>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <div class="w-6 h-6 rounded-full border-2 border-slate-300"></div>
+                        <span class="text-slate-800 font-medium text-lg">Tugas</span>
+                        <input type="radio" name="tipe_berkas" value="tugas" class="hidden">
                     </label>
                 </div>
             </div>
 
             <!-- Upload Berkas -->
             <div>
-                <label class="block text-base font-semibold text-slate-800 mb-2">Upload Berkas</label>
-                <div class="mt-1 flex justify-center px-6 py-10 border-2 border-blue-300 border-dashed rounded-xl">
-                    <div class="space-y-1 text-center">
-                        <!-- Ikon Upload (SVG) -->
-                        <img src="{{ asset('images/Vector.png') }}" class="mx-auto h-10 w-10 text-blue-400"  fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                        </img>
-                        <div class="flex text-sm text-slate-600">
-                            <label for="file-upload" class="relative cursor-pointer font-medium text-blue-500 hover:text-blue-600">
-                                <span>Upload berkas anda</span>
-                                <input id="file-upload" name="file-upload" type="file" class="sr-only">
-                            </label>
-                        </div>
+                <label class="block text-lg font-bold text-slate-900 mb-4">Upload Berkas</label>
+                <div class="mt-1 w-full max-w-xl px-6 py-10 border-2 border-blue-300 border-dashed rounded-xl bg-white">
+                    <div class="space-y-3 text-center">
+                        <img src="{{ asset('images/Vector.png') }}" class="mx-auto h-10 w-10" alt="Icon Upload">
+                        <label for="file-upload" class="block text-sm font-medium text-blue-500 hover:text-blue-600 cursor-pointer">
+                            Upload berkas anda
+                            <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                        </label>
                     </div>
                 </div>
             </div>
 
             <!-- Nama Berkas -->
             <div>
-                <label for="nama_berkas" class="block text-base font-semibold text-slate-800 mb-2">Nama Berkas</label>
-                <input type="text" name="nama_berkas" id="nama_berkas" class="mt-1 block w-full border-blue-300 rounded-xl shadow-sm focus:ring-blue-400 focus:border-blue-400 py-3 px-4 placeholder:text-slate-400" placeholder="Maksimal 10 Karakter">
-                <!-- <p class="mt-1 text-xs text-slate-500">Maksimal 10 karakter</p> --> <!-- Diubah jadi placeholder -->
+                <label for="nama_berkas" class="block text-lg font-bold text-slate-900 mb-2">Nama Berkas</label>
+                <input type="text" name="nama_berkas" id="nama_berkas" class="w-full max-w-lg border-2 border-blue-300 rounded-lg py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500" placeholder="Maksimal 10 Karakter">
             </div>
 
             <!-- Deskripsi Materi -->
             <div>
-                <label for="deskripsi" class="block text-base font-semibold text-slate-800 mb-2">Deskripsi Materi</label>
-                <textarea id="deskripsi" name="deskripsi" rows="4" class="mt-1 block w-full border-blue-300 rounded-xl shadow-sm focus:ring-blue-400 focus:border-blue-400 py-3 px-4 placeholder:text-slate-400" placeholder="Deskripsi materi atau tugas anda"></textarea>
+                <label for="deskripsi" class="block text-lg font-bold text-slate-900 mb-2">Deskripsi Materi</label>
+                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Deskripsi materi atau tugas anda"></textarea>
             </div>
 
             <!-- Waktu (Khusus Tugas) -->
-           <div>
-    <label class="block text-base font-semibold text-slate-800 mb-4">
-        Waktu <span class="text-sm text-slate-400 font-medium">(khusus berkas tugas)</span>
-    </label>
-    
-    <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 max-w-lg">
-
-        <div>
-            <div class="mb-4 border-b-2 border-transparent inline-block pb-1">
-                <span class="text-slate-500 font-bold">Dibuka</span>
+            <div>
+                <label class="block text-lg font-bold text-slate-900 mb-4">
+                    Waktu <span class="text-base font-normal text-slate-500">(khusus berkas tugas)</span>
+                </label>
+                <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 max-w-md">
+                    <div>
+                        <div class="mb-2 text-blue-500 text-sm">Dibuka</div>
+                        <input type="text" value="00:00" class="w-full text-center border-2 border-blue-300 rounded-lg py-3 text-slate-600 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="pt-7">
+                        <div class="w-5 h-1.5 bg-blue-600 rounded-full"></div>
+                    </div>
+                    <div>
+                        <div class="mb-2 text-blue-400 text-sm">Ditutup</div>
+                        <input type="text" value="00:00" class="w-full text-center border-2 border-blue-300 rounded-lg py-3 text-slate-600 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
             </div>
-            <input type="text" value="00:00" class="w-full text-center border-blue-300 rounded-xl shadow-sm focus:ring-blue-400 focus:border-blue-400 py-3 font-medium text-slate-700">
-        </div>
-
-        <div class="pt-10"> <span class="text-blue-500 font-bold text-2xl">–</span>
-        </div>
-
-        <div>
-             <div class="mb-4 pb-1 inline-block border-b-2 border-transparent"> <span class="text-slate-500 font-medium">Ditutup</span>
-            </div>
-            <input type="text" value="00:00" class="w-full text-center border-blue-300 rounded-xl shadow-sm focus:ring-blue-400 focus:border-blue-400 py-3 font-medium text-slate-700">
-        </div>
-
-    </div>
-</div>
 
             <!-- Tombol Tambah Berkas -->
-            <div class="!mt-10"> <!-- !mt-10 untuk memberi jarak lebih -->
-                <button type="button" class="flex items-center justify-center space-x-3 bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors shadow-lg shadow-blue-100">
+            <div class="mt-10!"> <!-- !mt-10 untuk memberi jarak lebih -->
+                <a href="{{ route('guru.upload_materi_step2') }}" class="inline-flex items-center space-x-3 bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors shadow-lg shadow-blue-100">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                     <span>Tambah Berkas</span>
-                </button>
+                </a>
             </div>
 
         </div> <!-- end space-y-6 -->
@@ -121,12 +117,12 @@
     <!-- Tombol Simpan (Footer) -->
     <div class="mt-8 pt-6 border-t border-slate-200">
         <div class="flex justify-end">
-            <button type="submit" class="flex items-center space-x-2 bg-green-500 text-white font-medium px-6 py-2 rounded-full hover:bg-green-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <a href="{{ route('guru.detail_tugas') }}" class="flex items-center space-x-2 bg-green-500 text-white font-medium px-6 py-2 rounded-full hover:bg-green-600 transition-colors">
+                <img src="{{ asset('images/save.png') }}" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                </svg>
+                </img>
                 <span>Simpan</span>
-            </button>
+                        </a>
         </div>
     </div>
 

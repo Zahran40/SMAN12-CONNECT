@@ -17,7 +17,7 @@
                 </img>
             </div>
 
-            <a href="#" class="w-full max-w-xs bg-blue-400 text-white font-medium py-2 rounded-lg text-center hover:bg-blue-500 transition-colors">
+            <a href="{{ route('guru.detail_materi') }}" class="w-full max-w-xs bg-blue-400 text-white font-medium py-2 rounded-lg text-center hover:bg-blue-500 transition-colors">
                 Lihat
             </a>
         </div>
@@ -33,7 +33,7 @@
                 </img>
             </div>
 
-            <a href="#" class="w-full max-w-xs bg-blue-400 text-white font-medium py-2 rounded-lg text-center hover:bg-blue-500 transition-colors">
+            <a href="{{ route('guru.detail_materi') }}" class="w-full max-w-xs bg-blue-400 text-white font-medium py-2 rounded-lg text-center hover:bg-blue-500 transition-colors">
                 Lihat
             </a>
         </div>
@@ -49,7 +49,7 @@
                 </img>
             </div>
 
-            <a href="#" class="w-full max-w-xs bg-blue-400 text-white font-medium py-2 rounded-lg text-center hover:bg-blue-500 transition-colors">
+            <a href="{{ route('guru.detail_materi') }}" class="w-full max-w-xs bg-blue-400 text-white font-medium py-2 rounded-lg text-center hover:bg-blue-500 transition-colors">
                 Lihat
             </a>
         </div>

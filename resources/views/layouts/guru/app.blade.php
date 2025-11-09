@@ -6,6 +6,7 @@
     <title>Dashboard Siswa</title>
     @vite('resources/css/app.css')
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     html, body, * { font-family: 'Poppins', sans-serif !important; }

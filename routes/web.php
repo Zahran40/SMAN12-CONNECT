@@ -192,9 +192,7 @@ Route::prefix('siswa')->group(function () {
             return view('Guru.upload2Materi');
         })->name('upload_materi_step2');
 
-        Route::get('/nilai', function () {
-            return view('Guru.nilai');
-        })->name('nilai');
+        // Route Nilai dihapus; gunakan menu Raport Siswa
 
         // Raport Siswa (daftar / ringkasan)
         Route::get('/raport-siswa', function () {
@@ -222,8 +220,9 @@ Route::prefix('siswa')->group(function () {
 
         Route::get('/profil', function () {
             return view('Guru.profil');
-        })->name('profil');
-
-        
+        })->name('profil');  
+        Route::get('/presensi-mapel-detail', function () {
+            return view('Guru.presensiMapelDetail');
+        })->name('presensi_mapel_detail');  
     });
 

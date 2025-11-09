@@ -7,7 +7,7 @@
     <!-- Profile Section -->
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
         <div class="rounded-full overflow-hidden w-24 h-24 ring-4 ring-blue-100">
-            <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Guru" class="w-full h-full object-cover" />
+            <img src="{{ asset('images/openmoji_woman-teacher-light-skin-tone.png') }}" alt="Foto Guru" class="w-full h-full object-cover" />
         </div>
         <div>
             <h3 class="text-xl font-bold text-slate-900">Nama Guru</h3>
@@ -17,8 +17,8 @@
     </div>
 
     <!-- Data Diri Guru Section -->
+    <h3 class="text-xl font-semibold text-slate-800 mb-4">Data Diri Guru</h3>
     <section class="bg-white rounded-xl shadow-lg p-6 mb-8">
-        <h3 class="text-xl font-semibold text-slate-800 mb-4">Data Diri Guru</h3>
         <div class="space-y-4">
             <div class="flex justify-between">
                 <span class="font-medium text-slate-700">Nama</span>
