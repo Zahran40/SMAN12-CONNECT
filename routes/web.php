@@ -158,17 +158,63 @@ Route::prefix('siswa')->group(function () {
             return view('Guru.presensi');
         })->name('presensi');
 
-        Route::get('/detail-presensi-guru', function () {
-        return view('Guru.detailpresensi');
-        })->name('Guru.detail_presensi');
+        // Detail presensi (rename route name to be consistent without duplicate prefix)
+        Route::get('/detail-presensi', function () {
+            return view('Guru.detailpresensi');
+        })->name('detail_presensi');
 
         Route::get('/materi', function () {
             return view('Guru.materi');
         })->name('materi');
 
+        // Detail Materi
+        Route::get('/detail-materi', function () {
+            return view('Guru.detailMateri');
+        })->name('detail_materi');
+
+        // Detail Tugas terkait materi
+        Route::get('/detail-tugas', function () {
+            return view('Guru.detailTugas');
+        })->name('detail_tugas');
+
+        // Edit Materi
+        Route::get('/edit-materi', function () {
+            return view('Guru.editMateri');
+        })->name('edit_materi');
+
+        // Upload Materi langkah 1
+        Route::get('/upload-materi', function () {
+            return view('Guru.uploadMateri');
+        })->name('upload_materi');
+
+        // Upload Materi langkah 2 / lanjutan
+        Route::get('/upload-materi-step-2', function () {
+            return view('Guru.upload2Materi');
+        })->name('upload_materi_step2');
+
         Route::get('/nilai', function () {
             return view('Guru.nilai');
         })->name('nilai');
+
+        // Raport Siswa (daftar / ringkasan)
+        Route::get('/raport-siswa', function () {
+            return view('Guru.raportSiswa');
+        })->name('raport_siswa');
+
+        // Detail Raport Siswa (per siswa)
+        Route::get('/detail-raport-siswa', function () {
+            return view('Guru.detailRaportSiswa');
+        })->name('detail_raport_siswa');
+
+        // Chart Raport Siswa Semester 1
+        Route::get('/chart-raport-siswa-semester-1', function () {
+            return view('Guru.chartRaportSiswaS1');
+        })->name('chart_raport_siswa_s1');
+
+        // Chart Raport Siswa Semester 2
+        Route::get('/chart-raport-siswa-semester-2', function () {
+            return view('Guru.chartRaportSiswaS2');
+        })->name('chart_raport_siswa_s2');
 
         Route::get('/pengumuman', function () {
             return view('Guru.pengumuman');
