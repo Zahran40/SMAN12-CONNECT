@@ -18,7 +18,7 @@
             <div class="p-6">
                 <div class="flex justify-between items-center cursor-pointer">
                     <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
+                        <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
                             1
                         </div>
                         <h3 class="font-bold text-lg text-slate-800">Pertemuan 1</h3>
@@ -78,7 +78,7 @@
             <div class="p-6">
                 <div class="flex justify-between items-center cursor-pointer">
                     <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
+                        <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
                             2
                         </div>
                         <h3 class="font-bold text-lg text-slate-800">Pertemuan 2</h3>
@@ -112,7 +112,7 @@
             <div class="p-6">
                 <div class="flex justify-between items-center cursor-pointer">
                     <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
+                        <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
                             3
                         </div>
                         <h3 class="font-bold text-lg text-slate-800">Pertemuan 3</h3>
@@ -130,7 +130,7 @@
             <div class="p-6">
                 <div class="flex justify-between items-center cursor-pointer">
                     <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
+                        <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
                             3
                         </div>
                         <h3 class="font-bold text-lg text-slate-800">Pertemuan 3</h3>

@@ -61,7 +61,7 @@
   </section>
 
   <!-- Section 4 -->
- <section class="bg-gradient-to-b from-white to-blue-200 py-20 text-center">
+ <section class="bg-linear-to-b from-white to-blue-200 py-20 text-center">
   <h2 class="text-3xl md:text-4xl font-bold mb-16">
     Mulai Pembelajaran dengan <br> E-Learning Sekarang
   </h2>
