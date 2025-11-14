@@ -71,6 +71,7 @@ Route::prefix('siswa')->group(function () {
     Route::get('/upload-tugas', function () {
         return view('siswa.uploadTugas');
     })->name('siswa.upload_tugas');
+   
 });
 
     // Routes untuk Admin

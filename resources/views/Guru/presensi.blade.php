@@ -7,8 +7,8 @@
 
 
     <div class="bg-white rounded-xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-slate-900 mb-2">Nilai Raport Mata Pelajaran Anda</h2>
-        <p class="text-sm text-slate-500 mb-8">Pilih Mata Pelajaran anda untuk mengisi nilai pada raport siswa</p>
+        <h2 class="text-3xl font-bold text-slate-900 mb-2">Presensi mata Pelajaran Anda</h2>
+        <p class="text-sm text-slate-500 mb-8">Pilih Mata Pelajaran anda untuk membuat presensi kehadiran</p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white rounded-3xl border-2 border-blue-400 p-6 flex flex-col shadow-sm">
