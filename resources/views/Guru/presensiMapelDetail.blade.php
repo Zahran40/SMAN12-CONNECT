@@ -56,6 +56,10 @@
                         <span class="ml-2 text-slate-900 font-medium">Sakit</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-slate-900 font-medium">Izin</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_1" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
                         <span class="ml-2 text-slate-900 font-medium">Absen</span>
                     </label>
@@ -76,6 +80,10 @@
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
                         <span class="ml-2 text-slate-900 font-medium">Sakit</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-slate-900 font-medium">Izin</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
@@ -100,6 +108,10 @@
                         <span class="ml-2 text-slate-900 font-medium">Sakit</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-slate-900 font-medium">Izin</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_3" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
                         <span class="ml-2 text-slate-900 font-medium">Absen</span>
                     </label>
@@ -122,6 +134,10 @@
                         <span class="ml-2 text-slate-900 font-medium">Sakit</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-slate-900 font-medium">Izin</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_4" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
                         <span class="ml-2 text-slate-900 font-medium">Absen</span>
                     </label>
@@ -142,6 +158,10 @@
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_5" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
                         <span class="ml-2 text-slate-900 font-medium">Sakit</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-slate-900 font-medium">Izin</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_5" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500">
