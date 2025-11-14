@@ -16,7 +16,14 @@ return new class extends Migration
             $table->bigInteger('user_id')->nullable()->index('idx_user');
             $table->string('nip', 20)->unique('uk_nip');
             $table->string('nama_lengkap', 250);
-            $table->string('no_telepon', 20);
+            $table->date('tgl_lahir')->nullable();
+            $table->string('tempat_lahir', 100)->nullable();
+            $table->string('alamat', 300)->nullable();
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable();
+            $table->string('no_telepon', 20)->nullable();
+            $table->string('email', 100)->nullable();
+            $table->string('agama', 50)->nullable();
+            $table->string('golongan_darah', 5)->nullable();
         });
     }
 

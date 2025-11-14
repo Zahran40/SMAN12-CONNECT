@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('materi', function (Blueprint $table) {
             $table->bigInteger('id_materi', true);
             $table->bigInteger('jadwal_id')->index('fk_materi_jadwal');
+            $table->bigInteger('pertemuan_id')->nullable()->index('idx_materi_pertemuan');
             $table->string('judul_materi', 250);
             $table->text('deskripsi')->nullable();
             $table->string('file_path')->nullable();

@@ -15,9 +15,16 @@ return new class extends Migration
             $table->bigInteger('id_siswa', true);
             $table->bigInteger('user_id')->nullable()->index('idx_user');
             $table->string('nis', 20)->nullable()->unique('uk_nis');
+            $table->string('nisn', 20)->nullable()->unique('uk_nisn');
             $table->string('nama_lengkap', 250);
             $table->date('tgl_lahir');
-            $table->string('alamat', 250);
+            $table->string('tempat_lahir', 100)->nullable();
+            $table->string('alamat', 250)->nullable();
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable();
+            $table->string('no_telepon', 20)->nullable();
+            $table->string('email', 100)->nullable();
+            $table->string('agama', 50)->nullable();
+            $table->string('golongan_darah', 5)->nullable();
             $table->bigInteger('kelas_id')->index('idx_kelas');
         });
     }
