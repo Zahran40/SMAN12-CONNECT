@@ -10,7 +10,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_rekap_nilai_siswa`(IN `id_kelas_param` BIGINT, IN `id_tahun_ajaran_param` BIGINT)
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_rekap_nilai_siswa");
+        
+        DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_rekap_nilai_siswa`(IN `siswa_id_param` BIGINT, IN `tahun_ajaran_id_param` BIGINT)
 BEGIN
   SELECT s.nama_lengkap,
          m.nama_mapel,
