@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('judul', 250);
             $table->text('isi_pengumuman');
             $table->date('tgl_publikasi')->index('idx_tanggal');
+            $table->string('hari', 20)->nullable();
             $table->bigInteger('author_id')->index('idx_author');
         });
     }
