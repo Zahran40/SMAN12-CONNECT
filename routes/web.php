@@ -29,9 +29,12 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
         return view('siswa.presensi');
     })->name('presensi');
 
-    Route::get('/materi', function () {
-        return view('siswa.materi');
-    })->name('materi');
+    // MATERI ROUTES - Using Controller
+    Route::get('/materi', [App\Http\Controllers\Siswa\MateriController::class, 'index'])->name('materi');
+    Route::get('/materi/{jadwal_id}', [App\Http\Controllers\Siswa\MateriController::class, 'detail'])->name('detail_materi');
+    Route::get('/materi/download-materi/{id}', [App\Http\Controllers\Siswa\MateriController::class, 'downloadMateri'])->name('download_materi');
+    Route::get('/materi/download-tugas/{id}', [App\Http\Controllers\Siswa\MateriController::class, 'downloadTugas'])->name('download_tugas');
+    Route::post('/materi/upload-tugas/{tugas_id}', [App\Http\Controllers\Siswa\MateriController::class, 'uploadTugas'])->name('upload_tugas');
 
     Route::get('/nilai', function () {
         return view('siswa.nilai');
@@ -50,10 +53,6 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     })->name('pengumuman');
 
     Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
-
-    Route::get('/detail-materi', function () {
-        return view('siswa.detailMateri');
-    })->name('detail_materi');
 
     Route::get('/detail-presensi', function () {
         return view('siswa.detailpresensi');
@@ -91,29 +90,20 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
         return view('Guru.detailpresensi');
     })->name('detail_presensi');
 
-    Route::get('/materi', function () {
-        return view('Guru.materi');
-    })->name('materi');
-
-    Route::get('/detail-materi', function () {
-        return view('Guru.detailMateri');
-    })->name('detail_materi');
+    // MATERI ROUTES - Using Controller
+    Route::get('/materi', [App\Http\Controllers\Guru\MateriController::class, 'index'])->name('materi');
+    Route::get('/materi/{jadwal_id}', [App\Http\Controllers\Guru\MateriController::class, 'detail'])->name('detail_materi');
+    Route::get('/materi/{jadwal_id}/create', [App\Http\Controllers\Guru\MateriController::class, 'create'])->name('upload_materi');
+    Route::get('/materi/{jadwal_id}/create-multiple', [App\Http\Controllers\Guru\MateriController::class, 'createMultiple'])->name('upload_materi_step2');
+    Route::post('/materi/{jadwal_id}/store', [App\Http\Controllers\Guru\MateriController::class, 'store'])->name('store_materi');
+    Route::get('/materi/{jadwal_id}/{type}/{id}/edit', [App\Http\Controllers\Guru\MateriController::class, 'edit'])->name('edit_materi');
+    Route::put('/materi/{jadwal_id}/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'update'])->name('update_materi');
+    Route::delete('/materi/{jadwal_id}/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'destroy'])->name('delete_materi');
+    Route::get('/materi/download/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'download'])->name('download_materi');
 
     Route::get('/detail-tugas', function () {
         return view('Guru.detailTugas');
     })->name('detail_tugas');
-
-    Route::get('/edit-materi', function () {
-        return view('Guru.editMateri');
-    })->name('edit_materi');
-
-    Route::get('/upload-materi', function () {
-        return view('Guru.uploadMateri');
-    })->name('upload_materi');
-
-    Route::get('/upload-materi-step-2', function () {
-        return view('Guru.upload2Materi');
-    })->name('upload_materi_step2');
 
     Route::get('/raport-siswa', function () {
         return view('Guru.raportSiswa');
@@ -206,6 +196,14 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/detail-siswa', function () {
         return view('Admin.detailSiswa');
     })->name('detail_siswa');
+
+    Route::get('/pendataan-siswa', function () {
+        return view('Admin.pendataanSiswa');
+    })->name('pendataan_siswa');
+
+    Route::get('/pendataan-guru', function () {
+        return view('Admin.pendataanGuru');
+    })->name('pendataan_guru');
 
     Route::get('/akademik', function () {
         return view('Admin.akademik');

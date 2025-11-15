@@ -23,7 +23,15 @@
         <span class="font-semibold text-xl text-gray-800">SMA NEGERI 12 MEDAN</span>
       </div>
       <div class="flex gap-3">
-        <a href="{{ route('login') }}" class="bg-blue-400 text-white px-4 py-1.5 rounded-full font-medium shadow hover:bg-blue-500 transition">Masuk</a>
+        @auth
+          <span class="text-gray-700 px-4 py-1.5">{{ Auth::user()->name }}</span>
+          <form action="{{ route('logout') }}" method="POST" class="inline">
+            @csrf
+            <button type="submit" class="bg-red-400 text-white px-4 py-1.5 rounded-full font-medium shadow hover:bg-red-500 transition">Logout</button>
+          </form>
+        @else
+          <a href="{{ route('login') }}" class="bg-blue-400 text-white px-4 py-1.5 rounded-full font-medium shadow hover:bg-blue-500 transition">Masuk</a>
+        @endauth
       </div>
     </header>
 

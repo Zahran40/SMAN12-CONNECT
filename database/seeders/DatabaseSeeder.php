@@ -82,6 +82,9 @@ class DatabaseSeeder extends Seeder
         // 3. SISWA (siswa1)
         // Pastikan kelas ada
         $kelas = DB::table('kelas')->first();
+        $tahunAjaranId = null; // Initialize variable
+        $kelasId = null; // Initialize variable
+        
         if (!$kelas) {
             // Buat tahun ajaran dulu
             $tahunAjaran = DB::table('tahun_ajaran')
@@ -110,6 +113,7 @@ class DatabaseSeeder extends Seeder
             ]);
         } else {
             $kelasId = $kelas->id_kelas;
+            $tahunAjaranId = $kelas->tahun_ajaran_id;
         }
 
         // Buat data di tabel siswa
@@ -152,6 +156,101 @@ class DatabaseSeeder extends Seeder
         if (!$siswa->db_user) {
             $siswa->createDatabaseUser();
             $siswa->applyRoleGrants();
+        }
+
+        // ===================================
+        // SEEDING MATA PELAJARAN, JADWAL & PERTEMUAN
+        // ===================================
+        
+        // Buat Mata Pelajaran
+        $mapelMatExists = DB::table('mata_pelajaran')->where('kode_mapel', 'MAT001')->first();
+        if (!$mapelMatExists) {
+            $mapelMat = DB::table('mata_pelajaran')->insertGetId([
+                'kode_mapel' => 'MAT001',
+                'nama_mapel' => 'Matematika',
+            ]);
+        } else {
+            $mapelMat = $mapelMatExists->id_mapel;
+        }
+
+        $mapelFisExists = DB::table('mata_pelajaran')->where('kode_mapel', 'FIS001')->first();
+        if (!$mapelFisExists) {
+            $mapelFis = DB::table('mata_pelajaran')->insertGetId([
+                'kode_mapel' => 'FIS001',
+                'nama_mapel' => 'Fisika',
+            ]);
+        } else {
+            $mapelFis = $mapelFisExists->id_mapel;
+        }
+
+        // Buat Jadwal Pelajaran
+        $jadwalMatExists = DB::table('jadwal_pelajaran')
+            ->where('mapel_id', $mapelMat)
+            ->where('kelas_id', $kelasId)
+            ->first();
+            
+        if (!$jadwalMatExists) {
+            $jadwalMat = DB::table('jadwal_pelajaran')->insertGetId([
+                'tahun_ajaran_id' => $tahunAjaranId,
+                'kelas_id' => $kelasId,
+                'mapel_id' => $mapelMat,
+                'guru_id' => $guruId,
+                'hari' => 'Senin',
+                'jam_mulai' => '08:00',
+                'jam_selesai' => '09:30',
+            ]);
+        } else {
+            $jadwalMat = $jadwalMatExists->id_jadwal;
+        }
+
+        $jadwalFisExists = DB::table('jadwal_pelajaran')
+            ->where('mapel_id', $mapelFis)
+            ->where('kelas_id', $kelasId)
+            ->first();
+            
+        if (!$jadwalFisExists) {
+            $jadwalFis = DB::table('jadwal_pelajaran')->insertGetId([
+                'tahun_ajaran_id' => $tahunAjaranId,
+                'kelas_id' => $kelasId,
+                'mapel_id' => $mapelFis,
+                'guru_id' => $guruId,
+                'hari' => 'Selasa',
+                'jam_mulai' => '08:00',
+                'jam_selesai' => '09:30',
+            ]);
+        } else {
+            $jadwalFis = $jadwalFisExists->id_jadwal;
+        }
+
+        // Buat Pertemuan (16 pertemuan untuk satu semester) - hanya jika belum ada
+        $pertemuanMatCount = DB::table('pertemuan')->where('jadwal_id', $jadwalMat)->count();
+        if ($pertemuanMatCount == 0) {
+            for ($i = 1; $i <= 16; $i++) {
+                DB::table('pertemuan')->insert([
+                    'jadwal_id' => $jadwalMat,
+                    'nomor_pertemuan' => $i,
+                    'tanggal_pertemuan' => now()->addDays($i * 7)->format('Y-m-d'),
+                    'waktu_mulai' => '08:00',
+                    'waktu_selesai' => '09:30',
+                    'topik_bahasan' => 'Topik Pertemuan ' . $i,
+                    'status_sesi' => 'Buka',
+                ]);
+            }
+        }
+
+        $pertemuanFisCount = DB::table('pertemuan')->where('jadwal_id', $jadwalFis)->count();
+        if ($pertemuanFisCount == 0) {
+            for ($i = 1; $i <= 16; $i++) {
+                DB::table('pertemuan')->insert([
+                    'jadwal_id' => $jadwalFis,
+                    'nomor_pertemuan' => $i,
+                    'tanggal_pertemuan' => now()->addDays($i * 7 + 1)->format('Y-m-d'),
+                    'waktu_mulai' => '08:00',
+                    'waktu_selesai' => '09:30',
+                    'topik_bahasan' => 'Topik Pertemuan ' . $i,
+                    'status_sesi' => 'Buka',
+                ]);
+            }
         }
     }
 }
