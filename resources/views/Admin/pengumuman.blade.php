@@ -1,5 +1,7 @@
 @extends('layouts.admin.app')
 
+@section('title', 'Pengumuman')
+
 @section('content')
     <div class="flex flex-col space-y-8">
         <div class="flex justify-between items-center">
