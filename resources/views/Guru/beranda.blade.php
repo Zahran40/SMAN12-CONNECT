@@ -1,5 +1,7 @@
 @extends('layouts.guru.app')
 
+@section('title', 'Beranda Guru')
+
 @section('content')
 
     <h2 class="text-3xl font-bold text-slate-800 mb-6">Beranda</h2>
@@ -22,23 +24,23 @@
     <section class="mb-8">
         <h3 class="text-xl font-bold text-blue-600 mb-4">Jadwal Mengajar</h3>
         
-        <div class="flex space-x-3 mb-6 overflow-x-auto pb-2">
-            <button class="shrink-0 w-24 h-24 bg-blue-400 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-200 transition-transform hover:scale-105">
+        <div class="flex space-x-2 mb-4">
+            <button class="px-8 py-10 rounded-lg bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium">
                 Senin
             </button>
-            <button class="shrink-0 w-24 h-24 bg-white border-2 border-blue-300 rounded-xl flex items-center justify-center text-slate-700 font-bold text-lg hover:bg-blue-50 transition-colors">
+            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">
                 Selasa
             </button>
-            <button class="shrink-0 w-24 h-24 bg-white border-2 border-blue-300 rounded-xl flex items-center justify-center text-slate-700 font-bold text-lg hover:bg-blue-50 transition-colors">
+            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">
                 Rabu
             </button>
-            <button class="shrink-0 w-24 h-24 bg-white border-2 border-blue-300 rounded-xl flex items-center justify-center text-slate-700 font-bold text-lg hover:bg-blue-50 transition-colors">
+            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">
                 Kamis
             </button>
-            <button class="shrink-0 w-24 h-24 bg-white border-2 border-blue-300 rounded-xl flex items-center justify-center text-slate-700 font-bold text-lg hover:bg-blue-50 transition-colors">
+            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">
                 Jumat
             </button>
-            <button class="shrink-0 w-24 h-24 bg-white border-2 border-blue-300 rounded-xl flex items-center justify-center text-slate-700 font-bold text-lg hover:bg-blue-50 transition-colors">
+            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">
                 Sabtu
             </button>
         </div>

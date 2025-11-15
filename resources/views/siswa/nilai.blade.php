@@ -1,5 +1,7 @@
 @extends('layouts.siswa.app')
 
+@section('title', 'Nilai Raport')
+
 @section('content')
 
     <h2 class="text-3xl font-bold text-blue-500 mb-6">Nilai Raport</h2>

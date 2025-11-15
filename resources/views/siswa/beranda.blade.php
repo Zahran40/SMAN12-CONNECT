@@ -1,5 +1,7 @@
 @extends('layouts.siswa.app')
 
+@section('title', 'Beranda')
+
 @section('content')
 
     <h2 class="text-3xl font-bold text-slate-800 mb-6">Beranda</h2>
