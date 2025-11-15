@@ -15,14 +15,18 @@
         <div class="text-center shrink-0">
             <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center p-4 mb-2">
                 <div class="rounded-full overflow-hidden w-16 h-16 ring-4 ring-blue-100">
-            <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
-        </div>
+                    @if($siswa && $siswa->foto_profil)
+                        <img src="{{ asset('storage/' . $siswa->foto_profil) }}" alt="Foto Siswa" class="w-full h-full object-cover" />
+                    @else
+                        <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
+                    @endif
+                </div>
             </div>
             <a href="#" class="text-xs text-blue-600 font-medium hover:underline">Edit Foto</a>
         </div>
         <div>
-            <h3 class="text-2xl font-bold text-slate-900">Nama Siswa</h3>
-            <p class="text-sm text-slate-500 mb-3">NIS: 1018392392</p>
+            <h3 class="text-2xl font-bold text-slate-900">{{ $siswa->nama_lengkap ?? 'Nama Siswa' }}</h3>
+            <p class="text-sm text-slate-500 mb-3">NIS: {{ $siswa->nis ?? '-' }}</p>
             <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">Kelas 12</span>
         </div>
     </div>
@@ -35,52 +39,52 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">Nama</p>
-                    <p class="md:col-span-2 text-slate-800">Nama Siswa</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->nama_lengkap ?? '-' }}</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">Tanggal lahir</p>
-                    <p class="md:col-span-2 text-slate-800">DD/MM/YEAR</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->tgl_lahir ? $siswa->tgl_lahir->format('d/m/Y') : '-' }}</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">Tempat lahir</p>
-                    <p class="md:col-span-2 text-slate-800">Tempat lahir Siswa</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->tempat_lahir ?? '-' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">Alamat</p>
-                    <p class="md:col-span-2 text-slate-800">Alamat Siswa</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->alamat ?? '-' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">Jenis Kelamin</p>
-                    <p class="md:col-span-2 text-slate-800">Laki-laki/Perempuan</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->jenis_kelamin ?? '-' }}</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">NIS</p>
-                    <p class="md:col-span-2 text-slate-800">1018392392</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->nis ?? '-' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">NISN</p>
-                    <p class="md:col-span-2 text-slate-800">6092582022</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->nisn ?? '-' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">No handphone</p>
-                    <p class="md:col-span-2 text-slate-800">+62xxxxxxxxxx</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->no_telepon ?? '-' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">Email</p>
-                    <p class="md:col-span-2 text-slate-800">example@gmail.com</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->email ?? '-' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                     <p class="font-semibold text-slate-600">Agama</p>
-                    <p class="md:col-span-2 text-slate-800">Agama Siswa</p>
+                    <p class="md:col-span-2 text-slate-800">{{ $siswa->agama ?? '-' }}</p>
                 </div>
 
               
