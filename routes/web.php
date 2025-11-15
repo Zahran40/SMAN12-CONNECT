@@ -48,9 +48,7 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
         return view('siswa.tagihanSudahDibayar');
     })->name('tagihan_sudah_dibayar');
 
-    Route::get('/pengumuman', function () {
-        return view('siswa.pengumuman');
-    })->name('pengumuman');
+    Route::get('/pengumuman', [App\Http\Controllers\Siswa\MateriController::class, 'pengumuman'])->name('pengumuman');
 
     Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
 
@@ -121,9 +119,7 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
         return view('Guru.chartRaportSiswaS2');
     })->name('chart_raport_siswa_s2');
 
-    Route::get('/pengumuman', function () {
-        return view('Guru.pengumuman');
-    })->name('pengumuman');
+    Route::get('/pengumuman', [App\Http\Controllers\Guru\MateriController::class, 'pengumuman'])->name('pengumuman');
 
     Route::get('/profil', [GuruController::class, 'profil'])->name('profil');
 
@@ -151,7 +147,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
     Route::get('/buat-pengumuman', function () {
         return view('Admin.buatPengumuman');
-    })->name('buat_pengumuman');
+    })->name('buatPengumuman');
 
     Route::get('/data-master', function () {
         return view('Admin.dataMaster');
@@ -209,9 +205,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
         return view('Admin.akademik');
     })->name('akademik');
 
-    Route::get('/pengumuman', function () {
-        return view('Admin.pengumuman');
-    })->name('pengumuman');
+    Route::get('/pengumuman', [App\Http\Controllers\Admin\PengumumanController::class, 'index'])->name('pengumuman');
+    Route::post('/pengumuman', [App\Http\Controllers\Admin\PengumumanController::class, 'store'])->name('pengumuman.store');
+    Route::put('/pengumuman/{id}', [App\Http\Controllers\Admin\PengumumanController::class, 'update'])->name('pengumuman.update');
+    Route::delete('/pengumuman/{id}', [App\Http\Controllers\Admin\PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
     Route::get('/pembayaran', function () {
         return view('Admin.pembayaran');

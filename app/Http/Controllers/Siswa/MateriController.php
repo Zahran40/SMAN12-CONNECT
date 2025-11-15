@@ -165,4 +165,16 @@ class MateriController extends Controller
             return back()->with('error', 'Gagal mengupload tugas: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Tampilkan pengumuman aktif
+     */
+    public function pengumuman()
+    {
+        $pengumuman = \App\Models\Pengumuman::where('status', 'aktif')
+            ->orderBy('tanggal_dibuat', 'desc')
+            ->get();
+        
+        return view('siswa.pengumuman', compact('pengumuman'));
+    }
 }
