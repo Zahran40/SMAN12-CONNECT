@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 200);
             $table->string('email', 200)->unique('uk_email');
             $table->string('password');
+            $table->rememberToken();
             $table->enum('role', ['admin', 'guru', 'siswa'])->index('idx_role');
             $table->bigInteger('reference_id')->nullable()->index('idx_reference');
             $table->dateTime('last_login')->nullable();
