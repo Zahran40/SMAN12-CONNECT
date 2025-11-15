@@ -6,12 +6,16 @@
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
         <div class="rounded-full overflow-hidden w-16 h-16 bg-slate-100 flex items-center justify-center ring-4 ring-blue-100">
-            <img src="{{ asset('images/openmoji_woman-teacher-light-skin-tone.png') }}" alt="Foto Guru" class="w-full h-full object-cover" />
+            @if($guru && $guru->foto_profil)
+                <img src="{{ asset('storage/' . $guru->foto_profil) }}" alt="Foto Guru" class="w-full h-full object-cover" />
+            @else
+                <img src="{{ asset('images/openmoji_woman-teacher-light-skin-tone.png') }}" alt="Foto Guru" class="w-full h-full object-cover" />
+            @endif
         </div>
         <div>
-            <h3 class="text-xl font-bold text-slate-900">Nama Guru</h3>
-            <p class="text-sm text-slate-500">NIP: 1178382119</p>
-            <span class="inline-block border border-yellow-400 text-yellow-600 text-xs font-semibold px-3 py-1 rounded-full mt-2">Wali Kelas</span>
+            <h3 class="text-xl font-bold text-slate-900">{{ $guru->nama_lengkap ?? 'Nama Guru' }}</h3>
+            <p class="text-sm text-slate-500">NIP: {{ $guru->nip ?? '-' }}</p>
+            <span class="inline-block border border-yellow-400 text-yellow-600 text-xs font-semibold px-3 py-1 rounded-full mt-2">Guru</span>
         </div>
     </div>
 
