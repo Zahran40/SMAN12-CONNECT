@@ -9,7 +9,7 @@
         <img src="{{ asset('images/clarity_administrator-solid.png') }}" alt="Operator Icon" class="w-16 h-16">
         <div>
             <h2 class="text-lg font-semibold text-gray-800">Operator</h2>
-            <p class="text-sm text-gray-500">ID Operator</p>
+            
         </div>
     </div>
 

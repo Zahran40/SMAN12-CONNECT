@@ -41,21 +41,59 @@
 
             <h2 class="text-[#2a5db0] font-bold text-[32px] mb-6">Masuk</h2>
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-6">
+            {{-- Flash Messages --}}
+            @if (session('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+                    <p class="font-medium">{{ session('error') }}</p>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg" role="alert">
+                    <p class="font-medium">{{ session('success') }}</p>
+                </div>
+            @endif
+
+            {{-- Validation Errors --}}
+            @if ($errors->any())
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login.authenticate') }}" class="space-y-6">
                 @csrf
 
                 <div>
-                    <label for="login" class="text-[15px]">NIP/NIS/Email Terkait</label>
+                    <label for="login" class="text-[15px]">NIP/NISN/Email Terkait</label>
                     <input id="login" type="text" name="login" required autofocus
-                        class="w-full mt-1 border border-[#bcd6f6] rounded-lg px-4 py-3 text-[16px] focus:ring-2 focus:ring-[#4eaaff] outline-none"
-                        placeholder="89823xxxxx">
+                        value="{{ old('login') }}"
+                        class="w-full mt-1 border border-[#bcd6f6] rounded-lg px-4 py-3 text-[16px] focus:ring-2 focus:ring-[#4eaaff] outline-none @error('login') border-red-500 @enderror"
+                        placeholder="Masukkan NIP/NISN/Email">
+                    @error('login')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
 
                 <div>
                     <label for="password" class="text-[15px]">Kata Sandi</label>
                     <input id="password" type="password" name="password" required
-                        class="w-full mt-1 border border-[#bcd6f6] rounded-lg px-4 py-3 text-[16px] focus:ring-2 focus:ring-[#4eaaff] outline-none">
+                        class="w-full mt-1 border border-[#bcd6f6] rounded-lg px-4 py-3 text-[16px] focus:ring-2 focus:ring-[#4eaaff] outline-none @error('password') border-red-500 @enderror"
+                        placeholder="Masukkan password">
+                    @error('password')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Remember Me --}}
+                <div class="flex items-center">
+                    <input type="checkbox" name="remember" id="remember" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                    <label for="remember" class="ml-2 text-sm text-gray-700">Ingat Saya</label>
                 </div>
 
 
