@@ -6,11 +6,15 @@
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
         <div class="rounded-full overflow-hidden w-16 h-16 ring-4 ring-blue-100">
-            <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
+            @if($siswa && $siswa->foto_profil)
+                <img src="{{ asset('storage/' . $siswa->foto_profil) }}" alt="Foto Siswa" class="w-full h-full object-cover" />
+            @else
+                <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
+            @endif
         </div>
         <div>
-            <h3 class="text-xl font-bold text-slate-900">Nama Siswa</h3>
-            <p class="text-sm text-slate-500">NISN: 0123456789</p>
+            <h3 class="text-xl font-bold text-slate-900">{{ $siswa->nama_lengkap ?? 'Nama Siswa' }}</h3>
+            <p class="text-sm text-slate-500">NISN: {{ $siswa->nisn ?? '-' }}</p>
             <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">Kelas 11</span>
         </div>
     </div>
