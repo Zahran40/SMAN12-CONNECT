@@ -1,5 +1,7 @@
 @extends('layouts.guru.app')
 
+@section('title', 'Presensi')
+
 @section('content')
 
   <h2 class="text-3xl font-bold text-slate-800 mb-6">Materi Kelas Saya</h2>

@@ -56,10 +56,6 @@
                 <span class="font-medium text-slate-700">Agama</span>
                 <span class="text-slate-500">Agama Guru</span>
             </div>
-            <div class="flex justify-between">
-                <span class="font-medium text-slate-700">Golongan Darah</span>
-                <span class="text-slate-500">Golongan darah Guru</span>
-            </div>
         </div>
     </section>
 
