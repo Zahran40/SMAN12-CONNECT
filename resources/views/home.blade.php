@@ -73,30 +73,28 @@
 
 
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-gray-200 py-10 px-6">
-    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
-      <div>
-        <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo" class="w-14 h-14 mb-3">
-        <h3 class="font-bold text-lg">SMA NEGERI 12 MEDAN</h3>
-        <p class="text-sm text-gray-400 mt-3 leading-relaxed text-justify max-w-md">
-
-          SMA Negeri (SMAN) 12 Medan, merupakan salah satu Sekolah Menengah Atas Negeri yang ada di Provinsi Sumatera Utara, Indonesia. 
-          Sama dengan SMA pada umumnya di Indonesia masa pendidikan sekolah di SMAN 12 Medan ditempuh dalam waktu tiga tahun pelajaran, 
-          mulai dari Kelas X sampai Kelas XII.
-        </p>
-      </div>
-      <div>
-        <h3 class="font-bold text-lg mt-16 mb-3">INFORMATION</h3>
-        <p class="text-sm text-gray-400 mt-3 leading-relaxed text-justify max-w-md">
-
-          Jl. Cempaka No. 75, Medan, Sumatera Utara, Indonesia <br>
-          061-8455904 <br>
-          NPSN 10210876
-        </p>
-      </div>
-    </div>
-  </footer>
-
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-200 py-10 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+            <div>
+                <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo" class="w-14 h-14 mb-3 object-contain">
+                <h3 class="font-bold text-lg">SMA NEGERI 12 MEDAN</h3>
+                <p class="text-sm text-gray-400 mt-3 leading-relaxed text-justify max-w-md">
+                    SMA Negeri (SMAN) 12 Medan, merupakan salah satu Sekolah Menengah Atas Negeri yang ada di Provinsi Sumatera Utara, Indonesia. 
+                    Sama dengan SMA pada umumnya di Indonesia masa pendidikan sekolah di SMAN 12 Medan ditempuh dalam waktu tiga tahun pelajaran, 
+                    mulai dari Kelas X sampai Kelas XII.
+                </p>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mt-16 mb-3">INFORMATION</h3>
+                <p class="text-sm text-gray-400 mt-3 leading-relaxed text-justify max-w-md">
+                    Jl. Cempaka No. 75, Medan, Sumatera Utara, Indonesia <br>
+                    061-8455904 <br>
+                    NPSN 10210876
+                </p>
+            </div>
+        </div>
+    </footer>
+    
 </body>
 </html>
