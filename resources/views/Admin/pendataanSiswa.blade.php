@@ -4,7 +4,7 @@
     <div class="flex flex-col space-y-6">
         
         <div class="flex justify-between items-center">
-            <h3 class="text-xl font-bold text-blue-600">Form Data Diri Siswa</h3>
+            <h3 class="text-xl font-bold text-blue-400">Form Data Diri Siswa</h3>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-8">
