@@ -1,5 +1,7 @@
 @extends('layouts.admin.app')
 
+@section('title', 'Tahun Ajaran')
+
 @section('content')
 <div class="content-wrapper p-6">
 

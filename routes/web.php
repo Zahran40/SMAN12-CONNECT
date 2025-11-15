@@ -136,6 +136,14 @@ Route::prefix('siswa')->group(function () {
             return view('Admin.detailSiswa');
         })->name('detail_siswa');
 
+        Route::get('/pendataan-siswa', function () {
+            return view('Admin.pendataanSiswa');
+        })->name('pendataan_siswa');
+
+        Route::get('/pendataan-guru', function () {
+            return view('Admin.pendataanGuru');
+        })->name('pendataan_guru');
+
         Route::get('/akademik', function () {
             return view('Admin.akademik');
         })->name('akademik');
