@@ -327,4 +327,16 @@ class MateriController extends Controller
 
         return Storage::disk('public')->download($filePath, $fileName . '.' . pathinfo($filePath, PATHINFO_EXTENSION));
     }
+
+    /**
+     * Tampilkan pengumuman aktif
+     */
+    public function pengumuman()
+    {
+        $pengumuman = \App\Models\Pengumuman::where('status', 'aktif')
+            ->orderBy('tanggal_dibuat', 'desc')
+            ->get();
+        
+        return view('Guru.pengumuman', compact('pengumuman'));
+    }
 }
