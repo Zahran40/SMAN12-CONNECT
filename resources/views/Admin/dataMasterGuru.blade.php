@@ -1,5 +1,7 @@
 @extends('layouts.admin.app')
 
+@section('title', 'Data Master Guru')
+
 @section('content')
 <div class="flex flex-col h-full space-y-6">
     <div class="flex items-center space-x-4">
@@ -47,7 +49,7 @@
         </a>
     </div>
 
-    <div class="bg-white p-8 rounded-2xl shadow-sm flex-grow">
+    <div class="bg-white p-8 rounded-2xl shadow-sm grow">
         <h3 class="text-xl font-bold text-blue-600 mb-6">Daftar Guru Mengajar</h3>
 
         <div class="grid grid-cols-12 gap-4 text-blue-600 font-semibold mb-4 px-6">
