@@ -22,6 +22,16 @@
             {{ session('error') }}
         </div>
     @endif
+    
+    @if($errors->any())
+        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <!-- Tabs Navigation -->
     <div class="mb-6 bg-white rounded-t-xl border-2 border-b-0 border-blue-200">
@@ -90,12 +100,23 @@
                     @forelse($pertemuan->tugas as $t)
                     @php
                         $now = now();
-                        $waktuBuka = \Carbon\Carbon::parse($t->waktu_dibuka);
-                        $waktuTutup = \Carbon\Carbon::parse($t->waktu_ditutup);
                         
-                        // Tanggal untuk display
-                        $tanggalDibuka = $t->tanggal_dibuka ? \Carbon\Carbon::parse($t->tanggal_dibuka) : $waktuBuka;
-                        $tanggalDitutup = $t->tanggal_ditutup ? \Carbon\Carbon::parse($t->tanggal_ditutup) : $waktuTutup;
+                        // Parse tanggal dari database (already in date format)
+                        $tanggalDibuka = $t->tanggal_dibuka ? \Carbon\Carbon::parse($t->tanggal_dibuka)->startOfDay() : now();
+                        $tanggalDitutup = $t->tanggal_ditutup ? \Carbon\Carbon::parse($t->tanggal_ditutup)->startOfDay() : now();
+                        
+                        // Create full datetime by setting time on the date
+                        $waktuBuka = clone $tanggalDibuka;
+                        if ($t->jam_buka) {
+                            $jamBukaParts = explode(':', $t->jam_buka);
+                            $waktuBuka->setTime((int)$jamBukaParts[0], (int)$jamBukaParts[1], isset($jamBukaParts[2]) ? (int)$jamBukaParts[2] : 0);
+                        }
+                        
+                        $waktuTutup = clone $tanggalDitutup;
+                        if ($t->jam_tutup) {
+                            $jamTutupParts = explode(':', $t->jam_tutup);
+                            $waktuTutup->setTime((int)$jamTutupParts[0], (int)$jamTutupParts[1], isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0);
+                        }
                         
                         // Tugas terbuka jika: sekarang >= waktu buka DAN sekarang <= waktu tutup
                         $isOpen = $now->greaterThanOrEqualTo($waktuBuka) && $now->lessThanOrEqualTo($waktuTutup);
@@ -154,13 +175,13 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-green-600">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span><strong>Dibuka:</strong> {{ $tanggalDibuka->translatedFormat('l, d F Y') }} - {{ $waktuBuka->format('H:i') }}</span>
+                                    <span><strong>Dibuka:</strong> {{ $tanggalDibuka->translatedFormat('l, d F Y') }} - {{ substr($t->jam_buka, 0, 5) }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2 text-xs text-slate-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-red-600">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span><strong>Ditutup:</strong> {{ $tanggalDitutup->translatedFormat('l, d F Y') }} - {{ $waktuTutup->format('H:i') }}</span>
+                                    <span><strong>Ditutup:</strong> {{ $tanggalDitutup->translatedFormat('l, d F Y') }} - {{ substr($t->jam_tutup, 0, 5) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -198,8 +219,14 @@
                                         <td class="py-3 px-4">
                                             @php
                                                 $tglKumpul = \Carbon\Carbon::parse($detailTugas->tgl_kumpul);
-                                                // Use waktu_ditutup from database (already includes date + time)
-                                                $batasWaktu = \Carbon\Carbon::parse($t->waktu_ditutup);
+                                                
+                                                // Create batas waktu from tanggal_ditutup + jam_tutup
+                                                $batasWaktu = clone $tanggalDitutup;
+                                                if ($t->jam_tutup) {
+                                                    $jamTutupParts = explode(':', $t->jam_tutup);
+                                                    $batasWaktu->setTime((int)$jamTutupParts[0], (int)$jamTutupParts[1], isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0);
+                                                }
+                                                
                                                 $isLate = $tglKumpul->greaterThan($batasWaktu);
                                                 // Calculate total minutes difference
                                                 $totalMinutes = abs($tglKumpul->diffInMinutes($batasWaktu));
@@ -282,7 +309,10 @@
                                 </tbody>
                             </table>
                         </div>
-                        @elseif($isOpen)
+                        @endif
+                        
+                        @if($isOpen)
+                        <!-- Form Upload - Selalu ada jika tugas terbuka -->
                         <form id="upload-form-{{ $t->id_tugas }}" action="{{ route('siswa.upload_tugas', $t->id_tugas) }}" method="POST" enctype="multipart/form-data" class="mt-4 hidden">
                             @csrf
                             
@@ -290,15 +320,22 @@
                                 <h4 class="font-bold text-gray-800 px-4 py-3 bg-gray-50 border-b border-gray-200">Upload Jawaban Anda</h4>
                                 
                                 <div class="p-4">
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Teks Jawaban (Opsional)</label>
+                                        <textarea name="teks_jawaban" rows="4" class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="Tulis jawaban atau catatan Anda di sini...">{{ old('teks_jawaban') }}</textarea>
+                                        <p class="text-xs text-gray-500 mt-1">Anda bisa menulis jawaban langsung atau upload file, atau keduanya</p>
+                                    </div>
+                                    
                                     <div id="drop-zone-{{ $t->id_tugas }}" class="border-2 border-dashed border-blue-300 rounded-lg p-8 text-center hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
                                         <div class="space-y-2">
                                             <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                             </svg>
                                             <label for="tugas-file-{{ $t->id_tugas }}" class="block text-blue-600 font-medium cursor-pointer">
-                                                Upload file
+                                                Upload file (Opsional)
                                             </label>
-                                            <input type="file" name="file" id="tugas-file-{{ $t->id_tugas }}" class="hidden" required accept=".pdf,.doc,.docx,.zip,.rar">
+                                            <p class="text-xs text-gray-500">PDF, DOC, DOCX, ZIP, RAR (Max: 20MB)</p>
+                                            <input type="file" name="file" id="tugas-file-{{ $t->id_tugas }}" class="hidden" accept=".pdf,.doc,.docx,.zip,.rar">
                                         </div>
                                     </div>
                                     
@@ -396,6 +433,13 @@
                 function handleFiles(files, id) {
                     const file = files[0];
                     const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+                    
+                    // Validasi ukuran file (max 20MB)
+                    if (fileSizeMB > 20) {
+                        alert('❌ Ukuran file terlalu besar!\n\nFile: ' + file.name + '\nUkuran: ' + fileSizeMB + ' MB\n\nMaksimal ukuran file adalah 20MB.\nSilakan kompres atau kurangi ukuran file Anda.');
+                        fileInput.value = '';
+                        return;
+                    }
                     
                     fileName.textContent = file.name;
                     fileSize.textContent = `${fileSizeMB} MB`;

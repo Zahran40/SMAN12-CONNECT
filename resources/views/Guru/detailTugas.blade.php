@@ -80,8 +80,10 @@
                         <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">No</th>
                         <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">Nama</th>
                         <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">NIS</th>
-                        <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">File Pengumpulan</th>
-                        <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">Nilai Tugas</th>
+                        <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">Teks Jawaban</th>
+                        <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">File</th>
+                        <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">Nilai</th>
+                        <th scope="col" class="py-4 px-6 text-left text-sm font-semibold text-blue-500">Komentar</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200 bg-white">
@@ -92,6 +94,33 @@
                         </td>
                         <td class="px-6 py-4 text-sm font-medium text-slate-700">{{ $item['siswa']->nama_lengkap }}</td>
                         <td class="px-6 py-4 text-sm text-slate-500">{{ $item['siswa']->nis }}</td>
+                        <td class="px-6 py-4">
+                            @if($item['detail_tugas'] && $item['detail_tugas']->teks_jawaban)
+                                <button onclick="showJawaban{{ $loop->iteration }}()" class="text-blue-600 hover:text-blue-800 text-sm underline">
+                                    Lihat Jawaban
+                                </button>
+                                <div id="jawaban{{ $loop->iteration }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="this.classList.add('hidden')">
+                                    <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4" onclick="event.stopPropagation()">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 class="text-lg font-bold text-slate-800">Jawaban - {{ $item['siswa']->nama_lengkap }}</h3>
+                                            <button onclick="document.getElementById('jawaban{{ $loop->iteration }}').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">
+                                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                            </button>
+                                        </div>
+                                        <div class="bg-gray-50 rounded p-4 text-sm text-slate-700 whitespace-pre-wrap max-h-96 overflow-y-auto">
+                                            {{ $item['detail_tugas']->teks_jawaban }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    function showJawaban{{ $loop->iteration }}() {
+                                        document.getElementById('jawaban{{ $loop->iteration }}').classList.remove('hidden');
+                                    }
+                                </script>
+                            @else
+                                <span class="text-sm text-slate-400 italic">-</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4">
                             @if($item['detail_tugas'] && $item['detail_tugas']->file_path)
                                 <a href="{{ asset('storage/' . $item['detail_tugas']->file_path) }}" target="_blank" class="flex items-center justify-between bg-white border-2 border-blue-200 rounded-lg py-2 px-3 w-48 hover:bg-blue-50">
@@ -116,6 +145,7 @@
                                     <form action="{{ route('guru.update_nilai_tugas', $item['detail_tugas']->id_detail_tugas) }}" method="POST" class="flex items-center justify-end space-x-4 px-3">
                                         @csrf
                                         <input type="number" name="nilai" value="{{ $item['detail_tugas']->nilai }}" min="0" max="100" class="w-16 text-center border-2 border-blue-300 rounded-lg py-1 text-slate-700 focus:outline-none focus:border-blue-500">
+                                        <input type="hidden" name="komentar_guru" value="{{ $item['detail_tugas']->komentar_guru }}">
                                         <button type="submit" class="text-blue-600 hover:text-blue-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                                 <path d="M10 2c-1.716 0-3.408.106-5.07.31C3.806 2.45 3 3.414 3 4.517V17.25a.75.75 0 001.075.676L10 15.082l5.925 2.844A.75.75 0 0017 17.25V4.517c0-1.103-.806-2.068-1.93-2.207A41.403 41.403 0 0010 2z" />
@@ -126,6 +156,7 @@
                                     <form action="{{ route('guru.update_nilai_tugas', $item['detail_tugas']->id_detail_tugas) }}" method="POST" class="flex items-center justify-between bg-white border-2 border-slate-200 rounded-lg py-2 px-3 w-32">
                                         @csrf
                                         <input type="number" name="nilai" placeholder="Nilai..." min="0" max="100" class="w-16 text-sm text-slate-700 focus:outline-none">
+                                        <input type="hidden" name="komentar_guru" value="{{ $item['detail_tugas']->komentar_guru }}">
                                         <button type="submit" class="text-slate-400 hover:text-slate-600">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                                 <path d="M10 2c-1.716 0-3.408.106-5.07.31C3.806 2.45 3 3.414 3 4.517V17.25a.75.75 0 001.075.676L10 15.082l5.925 2.844A.75.75 0 0017 17.25V4.517c0-1.103-.806-2.068-1.93-2.207A41.403 41.403 0 0010 2z" />
@@ -133,6 +164,18 @@
                                         </button>
                                     </form>
                                 @endif
+                            @else
+                                <span class="text-sm text-slate-400 italic">-</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($item['detail_tugas'])
+                                <form action="{{ route('guru.update_nilai_tugas', $item['detail_tugas']->id_detail_tugas) }}" method="POST" class="space-y-2">
+                                    @csrf
+                                    <input type="hidden" name="nilai" value="{{ $item['detail_tugas']->nilai }}">
+                                    <textarea name="komentar_guru" rows="2" class="w-full text-sm border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Tulis komentar...">{{ $item['detail_tugas']->komentar_guru }}</textarea>
+                                    <button type="submit" class="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Simpan</button>
+                                </form>
                             @else
                                 <span class="text-sm text-slate-400 italic">-</span>
                             @endif

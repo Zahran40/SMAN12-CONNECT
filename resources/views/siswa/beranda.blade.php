@@ -76,8 +76,8 @@
                                 <h4 class="font-semibold text-slate-800">{{ $pertemuan->jadwal->mataPelajaran->nama_mapel }}</h4>
                                 <p class="text-sm text-slate-500">{{ $pertemuan->jadwal->guru->nama_lengkap }}</p>
                                 <p class="text-xs text-blue-400 mt-1">
-                                    Dibuka: {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_dibuka)->format('H:i') }} - 
-                                    Ditutup: {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_ditutup)->format('H:i') }}
+                                    Dibuka: {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '-' }} - 
+                                    {{ $pertemuan->jam_absen_tutup ? substr($pertemuan->jam_absen_tutup, 0, 5) : '-' }}
                                 </p>
                             </div>
                             <div class="flex items-center space-x-2 text-sm text-blue-400 font-medium">

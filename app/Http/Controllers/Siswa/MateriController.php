@@ -147,21 +147,54 @@ class MateriController extends Controller
      */
     public function uploadTugas(Request $request, $tugas_id)
     {
-        $validated = $request->validate([
-            'file' => 'required|file|mimes:pdf,doc,docx,zip,rar|max:5120', // max 5MB
-        ], [
-            'file.required' => 'File tugas wajib diupload',
-            'file.mimes' => 'File harus berformat PDF, DOC, DOCX, ZIP, atau RAR',
-            'file.max' => 'Ukuran file maksimal 5MB',
+        // Debug: Pastikan method ini dipanggil
+        \Log::info('Upload Tugas Called', [
+            'tugas_id' => $tugas_id,
+            'has_file' => $request->hasFile('file'),
+            'user_id' => Auth::id()
         ]);
+        
+        try {
+            $validated = $request->validate([
+                'file' => 'nullable|file|mimes:pdf,doc,docx,zip,rar|max:20480', // max 20MB
+                'teks_jawaban' => 'nullable|string',
+            ], [
+                'file.mimes' => 'File harus berformat PDF, DOC, DOCX, ZIP, atau RAR',
+                'file.max' => 'Ukuran file maksimal 20MB',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation Failed', $e->errors());
+            return back()->withErrors($e->errors())->withInput();
+        }
 
         $tugas = Tugas::findOrFail($tugas_id);
         $siswa = Auth::user()->siswa;
+        
+        if (!$siswa) {
+            \Log::error('Siswa not found', ['user_id' => Auth::id()]);
+            return back()->with('error', 'Data siswa tidak ditemukan');
+        }
+        
+        \Log::info('Siswa found', ['siswa_id' => $siswa->id_siswa]);
 
-        // Cek apakah masih dalam waktu pengumpulan (gunakan waktu_dibuka dan waktu_ditutup)
+        // Cek apakah masih dalam waktu pengumpulan
         $now = now();
-        $waktuBuka = \Carbon\Carbon::parse($tugas->waktu_dibuka);
-        $waktuTutup = \Carbon\Carbon::parse($tugas->waktu_ditutup);
+        
+        // Combine tanggal and jam for waktu buka and tutup
+        $tanggalDibuka = $tugas->tanggal_dibuka ? \Carbon\Carbon::parse($tugas->tanggal_dibuka)->startOfDay() : now();
+        $tanggalDitutup = $tugas->tanggal_ditutup ? \Carbon\Carbon::parse($tugas->tanggal_ditutup)->startOfDay() : now();
+        
+        $waktuBuka = clone $tanggalDibuka;
+        if ($tugas->jam_buka) {
+            $jamBukaParts = explode(':', $tugas->jam_buka);
+            $waktuBuka->setTime((int)$jamBukaParts[0], (int)$jamBukaParts[1], isset($jamBukaParts[2]) ? (int)$jamBukaParts[2] : 0);
+        }
+        
+        $waktuTutup = clone $tanggalDitutup;
+        if ($tugas->jam_tutup) {
+            $jamTutupParts = explode(':', $tugas->jam_tutup);
+            $waktuTutup->setTime((int)$jamTutupParts[0], (int)$jamTutupParts[1], isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0);
+        }
 
         if ($now->lt($waktuBuka)) {
             return back()->with('error', 'Tugas belum dibuka untuk pengumpulan');
@@ -178,18 +211,26 @@ class MateriController extends Controller
                 ->where('siswa_id', $siswa->id_siswa)
                 ->first();
 
-            // Upload file
-            $file = $request->file('file');
-            $fileName = time() . '_' . $siswa->nis . '_' . str_replace(' ', '_', $file->getClientOriginalName());
-            $filePath = $file->storeAs('tugas_siswa', $fileName, 'public');
+            // Upload file jika ada
+            $filePath = null;
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = time() . '_' . $siswa->nis . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+                $filePath = $file->storeAs('tugas_siswa', $fileName, 'public');
+            }
 
             if ($detailTugas) {
-                // Update (replace file lama)
-                if ($detailTugas->file_path && Storage::disk('public')->exists($detailTugas->file_path)) {
+                // Update (replace file lama jika ada file baru)
+                if ($filePath && $detailTugas->file_path && Storage::disk('public')->exists($detailTugas->file_path)) {
                     Storage::disk('public')->delete($detailTugas->file_path);
                 }
                 
-                $detailTugas->file_path = $filePath;
+                if ($filePath) {
+                    $detailTugas->file_path = $filePath;
+                }
+                if ($request->teks_jawaban !== null) {
+                    $detailTugas->teks_jawaban = $request->teks_jawaban;
+                }
                 $detailTugas->tgl_kumpul = now();
                 $detailTugas->save();
 
@@ -200,6 +241,7 @@ class MateriController extends Controller
                     'tugas_id' => $tugas_id,
                     'siswa_id' => $siswa->id_siswa,
                     'file_path' => $filePath,
+                    'teks_jawaban' => $request->teks_jawaban,
                     'tgl_kumpul' => now(),
                 ]);
 

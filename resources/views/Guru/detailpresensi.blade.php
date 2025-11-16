@@ -52,24 +52,29 @@
             </div>
         </div>
         
-        @if($pertemuan->waktu_absen_dibuka && $pertemuan->waktu_absen_ditutup)
+        @if($pertemuan->tanggal_absen_dibuka && $pertemuan->jam_absen_buka && $pertemuan->tanggal_absen_ditutup && $pertemuan->jam_absen_tutup)
             <div class="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
                 <div class="text-sm text-slate-600">
                     <span class="font-medium">Waktu Absensi:</span>
                     <span class="text-green-600">
-                        {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_dibuka)->isoFormat('DD MMM Y, HH:mm') }}
+                        {{ \Carbon\Carbon::parse($pertemuan->tanggal_absen_dibuka)->translatedFormat('d M Y') }}, {{ substr($pertemuan->jam_absen_buka, 0, 5) }}
                     </span>
                     - 
                     <span class="text-red-600">
-                        {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_ditutup)->isoFormat('DD MMM Y, HH:mm') }}
+                        {{ \Carbon\Carbon::parse($pertemuan->tanggal_absen_ditutup)->translatedFormat('d M Y') }}, {{ substr($pertemuan->jam_absen_tutup, 0, 5) }}
                     </span>
                     
                     @if($pertemuan->isAbsensiOpen())
                         <span class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">● Sedang Berlangsung</span>
-                    @elseif(now()->greaterThan($pertemuan->waktu_absen_ditutup))
-                        <span class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">Sudah Ditutup</span>
                     @else
-                        <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">Belum Dibuka</span>
+                        @php
+                            $waktuTutup = \Carbon\Carbon::parse($pertemuan->tanggal_absen_ditutup)->setTimeFromTimeString($pertemuan->jam_absen_tutup);
+                        @endphp
+                        @if(now()->greaterThan($waktuTutup))
+                            <span class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">Sudah Ditutup</span>
+                        @else
+                            <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">Belum Dibuka</span>
+                        @endif
                     @endif
                 </div>
                 

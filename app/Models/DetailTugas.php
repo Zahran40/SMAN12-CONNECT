@@ -14,15 +14,15 @@ class DetailTugas extends Model
         'tugas_id',
         'siswa_id',
         'file_path',
-        'tgl_submit',
+        'tgl_kumpul',
+        'teks_jawaban',
         'nilai',
-        'feedback',
-        'status',
+        'komentar_guru',
     ];
 
     protected $casts = [
-        'tgl_submit' => 'datetime',
-        'nilai' => 'integer',
+        'tgl_kumpul' => 'datetime',
+        'nilai' => 'decimal:2',
     ];
 
     /**

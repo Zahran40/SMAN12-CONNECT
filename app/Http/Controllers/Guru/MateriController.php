@@ -242,9 +242,7 @@ class MateriController extends Controller
                 'file_path' => $filePath,
                 'tanggal_dibuka' => $tanggalDibuka,
                 'tanggal_ditutup' => $tanggalDitutup,
-                'tanggal_deadline' => $tanggalDitutup, // deadline sama dengan tanggal ditutup
-                'waktu_dibuka' => $waktuDibuka,
-                'waktu_ditutup' => $waktuDitutup,
+                'deadline' => $tanggalDitutup, // deadline sama dengan tanggal ditutup
                 'jam_buka' => $validated['jam_buka'],
                 'jam_tutup' => $validated['jam_tutup'],
             ]);
@@ -449,7 +447,8 @@ class MateriController extends Controller
     public function updateNilaiTugas(Request $request, $detail_tugas_id)
     {
         $validated = $request->validate([
-            'nilai' => 'required|numeric|min:0|max:100',
+            'nilai' => 'nullable|numeric|min:0|max:100',
+            'komentar_guru' => 'nullable|string',
             'komentar_guru' => 'nullable|string',
         ]);
 
