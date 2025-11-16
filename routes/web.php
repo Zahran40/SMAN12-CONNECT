@@ -43,7 +43,8 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
 
     // RAPORT ROUTES
     Route::get('/nilai', [App\Http\Controllers\Siswa\RaportController::class, 'index'])->name('nilai');
-    Route::get('/detail-raport/{mapel_id}', [App\Http\Controllers\Siswa\RaportController::class, 'detail'])->name('detail_raport');
+    Route::get('/detail-raport', [App\Http\Controllers\Siswa\RaportController::class, 'detailAll'])->name('detail_raport');
+    Route::get('/detail-raport/{mapel_id}', [App\Http\Controllers\Siswa\RaportController::class, 'detail'])->name('detail_raport_mapel');
 
     Route::get('/tagihan', function () {
         return view('siswa.tagihan');
@@ -56,10 +57,6 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/pengumuman', [App\Http\Controllers\Siswa\MateriController::class, 'pengumuman'])->name('pengumuman');
 
     Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
-
-    Route::get('/detail-raport', function () {
-        return view('siswa.detailRaport');
-    })->name('detail_raport');
 
     Route::get('/detail-tagihan', function () {
         return view('siswa.detailTagihan');
