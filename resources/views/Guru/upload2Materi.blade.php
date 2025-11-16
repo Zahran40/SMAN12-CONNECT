@@ -135,25 +135,74 @@
 
             <div>
                 <label for="deskripsi" class="block text-lg font-bold text-slate-900 mb-2">Deskripsi</label>
-                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Deskripsi materi atau tugas anda" required>{{ old('deskripsi') }}</textarea>
+                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Deskripsi materi atau tugas anda (opsional)">{{ old('deskripsi') }}</textarea>
             </div>
 
-            <div id="waktu-section" class="hidden">
-                <label class="block text-lg font-bold text-slate-900 mb-4">
-                    Waktu <span class="text-base font-normal text-slate-500">(khusus berkas tugas)</span>
-                </label>
-                <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 max-w-md">
-                    <div>
-                        <div class="mb-2 text-blue-500 text-sm">Dibuka</div>
-                        <input type="time" name="jam_buka" value="{{ old('jam_buka', '08:00') }}" class="w-full text-center border-2 border-blue-300 rounded-lg py-3 text-slate-600 focus:outline-none focus:border-blue-500">
+            <div id="waktu-section" class="hidden space-y-6">
+                <div>
+                    <label class="block text-lg font-bold text-slate-900 mb-2">
+                        Tanggal Deadline <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="deadline" value="{{ old('deadline') }}" class="w-full max-w-xs border-2 border-blue-300 rounded-lg py-3 px-4 text-slate-700 focus:outline-none focus:border-blue-500" min="{{ date('Y-m-d') }}">
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-bold text-slate-900 mb-4">
+                        Waktu <span class="text-base font-normal text-slate-500">(jam buka dan tutup)</span> <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-4 max-w-md">
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 inline mr-1">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                </svg>
+                                Jam Dibuka
+                            </label>
+                            <div class="flex gap-2">
+                                <select id="jam_buka_hour_edit" class="w-1/2 border-2 border-blue-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                                    @for($h = 0; $h < 24; $h++)
+                                        <option value="{{ sprintf('%02d', $h) }}" {{ $h == 8 ? 'selected' : '' }}>{{ sprintf('%02d', $h) }}</option>
+                                    @endfor
+                                </select>
+                                <select id="jam_buka_minute_edit" class="w-1/2 border-2 border-blue-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                                    <option value="00" selected>00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                                <input type="hidden" id="jam_buka_edit" name="jam_buka" value="08:00">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-red-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 inline mr-1">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                </svg>
+                                Jam Ditutup
+                            </label>
+                            <div class="flex gap-2">
+                                <select id="jam_tutup_hour_edit" class="w-1/2 border-2 border-red-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200">
+                                    @for($h = 0; $h < 24; $h++)
+                                        <option value="{{ sprintf('%02d', $h) }}" {{ $h == 23 ? 'selected' : '' }}>{{ sprintf('%02d', $h) }}</option>
+                                    @endfor
+                                </select>
+                                <select id="jam_tutup_minute_edit" class="w-1/2 border-2 border-red-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200">
+                                    <option value="00">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                    <option value="59" selected>59</option>
+                                </select>
+                                <input type="hidden" id="jam_tutup_edit" name="jam_tutup" value="23:59">
+                            </div>
+                        </div>
                     </div>
-                    <div class="pt-7">
-                        <div class="w-5 h-1.5 bg-blue-600 rounded-full"></div>
-                    </div>
-                    <div>
-                        <div class="mb-2 text-blue-400 text-sm">Ditutup</div>
-                         <input type="time" name="jam_tutup" value="{{ old('jam_tutup', '23:59') }}" class="w-full text-center border-2 border-blue-300 rounded-lg py-3 text-slate-600 focus:outline-none focus:border-blue-500">
-                    </div>
+                    <p class="mt-2 text-xs text-slate-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 inline mr-1">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
+                        </svg>
+                        Klik pada input untuk memilih waktu menggunakan time picker
+                    </p>
                 </div>
             </div>
 
@@ -174,6 +223,31 @@
     </form>
 
     <script>
+        // Update hidden time inputs when selects change
+        function updateJamBukaEdit() {
+            const hour = document.getElementById('jam_buka_hour_edit').value;
+            const minute = document.getElementById('jam_buka_minute_edit').value;
+            document.getElementById('jam_buka_edit').value = hour + ':' + minute;
+        }
+        
+        function updateJamTutupEdit() {
+            const hour = document.getElementById('jam_tutup_hour_edit').value;
+            const minute = document.getElementById('jam_tutup_minute_edit').value;
+            document.getElementById('jam_tutup_edit').value = hour + ':' + minute;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Attach listeners
+            document.getElementById('jam_buka_hour_edit').addEventListener('change', updateJamBukaEdit);
+            document.getElementById('jam_buka_minute_edit').addEventListener('change', updateJamBukaEdit);
+            document.getElementById('jam_tutup_hour_edit').addEventListener('change', updateJamTutupEdit);
+            document.getElementById('jam_tutup_minute_edit').addEventListener('change', updateJamTutupEdit);
+            
+            // Initialize values
+            updateJamBukaEdit();
+            updateJamTutupEdit();
+        });
+
         // Drag & Drop functionality
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-upload');
@@ -363,6 +437,49 @@
                     <span>Tambah Berkas</span>
                 </a>
             </div>
+
+            <script>
+                // Time picker validation for edit form
+                function validateTimeEdit() {
+                    const jamBukaEdit = document.getElementById('jam_buka_edit');
+                    const jamTutupEdit = document.getElementById('jam_tutup_edit');
+                    
+                    if (jamBukaEdit.value && jamTutupEdit.value) {
+                        const [bukaHour, bukaMin] = jamBukaEdit.value.split(':').map(Number);
+                        const [tutupHour, tutupMin] = jamTutupEdit.value.split(':').map(Number);
+                        
+                        const bukaMinutes = bukaHour * 60 + bukaMin;
+                        const tutupMinutes = tutupHour * 60 + tutupMin;
+                        
+                        if (tutupMinutes <= bukaMinutes) {
+                            alert('⚠️ Waktu ditutup harus lebih dari waktu dibuka!\n\nContoh:\nDibuka: 08:00\nDitutup: 17:00');
+                            document.getElementById('jam_tutup_hour_edit').value = '23';
+                            document.getElementById('jam_tutup_minute_edit').value = '59';
+                            updateJamTutupEdit();
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
+                // Attach validation to dropdown changes
+                document.getElementById('jam_buka_hour_edit').addEventListener('change', function() {
+                    updateJamBukaEdit();
+                    validateTimeEdit();
+                });
+                document.getElementById('jam_buka_minute_edit').addEventListener('change', function() {
+                    updateJamBukaEdit();
+                    validateTimeEdit();
+                });
+                document.getElementById('jam_tutup_hour_edit').addEventListener('change', function() {
+                    updateJamTutupEdit();
+                    validateTimeEdit();
+                });
+                document.getElementById('jam_tutup_minute_edit').addEventListener('change', function() {
+                    updateJamTutupEdit();
+                    validateTimeEdit();
+                });
+            </script>
 
         </div>
     </div>

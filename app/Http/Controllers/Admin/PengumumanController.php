@@ -7,6 +7,7 @@ use App\Models\Pengumuman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PengumumanController extends Controller
 {
@@ -23,7 +24,8 @@ class PengumumanController extends Controller
             'hari' => 'nullable|string',
             'tanggal' => 'nullable|date',
             'isi' => 'required|string',
-            'pembuat' => 'nullable|string|max:255',
+            'target_role' => 'required|in:Semua,guru,siswa',
+            'file_lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
 
         DB::beginTransaction();
@@ -33,15 +35,22 @@ class PengumumanController extends Controller
             // Use hari from form or auto detect from date
             $hari = $validated['hari'] ?? \Carbon\Carbon::parse($tanggal)->translatedFormat('l');
 
+            $filePath = null;
+            if ($request->hasFile('file_lampiran')) {
+                $file = $request->file('file_lampiran');
+                $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+                $filePath = $file->storeAs('pengumuman', $fileName, 'public');
+            }
+
             Pengumuman::create([
                 'judul' => $validated['judul'],
                 'isi_pengumuman' => $validated['isi'],
                 'tgl_publikasi' => $tanggal,
                 'hari' => $hari,
-                'target_role' => 'Semua',
-                'author_id' => 1,
+                'target_role' => $validated['target_role'],
+                'author_id' => Auth::id(),
                 'tanggal_dibuat' => now(),
-                'file_lampiran' => null,
+                'file_lampiran' => $filePath,
                 'status' => 'aktif',
             ]);
 

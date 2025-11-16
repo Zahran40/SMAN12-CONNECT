@@ -47,6 +47,21 @@
 
                 <div class="text-center mb-6">
                     <h2 class="text-xl font-bold text-slate-800">{{ $item->judul }}</h2>
+                    <div class="mt-2">
+                        @if($item->target_role == 'Semua')
+                            <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                📢 Untuk Semua (Guru & Siswa)
+                            </span>
+                        @elseif($item->target_role == 'guru')
+                            <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                👨‍🏫 Khusus Guru
+                            </span>
+                        @else
+                            <span class="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                👨‍🎓 Khusus Siswa
+                            </span>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="mb-6 text-sm">

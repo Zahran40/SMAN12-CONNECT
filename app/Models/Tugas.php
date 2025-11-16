@@ -15,22 +15,36 @@ class Tugas extends Model
         'pertemuan_id',
         'judul_tugas',
         'deskripsi_tugas',
-        'deadline',
-        'file_tugas',
-        'tgl_upload',
+        'file_path',
+        'tanggal_dibuka',
+        'tanggal_ditutup',
+        'tanggal_deadline',
+        'waktu_dibuka',
+        'waktu_ditutup',
         'jam_buka',
         'jam_tutup',
     ];
 
     protected $casts = [
-        'tgl_upload' => 'datetime',
-        'deadline' => 'date',
+        'tanggal_dibuka' => 'date',
+        'tanggal_ditutup' => 'date',
+        'tanggal_deadline' => 'date',
+        'waktu_dibuka' => 'datetime',
+        'waktu_ditutup' => 'datetime',
     ];
 
     /**
      * Relasi ke Jadwal Pelajaran
      */
     public function jadwal()
+    {
+        return $this->belongsTo(JadwalPelajaran::class, 'jadwal_id', 'id_jadwal');
+    }
+
+    /**
+     * Alias untuk relasi jadwal (untuk konsistensi penamaan)
+     */
+    public function jadwalPelajaran()
     {
         return $this->belongsTo(JadwalPelajaran::class, 'jadwal_id', 'id_jadwal');
     }

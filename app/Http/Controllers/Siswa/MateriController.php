@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MateriController extends Controller
 {
@@ -57,7 +58,41 @@ class MateriController extends Controller
             ->orderBy('nomor_pertemuan', 'asc')
             ->get();
 
-        return view('siswa.detailMateri', compact('jadwal', 'pertemuans'));
+        // Ambil semua tugas untuk tab Status Tugas
+        $allTugasSiswa = Tugas::where('jadwal_id', $jadwal_id)
+            ->with(['pertemuan', 'detailTugas' => function($query) use ($siswa) {
+                $query->where('siswa_id', $siswa->id_siswa);
+            }])
+            ->get()
+            ->map(function($tugas) use ($siswa) {
+                $detailTugas = $tugas->detailTugas->first();
+                $waktuTutup = \Carbon\Carbon::parse($tugas->waktu_ditutup);
+                $now = now();
+                
+                // Tentukan status pengumpulan
+                if (!$detailTugas) {
+                    $statusPengumpulan = $now->greaterThan($waktuTutup) ? 'Belum Dikumpulkan' : 'Belum Dikumpulkan';
+                } else {
+                    $tglKumpul = \Carbon\Carbon::parse($detailTugas->tgl_kumpul);
+                    $statusPengumpulan = $tglKumpul->lessThanOrEqualTo($waktuTutup) ? 'Tepat Waktu' : 'Terlambat';
+                }
+                
+                return (object)[
+                    'id_tugas' => $tugas->id_tugas,
+                    'judul_tugas' => $tugas->judul_tugas,
+                    'deskripsi' => $tugas->deskripsi,
+                    'nomor_pertemuan' => $tugas->pertemuan->nomor_pertemuan ?? '-',
+                    'deadline' => $tugas->deadline,
+                    'waktu_ditutup' => $tugas->waktu_ditutup,
+                    'tgl_kumpul' => $detailTugas->tgl_kumpul ?? null,
+                    'nilai' => $detailTugas->nilai ?? null,
+                    'komentar_guru' => $detailTugas->komentar_guru ?? null,
+                    'status_pengumpulan' => $statusPengumpulan,
+                ];
+            })
+            ->sortByDesc('deadline');
+
+        return view('siswa.detailMateri', compact('jadwal', 'pertemuans', 'allTugasSiswa'));
     }
 
     /**
@@ -67,14 +102,14 @@ class MateriController extends Controller
     {
         $materi = Materi::findOrFail($id);
 
-        if (!Storage::disk('public')->exists($materi->file_path)) {
+        $fullPath = storage_path('app/public/' . $materi->file_path);
+        
+        if (!file_exists($fullPath)) {
             return back()->with('error', 'File tidak ditemukan');
         }
 
-        return Storage::disk('public')->download(
-            $materi->file_path, 
-            $materi->judul_materi . '.' . pathinfo($materi->file_path, PATHINFO_EXTENSION)
-        );
+        $extension = pathinfo($materi->file_path, PATHINFO_EXTENSION);
+        return response()->download($fullPath, $materi->judul_materi . '.' . $extension);
     }
 
     /**
@@ -84,14 +119,27 @@ class MateriController extends Controller
     {
         $tugas = Tugas::findOrFail($id);
 
-        if (!$tugas->file_tugas || !Storage::disk('public')->exists($tugas->file_tugas)) {
-            return back()->with('error', 'File tidak ditemukan');
+        // Debug: Log file path
+        Log::info('Download Tugas - File Path: ' . $tugas->file_path);
+        
+        if (!$tugas->file_path) {
+            return back()->with('error', 'File tugas tidak tersedia');
         }
 
-        return Storage::disk('public')->download(
-            $tugas->file_tugas, 
-            $tugas->judul_tugas . '.' . pathinfo($tugas->file_tugas, PATHINFO_EXTENSION)
-        );
+        $fullPath = storage_path('app/public/' . $tugas->file_path);
+        
+        // Debug: Log full path
+        Log::info('Download Tugas - Full Path: ' . $fullPath);
+        Log::info('Download Tugas - File Exists: ' . (file_exists($fullPath) ? 'YES' : 'NO'));
+        
+        if (!file_exists($fullPath)) {
+            return back()->with('error', 'File tidak ditemukan di: ' . $tugas->file_path);
+        }
+
+        $extension = pathinfo($tugas->file_path, PATHINFO_EXTENSION);
+        $fileName = $tugas->judul_tugas . '.' . $extension;
+        
+        return response()->download($fullPath, $fileName);
     }
 
     /**
@@ -110,16 +158,16 @@ class MateriController extends Controller
         $tugas = Tugas::findOrFail($tugas_id);
         $siswa = Auth::user()->siswa;
 
-        // Cek apakah masih dalam waktu pengumpulan
+        // Cek apakah masih dalam waktu pengumpulan (gunakan waktu_dibuka dan waktu_ditutup)
         $now = now();
-        $jamBuka = \Carbon\Carbon::parse($tugas->tgl_upload->format('Y-m-d') . ' ' . $tugas->jam_buka);
-        $jamTutup = \Carbon\Carbon::parse($tugas->tgl_upload->format('Y-m-d') . ' ' . $tugas->jam_tutup);
+        $waktuBuka = \Carbon\Carbon::parse($tugas->waktu_dibuka);
+        $waktuTutup = \Carbon\Carbon::parse($tugas->waktu_ditutup);
 
-        if ($now->lt($jamBuka)) {
+        if ($now->lt($waktuBuka)) {
             return back()->with('error', 'Tugas belum dibuka untuk pengumpulan');
         }
 
-        if ($now->gt($jamTutup)) {
+        if ($now->gt($waktuTutup)) {
             return back()->with('error', 'Waktu pengumpulan tugas sudah ditutup');
         }
 
@@ -171,9 +219,8 @@ class MateriController extends Controller
      */
     public function pengumuman()
     {
-        $pengumuman = \App\Models\Pengumuman::where('status', 'aktif')
-            ->orderBy('tanggal_dibuat', 'desc')
-            ->get();
+        // Gunakan stored procedure untuk get pengumuman aktif untuk siswa
+        $pengumuman = DB::select('CALL sp_get_pengumuman_aktif(?)', ['siswa']);
         
         return view('siswa.pengumuman', compact('pengumuman'));
     }
