@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="flex items-center space-x-4 mb-8">
-        <a href="{{ url()->previous() }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
+        <a href="{{ route('siswa.nilai') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
              <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
@@ -13,141 +13,67 @@
 
     <div class="bg-white rounded-xl shadow-lg border-2 border-blue-200 p-6">
         
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Tahun Ajaran {{ $tahunAjaranLabel }} - Semester {{ $semester }}</h3>
+        </div>
+
+        @if($raports->count() > 0)
         <div class="grid grid-cols-12 gap-4 mb-4 px-2">
             <div class="col-span-1 text-sm font-semibold text-blue-700">No</div>
-            <div class="col-span-7 text-sm font-semibold text-blue-700">Nama</div>
+            <div class="col-span-7 text-sm font-semibold text-blue-700">Nama Mata Pelajaran</div>
             <div class="col-span-2 text-sm font-semibold text-blue-700">Nilai</div>
-            <div class="col-span-2 text-sm font-semibold text-blue-700">Bobot Nilai</div>
+            <div class="col-span-2 text-sm font-semibold text-blue-700">Grade</div>
         </div>
 
         <div class="space-y-4">
 
+        @foreach($raports as $index => $raport)
             <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
                 <div class="col-span-1">
                     <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        1
+                        {{ $index + 1 }}
                     </div>
                 </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        2
-                    </div>
+                <div class="col-span-7 text-sm font-medium text-slate-800">{{ $raport->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }}</div>
+                <div class="col-span-2 text-sm font-bold text-slate-900">{{ number_format($raport->nilai_akhir, 2) }}</div>
+                <div class="col-span-2">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold 
+                        @if($raport->grade == 'A') bg-green-100 text-green-800
+                        @elseif($raport->grade == 'B') bg-blue-100 text-blue-800
+                        @elseif($raport->grade == 'C') bg-yellow-100 text-yellow-800
+                        @elseif($raport->grade == 'D') bg-orange-100 text-orange-800
+                        @else bg-red-100 text-red-800
+                        @endif">
+                        {{ $raport->grade }}
+                    </span>
                 </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
             </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        3
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        4
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        5
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        6
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        7
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        8
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        9
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-3 grid grid-cols-12 items-center gap-4 border border-slate-100">
-                <div class="col-span-1">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
-                        10
-                    </div>
-                </div>
-                <div class="col-span-7 text-sm font-medium text-slate-800">Nama Mapel</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">90</div>
-                <div class="col-span-2 text-sm font-bold text-slate-900">A</div>
-            </div>
+        @endforeach
 
         </div>
 
-    </div> <div class="mt-6 flex justify-between items-center">
-        <div class="flex items-center space-x-3">
-            <span class="w-8 h-3 bg-blue-700 rounded-sm"></span>
-            <span class="font-semibold text-slate-700">Rata-Rata Nilai :</span>
-            <span class="font-bold text-slate-900">90</span>
+        <div class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
+            <div class="flex justify-between items-center">
+                <h4 class="font-semibold text-slate-800">Rata-rata Nilai:</h4>
+                <p class="text-2xl font-bold text-blue-700">{{ number_format($rataRata, 2) }}</p>
+            </div>
         </div>
-        
-        <button class="flex items-center space-x-2 bg-blue-400 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            <img src="{{ asset('images/download.png') }}" fill="none" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-              <path fill-rule="evenodd" d="M5 2.75C5 1.784 5.784 1 6.75 1h6.5c.966 0 1.75.784 1.75 1.75v3.5A1.75 1.75 0 0 1 13.25 8H6.75A1.75 1.75 0 0 1 5 6.25v-3.5ZM11.5 4a.5.5 0 0 0 0-1H8.5a.5.5 0 0 0 0 1h3Z" clip-rule="evenodd" />
-              <path fill-rule="evenodd" d="M1.5 8.75A1.75 1.75 0 0 1 3.25 7h13.5A1.75 1.75 0 0 1 18.5 8.75v5.75c0 .59-.224 1.135-.59 1.562l-2.148 2.148A1.75 1.75 0 0 1 14.22 19H5.78a1.75 1.75 0 0 1-1.543-.89l-2.148-2.148A1.75 1.75 0 0 1 1.5 14.5v-5.75ZM3.25 8.5a.25.25 0 0 0-.25.25v5.75c0 .1.03.192.08.27l2.148 2.148c.078.078.17.13.27.13h8.44a.25.25 0 0 0 .19-.08l2.148-2.148a.25.25 0 0 0 .08-.27v-5.75a.25.25 0 0 0-.25-.25H3.25Z" clip-rule="evenodd" />
-            </img>
-            <span>Cetak Nilai</span>
-        </button>
+
+        <div class="mt-6 flex justify-end">
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition-colors flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                <span>Cetak Raport</span>
+            </button>
+        </div>
+
+        @else
+        <div class="text-center py-12">
+            <p class="text-slate-500">Nilai untuk semester ini belum tersedia</p>
+        </div>
+        @endif
+
     </div>
 
 @endsection

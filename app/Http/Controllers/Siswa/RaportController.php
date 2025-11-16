@@ -23,16 +23,10 @@ class RaportController extends Controller
         $tahunAjaran = $tahunAjaranAktif->id_tahun_ajaran;
         $tahunAjaranLabel = $tahunAjaranAktif->tahun_mulai . '/' . $tahunAjaranAktif->tahun_selesai;
         
-        // Ambil semua raport siswa untuk tahun ajaran ini
-        $raports = Raport::where('siswa_id', $siswa->id_siswa)
-            ->where('tahun_ajaran_id', $tahunAjaran)
-            ->with(['mataPelajaran', 'tahunAjaran'])
-            ->get();
+        // Ambil data kelas siswa
+        $kelas = $siswa->kelas;
         
-        // Hitung rata-rata
-        $rataRata = $raports->avg('nilai_akhir') ?? 0;
-        
-        return view('Siswa.raport', compact('raports', 'rataRata', 'tahunAjaranLabel'));
+        return view('Siswa.nilai', compact('tahunAjaranLabel', 'kelas'));
     }
     
     /**
@@ -55,5 +49,31 @@ class RaportController extends Controller
             ->first();
         
         return view('Siswa.detailRaport', compact('mataPelajaran', 'raport', 'tahunAjaranLabel'));
+    }
+
+    /**
+     * Detail Semua Nilai Raport berdasarkan Semester
+     */
+    public function detailAll(Request $request)
+    {
+        $siswa = auth()->user()->siswa;
+        $semester = $request->query('semester', 'Ganjil'); // Default Ganjil
+        
+        // Ambil tahun ajaran aktif
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        $tahunAjaran = $tahunAjaranAktif->id_tahun_ajaran;
+        $tahunAjaranLabel = $tahunAjaranAktif->tahun_mulai . '/' . $tahunAjaranAktif->tahun_selesai;
+        
+        // Ambil semua raport siswa untuk tahun ajaran dan semester ini
+        $raports = Raport::where('siswa_id', $siswa->id_siswa)
+            ->where('tahun_ajaran_id', $tahunAjaran)
+            ->where('semester', $semester)
+            ->with(['mataPelajaran', 'tahunAjaran'])
+            ->get();
+        
+        // Hitung rata-rata
+        $rataRata = $raports->avg('nilai_akhir') ?? 0;
+        
+        return view('Siswa.detailRaport', compact('raports', 'rataRata', 'tahunAjaranLabel', 'semester'));
     }
 }
