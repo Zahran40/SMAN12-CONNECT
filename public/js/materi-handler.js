@@ -117,11 +117,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form[data-validate]');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
+            console.log('Validating form...');
             let isValid = true;
             const requiredFields = form.querySelectorAll('[required]');
             
+            console.log('Required fields count:', requiredFields.length);
+            
             requiredFields.forEach(field => {
-                if (!field.value.trim()) {
+                let fieldValue = '';
+                
+                // Special handling for file input
+                if (field.type === 'file') {
+                    fieldValue = field.files && field.files.length > 0 ? field.files[0].name : '';
+                    console.log(`File field ${field.name}: ${fieldValue} (has files: ${field.files ? field.files.length : 0})`);
+                } else {
+                    fieldValue = field.value ? field.value.trim() : '';
+                }
+                
+                console.log(`Field ${field.name}: "${fieldValue}" (required: ${field.hasAttribute('required')})`);
+                
+                if (!fieldValue) {
                     isValid = false;
                     field.classList.add('border-red-500');
                     
@@ -142,9 +157,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
+            console.log('Form valid:', isValid);
+            
             if (!isValid) {
                 e.preventDefault();
                 alert('Mohon lengkapi semua field yang wajib diisi');
+                return false;
             }
         });
     });

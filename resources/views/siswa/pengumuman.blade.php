@@ -48,14 +48,3 @@
     </div>
 
 @endsection
-
-            <div class="mt-8 text-right">
-                <p class="text-sm text-slate-600 mb-1">Medan 10 November 2025</p>
-                <p class="text-sm font-bold text-blue-700">SMA NEGERI 12 MEDAN</p>
-            </div>
-            
-        </div>
-
-        </div>
-
-@endsection
