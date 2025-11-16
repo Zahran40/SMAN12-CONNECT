@@ -75,13 +75,30 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Target Pengumuman</label>
+                    <div class="relative w-64">
+                        <select name="target_role" class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 pr-10 focus:outline-none focus:border-blue-500 bg-white" required>
+                            <option value="Semua" {{ old('target_role') == 'Semua' ? 'selected' : '' }}>Semua (Guru & Siswa)</option>
+                            <option value="guru" {{ old('target_role') == 'guru' ? 'selected' : '' }}>Guru Saja</option>
+                            <option value="siswa" {{ old('target_role') == 'siswa' ? 'selected' : '' }}>Siswa Saja</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Isi Pengumuman</label>
                     <textarea name="isi" placeholder="Isi pengumuman..." rows="6" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-400 resize-none" required>{{ old('isi') }}</textarea>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Pembuat Pengumuman</label>
-                    <input type="text" name="pembuat" value="{{ old('pembuat') }}" placeholder="Nama Pembuat" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-400">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">File Lampiran (Opsional)</label>
+                    <input type="file" name="file_lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="text-xs text-slate-500 mt-1">Format: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</p>
                 </div>
 
             </div>

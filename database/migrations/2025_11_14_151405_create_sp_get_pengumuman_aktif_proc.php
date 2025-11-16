@@ -19,11 +19,15 @@ BEGIN
          p.isi_pengumuman,
          p.tgl_publikasi,
          p.hari,
+         p.target_role,
+         p.file_lampiran,
          u.name AS author_name,
          u.role AS author_role
   FROM pengumuman p
   JOIN users u ON p.author_id = u.id
-  WHERE (role_param IS NULL OR p.target_role = role_param OR p.target_role = 'Semua')
+  WHERE p.status = 'aktif' 
+    AND (p.target_role COLLATE utf8mb4_unicode_ci = target_role_param COLLATE utf8mb4_unicode_ci 
+         OR p.target_role = 'Semua')
   ORDER BY p.tgl_publikasi DESC;
 END");
     }

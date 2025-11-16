@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\Admin\PengumumanController;
+
 
 // ============================================
 // PUBLIC ROUTES
@@ -94,14 +96,19 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('/materi/{jadwal_id}/create', [App\Http\Controllers\Guru\MateriController::class, 'create'])->name('upload_materi');
     Route::get('/materi/{jadwal_id}/create-multiple', [App\Http\Controllers\Guru\MateriController::class, 'createMultiple'])->name('upload_materi_step2');
     Route::post('/materi/{jadwal_id}/store', [App\Http\Controllers\Guru\MateriController::class, 'store'])->name('store_materi');
-    Route::get('/materi/{jadwal_id}/{type}/{id}/edit', [App\Http\Controllers\Guru\MateriController::class, 'edit'])->name('edit_materi');
-    Route::put('/materi/{jadwal_id}/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'update'])->name('update_materi');
+    
+    // TUGAS ROUTES (Terpisah dari Materi)
+    Route::get('/materi/{jadwal_id}/create-tugas', [App\Http\Controllers\Guru\MateriController::class, 'createTugas'])->name('upload_tugas');
+    Route::post('/materi/{jadwal_id}/store-tugas', [App\Http\Controllers\Guru\MateriController::class, 'storeTugas'])->name('store_tugas');
+    Route::get('/materi/{jadwal_id}/materi/{id}/edit', [App\Http\Controllers\Guru\MateriController::class, 'edit'])->name('edit_materi');
+    Route::put('/materi/{jadwal_id}/materi/{id}', [App\Http\Controllers\Guru\MateriController::class, 'update'])->name('update_materi');
     Route::delete('/materi/{jadwal_id}/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'destroy'])->name('delete_materi');
     Route::get('/materi/download/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'download'])->name('download_materi');
 
-    Route::get('/detail-tugas', function () {
-        return view('Guru.detailTugas');
-    })->name('detail_tugas');
+    Route::get('/detail-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'detailTugas'])->name('detail_tugas');
+    Route::get('/edit-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'editTugas'])->name('edit_tugas');
+    Route::put('/update-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateTugas'])->name('update_tugas');
+    Route::post('/detail-tugas/nilai/{detail_tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateNilaiTugas'])->name('update_nilai_tugas');
 
     Route::get('/raport-siswa', function () {
         return view('Guru.raportSiswa');
@@ -205,10 +212,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
         return view('Admin.akademik');
     })->name('akademik');
 
-    Route::get('/pengumuman', [App\Http\Controllers\Admin\PengumumanController::class, 'index'])->name('pengumuman');
-    Route::post('/pengumuman', [App\Http\Controllers\Admin\PengumumanController::class, 'store'])->name('pengumuman.store');
-    Route::put('/pengumuman/{id}', [App\Http\Controllers\Admin\PengumumanController::class, 'update'])->name('pengumuman.update');
-    Route::delete('/pengumuman/{id}', [App\Http\Controllers\Admin\PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
+    Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman');
+    Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
+    Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
+    Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
     Route::get('/pembayaran', function () {
         return view('Admin.pembayaran');

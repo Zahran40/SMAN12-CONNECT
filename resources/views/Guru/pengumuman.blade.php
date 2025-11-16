@@ -50,18 +50,3 @@
     </div>
 
 @endsection
-                </p>
-                <p>
-                    Diberitahukan kepada seluruh siswa dan dewan guru SMA Negeri 12 Medan bahwa akan diadakan rapat bersama yang bertujuan untuk mempererat komunikasi antara pihak guru dan siswa dalam membahas berbagai hal yang berkaitan dengan kegiatan sekolah, baik dalam bidang akademik maupun non-akademik. Melalui rapat ini diharapkan tercipta kerja sama yang lebih baik, saling pengertian, serta peningkatan kualitas lingkungan belajar di sekolah. Rapat ini juga menjadi wadah bagi siswa untuk menyampaikan aspirasi, saran, dan gagasan yang membangun demi kemajuan bersama.
-                </p>
-            </div>
-
-            <div class="mt-8 text-right">
-                <p class="text-sm text-slate-700">Medan 10 November 2025</p>
-                <p class="text-sm font-bold text-blue-600">SMA 12 NEGERI MEDAN</p>
-            </div>
-        </div>
-
-    </div>
-
-@endsection

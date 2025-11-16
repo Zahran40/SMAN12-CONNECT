@@ -23,7 +23,30 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-xl border-2 border-blue-200 shadow-lg">
+    <!-- Tabs Navigation -->
+    <div class="mb-6 bg-white rounded-t-xl border-2 border-b-0 border-blue-200">
+        <nav class="flex px-6 pt-4" role="tablist">
+            <button type="button" class="tab-button-siswa py-3 px-6 font-medium text-sm transition-colors rounded-t-lg active" data-tab="pertemuan" role="tab">
+                <span class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                    </svg>
+                    <span>Materi Per Pertemuan</span>
+                </span>
+            </button>
+            <button type="button" class="tab-button-siswa py-3 px-6 font-medium text-sm transition-colors rounded-t-lg" data-tab="tugas" role="tab">
+                <span class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                    </svg>
+                    <span>Status Tugas ({{ $allTugasSiswa->count() }})</span>
+                </span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Tab Content: Per Pertemuan -->
+    <div class="tab-content-siswa bg-white rounded-b-xl border-2 border-blue-200 shadow-lg" id="tab-siswa-pertemuan">
         
         <div class="divide-y divide-slate-200">
 
@@ -67,9 +90,18 @@
                     @forelse($pertemuan->tugas as $t)
                     @php
                         $now = now();
-                        $jamBuka = \Carbon\Carbon::parse($t->jam_buka);
-                        $jamTutup = \Carbon\Carbon::parse($t->jam_tutup);
-                        $isOpen = $now->between($jamBuka, $jamTutup);
+                        $waktuBuka = \Carbon\Carbon::parse($t->waktu_dibuka);
+                        $waktuTutup = \Carbon\Carbon::parse($t->waktu_ditutup);
+                        
+                        // Tanggal untuk display
+                        $tanggalDibuka = $t->tanggal_dibuka ? \Carbon\Carbon::parse($t->tanggal_dibuka) : $waktuBuka;
+                        $tanggalDitutup = $t->tanggal_ditutup ? \Carbon\Carbon::parse($t->tanggal_ditutup) : $waktuTutup;
+                        
+                        // Tugas terbuka jika: sekarang >= waktu buka DAN sekarang <= waktu tutup
+                        $isOpen = $now->greaterThanOrEqualTo($waktuBuka) && $now->lessThanOrEqualTo($waktuTutup);
+                        $isBelumBuka = $now->lessThan($waktuBuka);
+                        $isSudahTutup = $now->greaterThan($waktuTutup);
+                        
                         $detailTugas = $t->detailTugas->where('siswa_id', auth()->user()->siswa->id_siswa)->first();
                     @endphp
                     <div class="border-2 border-blue-200 rounded-xl p-4">
@@ -81,16 +113,33 @@
                                 <span class="font-semibold text-slate-700">{{ $t->judul_tugas }}</span>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <a href="{{ route('siswa.download_tugas', $t->id_tugas) }}" class="bg-blue-600 text-white text-xs font-medium px-4 py-1.5 rounded-full hover:bg-blue-700 transition-colors">
-                                    Download Soal
-                                </a>
-                                @if(!$detailTugas && $isOpen)
-                                    <button onclick="document.getElementById('upload-form-{{ $t->id_tugas }}').classList.toggle('hidden')" class="bg-green-500 text-white text-xs font-medium px-4 py-1.5 rounded-full hover:bg-green-600 transition-colors">
-                                        Upload Jawaban
+                                @if($t->file_path)
+                                    <a href="{{ route('siswa.download_tugas', $t->id_tugas) }}" class="bg-blue-600 text-white text-xs font-medium px-4 py-1.5 rounded-full hover:bg-blue-700 transition-colors">
+                                        Download Soal
+                                    </a>
+                                @endif
+                                
+                                @if($isBelumBuka)
+                                    <span class="bg-yellow-500 text-white text-xs font-medium px-4 py-1.5 rounded-full flex items-center space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>Belum Dibuka</span>
+                                    </span>
+                                @elseif($isOpen)
+                                    <button onclick="document.getElementById('upload-form-{{ $t->id_tugas }}').classList.toggle('hidden')" class="bg-green-500 text-white text-xs font-medium px-4 py-1.5 rounded-full hover:bg-green-600 transition-colors flex items-center space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                            <path d="M9.25 13.25a.75.75 0 0 0 1.5 0V4.636l2.955 3.129a.75.75 0 0 0 1.09-1.03l-4.25-4.5a.75.75 0 0 0-1.09 0l-4.25 4.5a.75.75 0 1 0 1.09 1.03L9.25 4.636v8.614Z" />
+                                            <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+                                        </svg>
+                                        <span>{{ $detailTugas ? 'Upload Ulang' : 'Upload Jawaban' }}</span>
                                     </button>
-                                @elseif(!$detailTugas && !$isOpen)
-                                    <span class="bg-gray-400 text-white text-xs font-medium px-4 py-1.5 rounded-full">
-                                        Ditutup
+                                @elseif($isSudahTutup)
+                                    <span class="bg-gray-400 text-white text-xs font-medium px-4 py-1.5 rounded-full flex items-center space-x-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>Ditutup</span>
                                     </span>
                                 @endif
                             </div>
@@ -98,16 +147,22 @@
                         <div class="mt-3 border-t border-blue-100 pt-3 space-y-2">
                             <div>
                                 <p class="text-sm font-medium text-slate-600">Deskripsi Tugas :</p>
-                                <p class="text-sm text-slate-500">{{ $t->deskripsi_tugas }}</p>
+                                <p class="text-sm text-slate-500">{{ $t->deskripsi_tugas ?? '-' }}</p>
                             </div>
-                            @if($t->deadline)
-                            <div>
-                                <p class="text-xs font-medium text-slate-600">Deadline:</p>
-                                <p class="text-xs text-red-600 font-semibold">{{ \Carbon\Carbon::parse($t->deadline)->translatedFormat('l, d F Y') }} - {{ $jamTutup->format('H:i') }}</p>
+                            <div class="bg-blue-50 rounded-lg p-3 space-y-1.5">
+                                <div class="flex items-center space-x-2 text-xs text-slate-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-green-600">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span><strong>Dibuka:</strong> {{ $tanggalDibuka->translatedFormat('l, d F Y') }} - {{ $waktuBuka->format('H:i') }}</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs text-slate-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-red-600">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span><strong>Ditutup:</strong> {{ $tanggalDitutup->translatedFormat('l, d F Y') }} - {{ $waktuTutup->format('H:i') }}</span>
+                                </div>
                             </div>
-                            @else
-                            <p class="text-xs text-slate-400">Waktu: {{ $jamBuka->format('H:i') }} - {{ $jamTutup->format('H:i') }}</p>
-                            @endif
                         </div>
                         
                         @if($detailTugas)
@@ -143,17 +198,11 @@
                                         <td class="py-3 px-4">
                                             @php
                                                 $tglKumpul = \Carbon\Carbon::parse($detailTugas->tgl_kumpul);
-                                                // Use deadline if available, otherwise use pertemuan date + jam_tutup
-                                                if ($t->deadline) {
-                                                    $deadlineDate = \Carbon\Carbon::parse($t->deadline)->format('Y-m-d');
-                                                    $waktuTutup = \Carbon\Carbon::parse($deadlineDate . ' ' . $t->jam_tutup);
-                                                } else {
-                                                    $tglPertemuan = \Carbon\Carbon::parse($pertemuan->tanggal_pertemuan);
-                                                    $waktuTutup = \Carbon\Carbon::parse($tglPertemuan->format('Y-m-d') . ' ' . $t->jam_tutup);
-                                                }
-                                                $isLate = $tglKumpul->greaterThan($waktuTutup);
+                                                // Use waktu_ditutup from database (already includes date + time)
+                                                $batasWaktu = \Carbon\Carbon::parse($t->waktu_ditutup);
+                                                $isLate = $tglKumpul->greaterThan($batasWaktu);
                                                 // Calculate total minutes difference
-                                                $totalMinutes = abs($tglKumpul->diffInMinutes($waktuTutup));
+                                                $totalMinutes = abs($tglKumpul->diffInMinutes($batasWaktu));
                                                 $hours = floor($totalMinutes / 60);
                                                 $minutes = $totalMinutes % 60;
                                             @endphp
@@ -366,6 +415,115 @@
             dropZone.classList.remove('hidden');
             filePreview.classList.add('hidden');
         }
+    </script>
+
+    <!-- Tab Content: Status Tugas -->
+    <div class="tab-content-siswa hidden bg-white rounded-b-xl border-2 border-blue-200 shadow-lg p-6" id="tab-siswa-tugas">
+        <div class="space-y-4">
+            @forelse($allTugasSiswa as $tugas)
+            <div class="bg-white rounded-xl shadow-md p-5 border-l-4 {{ $tugas->status_pengumpulan == 'Belum Dikumpulkan' ? 'border-red-400' : ($tugas->status_pengumpulan == 'Tepat Waktu' ? 'border-green-400' : 'border-yellow-400') }}">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <h4 class="font-semibold text-slate-800 text-lg">{{ $tugas->judul_tugas }}</h4>
+                            <span class="inline-flex items-center px-2 py-1 {{ $tugas->status_pengumpulan == 'Belum Dikumpulkan' ? 'bg-red-100 text-red-700' : ($tugas->status_pengumpulan == 'Tepat Waktu' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700') }} text-xs font-semibold rounded-full">
+                                {{ $tugas->status_pengumpulan }}
+                            </span>
+                        </div>
+
+                        <div class="space-y-2 mb-3">
+                            <div class="flex items-center space-x-2 text-sm text-slate-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                </svg>
+                                <span>Pertemuan {{ $tugas->nomor_pertemuan }}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-red-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span class="font-medium text-red-600">Ditutup: {{ \Carbon\Carbon::parse($tugas->waktu_ditutup)->translatedFormat('d F Y, H:i') }}</span>
+                            </div>
+                            @if($tugas->tgl_kumpul)
+                            <div class="flex items-center space-x-2 text-sm text-green-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span>Dikumpulkan: {{ \Carbon\Carbon::parse($tugas->tgl_kumpul)->translatedFormat('d F Y, H:i') }}</span>
+                            </div>
+                            @endif
+                        </div>
+
+                        @if($tugas->deskripsi)
+                        <div class="bg-slate-50 rounded-lg p-3 mb-3">
+                            <p class="text-xs font-medium text-slate-600 mb-1">Deskripsi:</p>
+                            <p class="text-sm text-slate-700">{{ $tugas->deskripsi }}</p>
+                        </div>
+                        @endif
+
+                        @if($tugas->nilai)
+                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-blue-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                </svg>
+                                <p class="text-sm font-semibold text-blue-700">Nilai: {{ $tugas->nilai }}</p>
+                            </div>
+                            @if($tugas->komentar_guru)
+                            <p class="text-xs text-slate-600 italic">Komentar: {{ $tugas->komentar_guru }}</p>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="bg-white rounded-xl shadow-md p-8 text-center border border-slate-200">
+                <div class="inline-block p-4 bg-slate-100 rounded-full mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-slate-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                    </svg>
+                </div>
+                <p class="text-slate-500 text-lg">Belum ada tugas untuk mata pelajaran ini</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- Tab Switching Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button-siswa');
+            const tabContents = document.querySelectorAll('.tab-content-siswa');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    
+                    // Remove active class from all buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-blue-500', 'text-white');
+                        btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active', 'bg-blue-500', 'text-white');
+                    this.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // Show selected tab content
+                    document.getElementById('tab-siswa-' + tabName).classList.remove('hidden');
+                });
+            });
+            
+            // Set initial active state
+            document.querySelector('.tab-button-siswa.active').classList.add('bg-blue-500', 'text-white');
+            document.querySelector('.tab-button-siswa.active').classList.remove('bg-slate-100', 'text-slate-600');
+        });
     </script>
 
     <script src="{{ asset('js/materi-handler.js') }}"></script>
