@@ -59,10 +59,10 @@
                             <span class="text-slate-500 mr-2">⏰</span>
                             <div class="text-slate-700">
                                 <div class="text-green-600 font-medium">
-                                    Buka: {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_dibuka)->format('H:i') }}
+                                    Buka: {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '-' }}
                                 </div>
                                 <div class="text-red-600 font-medium">
-                                    Tutup: {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_ditutup)->format('H:i') }}
+                                    Tutup: {{ $pertemuan->jam_absen_tutup ? substr($pertemuan->jam_absen_tutup, 0, 5) : '-' }}
                                 </div>
                             </div>
                         </div>
@@ -71,11 +71,21 @@
                     <!-- Button -->
                     @php
                         $now = \Carbon\Carbon::now();
-                        $isOpen = $pertemuan->waktu_absen_dibuka && $pertemuan->waktu_absen_ditutup 
-                            && $now->greaterThanOrEqualTo($pertemuan->waktu_absen_dibuka) 
-                            && $now->lessThanOrEqualTo($pertemuan->waktu_absen_ditutup);
-                        $isBeforeOpen = $pertemuan->waktu_absen_dibuka && $now->lessThan($pertemuan->waktu_absen_dibuka);
-                        $isClosed = $pertemuan->waktu_absen_ditutup && $now->greaterThan($pertemuan->waktu_absen_ditutup);
+                        $waktuBuka = null;
+                        $waktuTutup = null;
+                        
+                        if ($pertemuan->tanggal_absen_dibuka && $pertemuan->jam_absen_buka) {
+                            $waktuBuka = \Carbon\Carbon::parse($pertemuan->tanggal_absen_dibuka . ' ' . $pertemuan->jam_absen_buka);
+                        }
+                        if ($pertemuan->tanggal_absen_ditutup && $pertemuan->jam_absen_tutup) {
+                            $waktuTutup = \Carbon\Carbon::parse($pertemuan->tanggal_absen_ditutup . ' ' . $pertemuan->jam_absen_tutup);
+                        }
+                        
+                        $isOpen = $waktuBuka && $waktuTutup 
+                            && $now->greaterThanOrEqualTo($waktuBuka) 
+                            && $now->lessThanOrEqualTo($waktuTutup);
+                        $isBeforeOpen = $waktuBuka && $now->lessThan($waktuBuka);
+                        $isClosed = $waktuTutup && $now->greaterThan($waktuTutup);
                     @endphp
 
                     @if($pertemuan->status_kehadiran)
@@ -101,7 +111,7 @@
                             🔒 Belum Dibuka
                         </button>
                         <p class="text-xs text-slate-500 mt-1 text-center">
-                            Buka {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_dibuka)->format('H:i') }}
+                            Buka {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '' }}
                         </p>
                     @elseif($isClosed)
                         <!-- Sudah Ditutup -->

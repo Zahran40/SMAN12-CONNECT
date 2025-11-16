@@ -41,9 +41,9 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/materi/download-tugas/{id}', [App\Http\Controllers\Siswa\MateriController::class, 'downloadTugas'])->name('download_tugas');
     Route::post('/materi/upload-tugas/{tugas_id}', [App\Http\Controllers\Siswa\MateriController::class, 'uploadTugas'])->name('upload_tugas');
 
-    Route::get('/nilai', function () {
-        return view('siswa.nilai');
-    })->name('nilai');
+    // RAPORT ROUTES
+    Route::get('/nilai', [App\Http\Controllers\Siswa\RaportController::class, 'index'])->name('nilai');
+    Route::get('/detail-raport/{mapel_id}', [App\Http\Controllers\Siswa\RaportController::class, 'detail'])->name('detail_raport');
 
     Route::get('/tagihan', function () {
         return view('siswa.tagihan');
@@ -107,21 +107,12 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::put('/update-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateTugas'])->name('update_tugas');
     Route::post('/detail-tugas/nilai/{detail_tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateNilaiTugas'])->name('update_nilai_tugas');
 
-    Route::get('/raport-siswa', function () {
-        return view('Guru.raportSiswa');
-    })->name('raport_siswa');
-
-    Route::get('/detail-raport-siswa', function () {
-        return view('Guru.detailRaportSiswa');
-    })->name('detail_raport_siswa');
-
-    Route::get('/chart-raport-siswa-semester-1', function () {
-        return view('Guru.chartRaportSiswaS1');
-    })->name('chart_raport_siswa_s1');
-
-    Route::get('/chart-raport-siswa-semester-2', function () {
-        return view('Guru.chartRaportSiswaS2');
-    })->name('chart_raport_siswa_s2');
+    // RAPORT ROUTES
+    Route::get('/raport-siswa', [App\Http\Controllers\Guru\RaportController::class, 'index'])->name('raport_siswa');
+    Route::get('/raport-siswa/{jadwal_id}/input-nilai', [App\Http\Controllers\Guru\RaportController::class, 'inputNilai'])->name('input_nilai');
+    Route::get('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/detail', [App\Http\Controllers\Guru\RaportController::class, 'detailNilai'])->name('detail_raport_siswa');
+    Route::get('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/semester-2', [App\Http\Controllers\Guru\RaportController::class, 'detailNilaiS2'])->name('chart_raport_siswa_s2');
+    Route::post('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/simpan', [App\Http\Controllers\Guru\RaportController::class, 'simpanNilai'])->name('simpan_nilai');
 
     Route::get('/pengumuman', [App\Http\Controllers\Guru\MateriController::class, 'pengumuman'])->name('pengumuman');
 

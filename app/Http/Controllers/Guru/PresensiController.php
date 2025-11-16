@@ -221,19 +221,13 @@ class PresensiController extends Controller
             return redirect()->back()->with('error', 'Pertemuan ke-' . $validated['nomor_pertemuan'] . ' sudah terisi. Silakan pilih nomor pertemuan lain.');
         }
 
-        // Gabungkan tanggal dengan jam
-        $waktuDibuka = Carbon::parse($validated['tanggal_pertemuan'] . ' ' . $validated['jam_absen_buka']);
-        $waktuDitutup = Carbon::parse($validated['tanggal_pertemuan'] . ' ' . $validated['jam_absen_tutup']);
-
         // Update pertemuan yang sudah ada
         $pertemuan->update([
             'tanggal_pertemuan' => $validated['tanggal_pertemuan'],
-            'tanggal_absen_dibuka' => $waktuDibuka->toDateString(),
-            'tanggal_absen_ditutup' => $waktuDitutup->toDateString(),
+            'tanggal_absen_dibuka' => $validated['tanggal_pertemuan'],
+            'tanggal_absen_ditutup' => $validated['tanggal_pertemuan'],
             'jam_absen_buka' => $validated['jam_absen_buka'],
             'jam_absen_tutup' => $validated['jam_absen_tutup'],
-            'waktu_absen_dibuka' => $waktuDibuka,
-            'waktu_absen_ditutup' => $waktuDitutup,
             'topik_bahasan' => $validated['topik_bahasan'],
         ]);
 

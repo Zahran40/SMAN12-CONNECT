@@ -70,13 +70,13 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            @if($pertemuan && $pertemuan->waktu_absen_dibuka && $pertemuan->waktu_absen_ditutup)
+                            @if($pertemuan && $pertemuan->jam_absen_buka && $pertemuan->jam_absen_tutup)
                                 <div class="text-xs">
                                     <div class="text-green-600 font-medium">
-                                        ⏰ {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_dibuka)->format('H:i') }}
+                                        ⏰ {{ substr($pertemuan->jam_absen_buka, 0, 5) }}
                                     </div>
                                     <div class="text-red-600 font-medium">
-                                        🔒 {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_ditutup)->format('H:i') }}
+                                        🔒 {{ substr($pertemuan->jam_absen_tutup, 0, 5) }}
                                     </div>
                                 </div>
                             @else

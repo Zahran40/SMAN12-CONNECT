@@ -17,8 +17,7 @@ return new class extends Migration
                 t.id_tugas,
                 t.judul_tugas,
                 t.deskripsi_tugas,
-                t.file_path AS file_tugas,
-                t.tanggal_deadline,
+                t.deadline AS tanggal_deadline,
                 t.jam_buka,
                 t.jam_tutup,
                 t.created_at AS tgl_upload,
@@ -44,7 +43,8 @@ return new class extends Migration
                 s.nisn,
                 CASE 
                     WHEN dt.tgl_kumpul IS NULL THEN 'Belum Dikumpulkan'
-                    WHEN dt.tgl_kumpul <= CONCAT(t.tanggal_deadline, ' ', t.jam_tutup) THEN 'Tepat Waktu'
+                    WHEN t.jam_tutup IS NOT NULL AND dt.tgl_kumpul <= CONCAT(t.deadline, ' ', t.jam_tutup) THEN 'Tepat Waktu'
+                    WHEN t.jam_tutup IS NULL AND dt.tgl_kumpul <= t.deadline THEN 'Tepat Waktu'
                     ELSE 'Terlambat'
                 END AS status_pengumpulan
             FROM tugas t
@@ -55,7 +55,7 @@ return new class extends Migration
             JOIN guru g ON jp.guru_id = g.id_guru
             LEFT JOIN detail_tugas dt ON t.id_tugas = dt.tugas_id
             LEFT JOIN siswa s ON dt.siswa_id = s.id_siswa
-            ORDER BY t.tanggal_deadline DESC, s.nama_lengkap ASC
+            ORDER BY t.deadline DESC, s.nama_lengkap ASC
         ");
     }
 

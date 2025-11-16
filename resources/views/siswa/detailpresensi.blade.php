@@ -36,9 +36,9 @@
             <div>
                 <p class="text-sm text-slate-500 mb-1">Waktu Absensi</p>
                 <p class="text-lg font-bold text-slate-800">
-                    @if($pertemuan->waktu_absen_dibuka && $pertemuan->waktu_absen_ditutup)
-                        {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_dibuka)->format('H:i') }} - 
-                        {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_ditutup)->format('H:i') }}
+                    @if($pertemuan->jam_absen_buka && $pertemuan->jam_absen_tutup)
+                        {{ substr($pertemuan->jam_absen_buka, 0, 5) }} - 
+                        {{ \Carbon\Carbon::parse($pertemuan->jam_absen_tutup)->format('H:i') }}
                     @else
                         -
                     @endif
@@ -92,9 +92,19 @@
             <div class="text-center">
                 @php
                     $now = \Carbon\Carbon::now();
-                    $isOpen = $pertemuan->waktu_absen_dibuka && $pertemuan->waktu_absen_ditutup 
-                        && $now->greaterThanOrEqualTo($pertemuan->waktu_absen_dibuka) 
-                        && $now->lessThanOrEqualTo($pertemuan->waktu_absen_ditutup);
+                    $waktuBuka = null;
+                    $waktuTutup = null;
+                    
+                    if ($pertemuan->tanggal_absen_dibuka && $pertemuan->jam_absen_buka) {
+                        $waktuBuka = \Carbon\Carbon::parse($pertemuan->tanggal_absen_dibuka)->setTimeFromTimeString($pertemuan->jam_absen_buka);
+                    }
+                    if ($pertemuan->tanggal_absen_ditutup && $pertemuan->jam_absen_tutup) {
+                        $waktuTutup = \Carbon\Carbon::parse($pertemuan->tanggal_absen_ditutup)->setTimeFromTimeString($pertemuan->jam_absen_tutup);
+                    }
+                    
+                    $isOpen = $waktuBuka && $waktuTutup 
+                        && $now->greaterThanOrEqualTo($waktuBuka) 
+                        && $now->lessThanOrEqualTo($waktuTutup);
                 @endphp
 
                 @if($isOpen)

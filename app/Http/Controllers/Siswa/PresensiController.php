@@ -131,12 +131,23 @@ class PresensiController extends Controller
 
         // Cek apakah waktu absensi sudah dibuka
         if (!$pertemuan->isAbsensiOpen()) {
+            $now = now();
             $status = 'belum dibuka';
-            if ($pertemuan->waktu_absen_dibuka && now()->lessThan($pertemuan->waktu_absen_dibuka)) {
-                $status = 'belum dibuka';
-            } else if ($pertemuan->waktu_absen_ditutup && now()->greaterThan($pertemuan->waktu_absen_ditutup)) {
-                $status = 'sudah ditutup';
+            
+            if ($pertemuan->tanggal_absen_dibuka && $pertemuan->jam_absen_buka) {
+                $waktuBuka = \Carbon\Carbon::parse($pertemuan->tanggal_absen_dibuka . ' ' . $pertemuan->jam_absen_buka);
+                if ($now->lessThan($waktuBuka)) {
+                    $status = 'belum dibuka. Absensi akan dibuka pada ' . $waktuBuka->translatedFormat('l, d F Y \\p\\u\\k\\u\\l H:i');
+                }
             }
+            
+            if ($pertemuan->tanggal_absen_ditutup && $pertemuan->jam_absen_tutup) {
+                $waktuTutup = \Carbon\Carbon::parse($pertemuan->tanggal_absen_ditutup . ' ' . $pertemuan->jam_absen_tutup);
+                if ($now->greaterThan($waktuTutup)) {
+                    $status = 'sudah ditutup sejak ' . $waktuTutup->translatedFormat('l, d F Y \\p\\u\\k\\u\\l H:i');
+                }
+            }
+            
             return redirect()->back()->with('error', "Waktu absensi $status");
         }
 

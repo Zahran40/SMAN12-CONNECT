@@ -3,12 +3,12 @@
 @section('content')
 
     <div class="flex items-center space-x-4 mb-6">
-    <a href="{{ route('guru.detail_raport_siswa') }}" class="text-blue-400 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50">
+        <a href="{{ route('guru.input_nilai', $jadwal->id_jadwal) }}" class="text-blue-400 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-slate-800">Detail Raport</h2>
+        <h2 class="text-3xl font-bold text-slate-800">Detail Raport - {{ $jadwal->mataPelajaran->nama_mapel }}</h2>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
@@ -16,115 +16,182 @@
              <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
         </div>
         <div>
-            <h3 class="text-xl font-bold text-slate-900">Nama Siswa</h3>
-            <p class="text-sm text-slate-500">NIS: 1083382392</p>
-            <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">Kelas 12</span>
+            <h3 class="text-xl font-bold text-slate-900">{{ $siswa->nama_lengkap }}</h3>
+            <p class="text-sm text-slate-500">NIS: {{ $siswa->nis ?? '-' }}</p>
+            <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">{{ $jadwal->kelas->nama_kelas }}</span>
         </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border-2 border-blue-100">
         <h3 class="text-xl font-semibold text-blue-600 mb-8 text-center">Perkembangan Siswa</h3>
         
-        <div class="relative px-6"> {{-- Container relative untuk referensi posisi garis --}}
-            
-            <div class="absolute top-48 left-0 right-0 h-0.5 bg-slate-300 mx-6"></div>
-
-            <div class="flex justify-around text-center">
-
-                <div class="flex flex-col items-center z-10"> {{-- z-10 agar bar berada di depan garis jika overlap --}}
-                    <div class="h-48 flex items-end space-x-3 pb-0.5"> {{-- h-48 fix height untuk area bar --}}
-                        <div class="relative w-12 h-32 bg-purple-600 rounded-t-md flex justify-center pt-2">
-                            <span class="text-white font-bold text-sm">80</span>
-                        </div>
-                        <div class="relative w-12 h-40 bg-blue-600 rounded-t-md flex justify-center pt-2">
-                            <span class="text-white font-bold text-sm">90</span>
-                        </div>
-                    </div>
-                    <span class="mt-4 text-sm font-medium text-slate-700">Tugas</span>
-                </div>
-
-                <div class="flex flex-col items-center z-10">
-                    <div class="h-48 flex items-end space-x-3 pb-0.5">
-                        <div class="relative w-12 h-40 bg-purple-600 rounded-t-md flex justify-center pt-2">
-                            <span class="text-white font-bold text-sm">90</span>
-                        </div>
-                        <div class="relative w-12 h-40 bg-blue-600 rounded-t-md flex justify-center pt-2">
-                            <span class="text-white font-bold text-sm">90</span>
-                        </div>
-                    </div>
-                    <span class="mt-4 text-sm font-medium text-slate-700">Ujian Tengah Semester</span>
-                </div>
-
-                <div class="flex flex-col items-center z-10">
-                    <div class="h-48 flex items-end space-x-3 pb-0.5">
-                        <div class="relative w-12 h-36 bg-purple-600 rounded-t-md flex justify-center pt-2">
-                            <span class="text-white font-bold text-sm">87</span>
-                        </div>
-                        <div class="relative w-12 h-32 bg-blue-600 rounded-t-md flex justify-center pt-2">
-                            <span class="text-white font-bold text-sm">84</span>
-                        </div>
-                    </div>
-                    <span class="mt-4 text-sm font-medium text-slate-700">Ujian Akhir Semester</span>
-                </div>
-
-            </div>
+        {{-- Chart.js Canvas --}}
+        <div class="px-6" style="max-width: 800px; margin: 0 auto;">
+            <canvas id="nilaiChart" height="300"></canvas>
         </div>
 
-        <div class="flex justify-center space-x-8 mt-10">
+        <div class="flex justify-center space-x-8 mt-6">
             <div class="flex items-center space-x-2">
                 <div class="w-4 h-4 rounded-full bg-purple-600"></div>
-                <span class="text-sm text-slate-600 font-medium">Semester 1</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <div class="w-4 h-4 rounded-full bg-blue-600"></div>
-                <span class="text-sm text-slate-600 font-medium">Semester 2</span>
+                <span class="text-sm text-slate-600 font-medium">Tahun Ajaran {{ $tahunAjaranLabel }}</span>
             </div>
         </div>
     </div>
 
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-        <h3 class="text-xl font-semibold text-slate-800 mb-6">Mengisi Nilai</h3>
-        
+        <h3 class="text-xl font-semibold text-slate-800 mb-6">Mengisi Nilai - {{ $tahunAjaranLabel }}</h3>
+
         <div class="flex space-x-4 mb-8">
-            <button class="px-8 py-2.5 rounded-full bg-blue-500 text-white font-semibold text-sm shadow-md shadow-blue-200">Semester 1</button>
-            <a href="{{ route('guru.chart_raport_siswa_s2') }}" class="px-8 py-2.5 rounded-full bg-white text-slate-500 border-2 border-slate-200 font-semibold text-sm hover:bg-slate-50 transition-colors">Semester 2</a>
+            <button class="px-8 py-2.5 rounded-full bg-blue-500 text-white font-semibold text-sm shadow-md">Semester 1 (Ganjil)</button>
+            <a href="{{ route('guru.chart_raport_siswa_s2', [$jadwal->id_jadwal, $siswa->id_siswa]) }}" class="px-8 py-2.5 rounded-full bg-white text-slate-600 border-2 border-slate-200 font-semibold text-sm hover:bg-slate-50 transition-colors">Semester 2 (Genap)</a>
         </div>
 
-        <div class="space-y-6">
+        <form action="{{ route('guru.simpan_nilai', [$jadwal->id_jadwal, $siswa->id_siswa]) }}" method="POST">
+            @csrf
+            <input type="hidden" name="semester" value="Ganjil">
             
-            <div class="flex justify-between items-center">
-                <div>
-                    <h4 class="text-base font-bold text-slate-800">Nilai Tugas</h4>
-                </div>
-                <span class="text-2xl font-bold text-slate-800">80</span>
-            </div>
-
-            <div class="flex justify-between items-center">
-                <h4 class="text-base font-medium text-slate-800">Nilai Ujian Tengah Semester</h4>
-                <div class="flex items-center justify-between w-32 border-2 border-slate-300 rounded-lg px-4 py-2">
-                    <span class="text-slate-400 text-sm font-medium">Nilai...</span>
-                    <img src="{{ asset('images/material-symbols_save-sharp (1).png') }}" class="w-5 h-5 text-slate-400 opacity-60">
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center">
-                <h4 class="text-base font-medium text-slate-800">Nilai Ujian Akhir Semester</h4>
-                 <div class="flex items-center justify-between w-32 border-2 border-slate-300 rounded-lg px-4 py-2">
-                    <span class="text-slate-400 text-sm font-medium">Nilai...</span>
-                    <img src="{{ asset('images/material-symbols_save-sharp (1).png') }}" class="w-5 h-5 text-slate-400 opacity-60">
-                </div>
-            </div>
-
-            <div class="pt-6 mt-10 border-t-[3px] border-black"> 
+            <div class="space-y-6">
+                
                 <div class="flex justify-between items-center">
-                    <h4 class="text-xl font-bold text-slate-900">Nilai Akhir</h4>
-                    <span class="text-3xl font-bold text-slate-900">84,4</span>
+                    <div>
+                        <h4 class="text-base font-bold text-slate-800">Nilai Tugas</h4>
+                    </div>
+                    <input type="number" step="0.01" min="0" max="100" name="nilai_tugas" value="{{ $raport->nilai_tugas ?? '' }}" 
+                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none" 
+                           placeholder="0-100">
                 </div>
-            </div>
 
-        </div>
+                <div class="flex justify-between items-center">
+                    <h4 class="text-base font-medium text-slate-800">Nilai Ujian Tengah Semester</h4>
+                    <input type="number" step="0.01" min="0" max="100" name="nilai_uts" value="{{ $raport->nilai_uts ?? '' }}"
+                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none"
+                           placeholder="0-100">
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <h4 class="text-base font-medium text-slate-800">Nilai Ujian Akhir Semester</h4>
+                    <input type="number" step="0.01" min="0" max="100" name="nilai_uas" value="{{ $raport->nilai_uas ?? '' }}"
+                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none"
+                           placeholder="0-100">
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <h4 class="text-base font-medium text-slate-800">Deskripsi/Catatan</h4>
+                    <textarea name="deskripsi" rows="2" maxlength="250" class="w-2/3 border-2 border-slate-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none" placeholder="Catatan untuk siswa... (maks 250 karakter)">{{ $raport->deskripsi ?? '' }}</textarea>
+                </div>
+
+                <div class="pt-6 mt-10 border-t-[3px] border-black"> 
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-xl font-bold text-slate-900">Nilai Akhir</h4>
+                        <span class="text-3xl font-bold text-slate-900">{{ $raport->nilai_akhir ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-lg font-semibold text-slate-700">Grade</h4>
+                        <span class="text-2xl font-bold text-blue-600">{{ $raport->grade ?? '-' }}</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition-colors">
+                        💾 Simpan Nilai
+                    </button>
+                </div>
+
+            </div>
+        </form>
 
     </div>
 
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('nilaiChart').getContext('2d');
+        
+        const nilaiTugas = {{ $raport->nilai_tugas ?? 0 }};
+        const nilaiUTS = {{ $raport->nilai_uts ?? 0 }};
+        const nilaiUAS = {{ $raport->nilai_uas ?? 0 }};
+        const nilaiAkhir = {{ $raport->nilai_akhir ?? 0 }};
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Tugas', 'UTS', 'UAS', 'Nilai Akhir'],
+                datasets: [{
+                    label: 'Nilai',
+                    data: [nilaiTugas, nilaiUTS, nilaiUAS, nilaiAkhir],
+                    backgroundColor: [
+                        'rgba(147, 51, 234, 0.8)',  // purple-600 untuk Tugas
+                        'rgba(147, 51, 234, 0.8)',  // purple-600 untuk UTS
+                        'rgba(147, 51, 234, 0.8)',  // purple-600 untuk UAS
+                        'rgba(37, 99, 235, 0.8)'    // blue-600 untuk Nilai Akhir
+                    ],
+                    borderColor: [
+                        'rgb(147, 51, 234)',
+                        'rgb(147, 51, 234)',
+                        'rgb(147, 51, 234)',
+                        'rgb(37, 99, 235)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barThickness: 60
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                return 'Nilai: ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            font: {
+                                size: 12
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+@endpush

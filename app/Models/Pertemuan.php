@@ -91,13 +91,15 @@ class Pertemuan extends Model
      */
     public function isAbsensiOpen()
     {
-        if (!$this->waktu_absen_dibuka || !$this->waktu_absen_ditutup) {
+        if (!$this->tanggal_absen_dibuka || !$this->jam_absen_buka || !$this->tanggal_absen_ditutup || !$this->jam_absen_tutup) {
             return false;
         }
 
         $now = now();
-        $waktuBuka = \Carbon\Carbon::parse($this->waktu_absen_dibuka);
-        $waktuTutup = \Carbon\Carbon::parse($this->waktu_absen_ditutup);
+        
+        // Combine tanggal and jam for waktu buka and tutup
+        $waktuBuka = \Carbon\Carbon::parse($this->tanggal_absen_dibuka)->setTimeFromTimeString($this->jam_absen_buka);
+        $waktuTutup = \Carbon\Carbon::parse($this->tanggal_absen_ditutup)->setTimeFromTimeString($this->jam_absen_tutup);
 
         return $now->greaterThanOrEqualTo($waktuBuka) && $now->lessThanOrEqualTo($waktuTutup);
     }

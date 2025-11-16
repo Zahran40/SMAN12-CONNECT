@@ -18,9 +18,7 @@ class Tugas extends Model
         'file_path',
         'tanggal_dibuka',
         'tanggal_ditutup',
-        'tanggal_deadline',
-        'waktu_dibuka',
-        'waktu_ditutup',
+        'deadline',
         'jam_buka',
         'jam_tutup',
     ];
@@ -28,9 +26,7 @@ class Tugas extends Model
     protected $casts = [
         'tanggal_dibuka' => 'date',
         'tanggal_ditutup' => 'date',
-        'tanggal_deadline' => 'date',
-        'waktu_dibuka' => 'datetime',
-        'waktu_ditutup' => 'datetime',
+        'deadline' => 'date',
     ];
 
     /**
