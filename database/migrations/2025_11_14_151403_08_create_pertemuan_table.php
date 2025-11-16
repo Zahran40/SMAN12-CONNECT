@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigInteger('id_pertemuan', true);
             $table->bigInteger('jadwal_id')->index('fk_pertemuan_jadwal');
             $table->unsignedInteger('nomor_pertemuan');
-            $table->date('tanggal_pertemuan');
+            $table->date('tanggal_pertemuan')->nullable();
             $table->time('waktu_mulai')->nullable();
             $table->time('waktu_selesai')->nullable();
             $table->string('topik_bahasan', 250)->nullable();

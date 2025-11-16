@@ -130,17 +130,62 @@
                     <label class="block text-xl font-bold text-slate-900 mb-4">
                         Waktu Pengerjaan
                     </label>
-                    <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 max-w-md">
+                    <div class="grid grid-cols-2 gap-4 max-w-md">
                         <div>
-                            <div class="mb-2 text-blue-500 text-sm">Dibuka</div>
-                            <input type="time" name="jam_buka" value="{{ old('jam_buka', \Carbon\Carbon::parse($item->jam_buka)->format('H:i')) }}" class="w-full text-center border-2 border-blue-300 rounded-lg py-3 text-slate-600 focus:outline-none focus:border-blue-500">
-                        </div>
-                        <div class="pt-7">
-                            <div class="w-5 h-1.5 bg-blue-600 rounded-full"></div>
+                            <label class="block mb-2 text-sm font-semibold text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 inline mr-1">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                </svg>
+                                Jam Dibuka
+                            </label>
+                            <div class="flex gap-2">
+                                @php
+                                    $waktuBuka = \Carbon\Carbon::parse($item->waktu_dibuka);
+                                    $bukaHour = $waktuBuka->format('H');
+                                    $bukaMinute = $waktuBuka->format('i');
+                                @endphp
+                                <select id="jam_buka_hour" class="w-1/2 border-2 border-blue-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" required>
+                                    @for($h = 0; $h < 24; $h++)
+                                        <option value="{{ sprintf('%02d', $h) }}" {{ $h == $bukaHour ? 'selected' : '' }}>{{ sprintf('%02d', $h) }}</option>
+                                    @endfor
+                                </select>
+                                <select id="jam_buka_minute" class="w-1/2 border-2 border-blue-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" required>
+                                    <option value="00" {{ $bukaMinute == '00' ? 'selected' : '' }}>00</option>
+                                    <option value="15" {{ $bukaMinute == '15' ? 'selected' : '' }}>15</option>
+                                    <option value="30" {{ $bukaMinute == '30' ? 'selected' : '' }}>30</option>
+                                    <option value="45" {{ $bukaMinute == '45' ? 'selected' : '' }}>45</option>
+                                    <option value="59" {{ $bukaMinute == '59' ? 'selected' : '' }}>59</option>
+                                </select>
+                                <input type="hidden" id="jam_buka" name="jam_buka" value="{{ old('jam_buka', \Carbon\Carbon::parse($item->waktu_dibuka)->format('H:i')) }}" required>
+                            </div>
                         </div>
                         <div>
-                            <div class="mb-2 text-blue-400 text-sm">Ditutup</div>
-                             <input type="time" name="jam_tutup" value="{{ old('jam_tutup', \Carbon\Carbon::parse($item->jam_tutup)->format('H:i')) }}" class="w-full text-center border-2 border-blue-300 rounded-lg py-3 text-slate-600 focus:outline-none focus:border-blue-500">
+                            <label class="block mb-2 text-sm font-semibold text-red-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 inline mr-1">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                </svg>
+                                Jam Ditutup
+                            </label>
+                            <div class="flex gap-2">
+                                @php
+                                    $waktuTutup = \Carbon\Carbon::parse($item->waktu_ditutup);
+                                    $tutupHour = $waktuTutup->format('H');
+                                    $tutupMinute = $waktuTutup->format('i');
+                                @endphp
+                                <select id="jam_tutup_hour" class="w-1/2 border-2 border-red-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200" required>
+                                    @for($h = 0; $h < 24; $h++)
+                                        <option value="{{ sprintf('%02d', $h) }}" {{ $h == $tutupHour ? 'selected' : '' }}>{{ sprintf('%02d', $h) }}</option>
+                                    @endfor
+                                </select>
+                                <select id="jam_tutup_minute" class="w-1/2 border-2 border-red-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200" required>
+                                    <option value="00" {{ $tutupMinute == '00' ? 'selected' : '' }}>00</option>
+                                    <option value="15" {{ $tutupMinute == '15' ? 'selected' : '' }}>15</option>
+                                    <option value="30" {{ $tutupMinute == '30' ? 'selected' : '' }}>30</option>
+                                    <option value="45" {{ $tutupMinute == '45' ? 'selected' : '' }}>45</option>
+                                    <option value="59" {{ $tutupMinute == '59' ? 'selected' : '' }}>59</option>
+                                </select>
+                                <input type="hidden" id="jam_tutup" name="jam_tutup" value="{{ old('jam_tutup', \Carbon\Carbon::parse($item->waktu_ditutup)->format('H:i')) }}" required>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -168,6 +213,74 @@
     </form>
 
     <script>
+        // Update hidden time inputs when selects change
+        function updateJamBuka() {
+            const hour = document.getElementById('jam_buka_hour').value;
+            const minute = document.getElementById('jam_buka_minute').value;
+            document.getElementById('jam_buka').value = hour + ':' + minute;
+        }
+        
+        function updateJamTutup() {
+            const hour = document.getElementById('jam_tutup_hour').value;
+            const minute = document.getElementById('jam_tutup_minute').value;
+            document.getElementById('jam_tutup').value = hour + ':' + minute;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const jamBukaHour = document.getElementById('jam_buka_hour');
+            const jamBukaMinute = document.getElementById('jam_buka_minute');
+            const jamTutupHour = document.getElementById('jam_tutup_hour');
+            const jamTutupMinute = document.getElementById('jam_tutup_minute');
+            
+            if (jamBukaHour && jamBukaMinute && jamTutupHour && jamTutupMinute) {
+                // Time validation function
+                function validateTime() {
+                    const jamBuka = document.getElementById('jam_buka');
+                    const jamTutup = document.getElementById('jam_tutup');
+                    
+                    if (jamBuka.value && jamTutup.value) {
+                        const [bukaHour, bukaMin] = jamBuka.value.split(':').map(Number);
+                        const [tutupHour, tutupMin] = jamTutup.value.split(':').map(Number);
+                        
+                        const bukaMinutes = bukaHour * 60 + bukaMin;
+                        const tutupMinutes = tutupHour * 60 + tutupMin;
+                        
+                        if (tutupMinutes <= bukaMinutes) {
+                            alert('⚠️ Waktu ditutup harus lebih dari waktu dibuka!\n\n' +
+                                  'Contoh:\nDibuka: 08:00\nDitutup: 17:00');
+                            jamTutupHour.value = '23';
+                            jamTutupMinute.value = '59';
+                            updateJamTutup();
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                
+                // Attach listeners with validation
+                jamBukaHour.addEventListener('change', function() {
+                    updateJamBuka();
+                    validateTime();
+                });
+                jamBukaMinute.addEventListener('change', function() {
+                    updateJamBuka();
+                    validateTime();
+                });
+                jamTutupHour.addEventListener('change', function() {
+                    updateJamTutup();
+                    validateTime();
+                });
+                jamTutupMinute.addEventListener('change', function() {
+                    updateJamTutup();
+                    validateTime();
+                });
+                
+                // Initialize values
+                updateJamBuka();
+                updateJamTutup();
+            }
+        });
+
         // Drag & Drop functionality
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-upload');

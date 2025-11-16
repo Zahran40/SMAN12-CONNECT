@@ -28,8 +28,8 @@ class MataPelajaran extends Model
     /**
      * Relasi ke Nilai (one to many)
      */
-    public function nilai()
-    {
-        return $this->hasMany(Nilai::class, 'mapel_id', 'id_mapel');
-    }
+    // public function nilai()
+    // {
+    //     return $this->hasMany(Nilai::class, 'mapel_id', 'id_mapel');
+    // }
 }

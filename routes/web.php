@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\Admin\PengumumanController;
+
 
 // ============================================
 // PUBLIC ROUTES
@@ -25,9 +27,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->group(function () {
     Route::get('/beranda', [SiswaController::class, 'beranda'])->name('beranda');
 
-    Route::get('/presensi', function () {
-        return view('siswa.presensi');
-    })->name('presensi');
+    // PRESENSI ROUTES - Using Controller
+    // Presensi (Absensi Siswa)
+    Route::get('/presensi', [App\Http\Controllers\Siswa\PresensiController::class, 'index'])->name('presensi');
+    Route::get('/presensi/{jadwal_id}/list', [App\Http\Controllers\Siswa\PresensiController::class, 'listPertemuan'])->name('list_presensi');
+    Route::get('/presensi/detail/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'detail'])->name('detail_presensi');
+    Route::post('/presensi/absen/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'absen'])->name('absen');
 
     // MATERI ROUTES - Using Controller
     Route::get('/materi', [App\Http\Controllers\Siswa\MateriController::class, 'index'])->name('materi');
@@ -52,10 +57,6 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
 
     Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
 
-    Route::get('/detail-presensi', function () {
-        return view('siswa.detailpresensi');
-    })->name('detail_presensi');
-
     Route::get('/detail-raport', function () {
         return view('siswa.detailRaport');
     })->name('detail_raport');
@@ -67,10 +68,6 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/detail-tagihan-sudah-dibayar', function () {
         return view('siswa.detailTagihanSudahDibayar');
     })->name('detail_tagihan_sudah_dibayar');
-
-    Route::get('/upload-tugas', function () {
-        return view('siswa.uploadTugas');
-    })->name('upload_tugas');
 });
 
 // ============================================
@@ -80,13 +77,15 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
 Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(function () {
     Route::get('/beranda', [GuruController::class, 'beranda'])->name('beranda');
 
-    Route::get('/presensi', function () {
-        return view('Guru.presensi');
-    })->name('presensi');
-
-    Route::get('/detail-presensi', function () {
-        return view('Guru.detailpresensi');
-    })->name('detail_presensi');
+    // PRESENSI ROUTES - Using Controller
+    Route::get('/presensi', [App\Http\Controllers\Guru\PresensiController::class, 'index'])->name('presensi');
+    Route::get('/presensi/list/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'listPertemuan'])->name('list_pertemuan');
+    Route::get('/presensi/slot-tersedia/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'getSlotTersedia'])->name('slot_tersedia');
+    Route::get('/presensi/{pertemuan_id}', [App\Http\Controllers\Guru\PresensiController::class, 'detail'])->name('detail_presensi');
+    Route::post('/presensi/{pertemuan_id}/update', [App\Http\Controllers\Guru\PresensiController::class, 'updateStatus'])->name('update_status_presensi');
+    Route::post('/presensi/{pertemuan_id}/submit', [App\Http\Controllers\Guru\PresensiController::class, 'submit'])->name('submit_presensi');
+    Route::post('/presensi/{pertemuan_id}/unlock', [App\Http\Controllers\Guru\PresensiController::class, 'unlock'])->name('unlock_presensi');
+    Route::post('/presensi/buat-pertemuan/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'buatPertemuan'])->name('buat_pertemuan');
 
     // MATERI ROUTES - Using Controller
     Route::get('/materi', [App\Http\Controllers\Guru\MateriController::class, 'index'])->name('materi');
@@ -94,14 +93,19 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('/materi/{jadwal_id}/create', [App\Http\Controllers\Guru\MateriController::class, 'create'])->name('upload_materi');
     Route::get('/materi/{jadwal_id}/create-multiple', [App\Http\Controllers\Guru\MateriController::class, 'createMultiple'])->name('upload_materi_step2');
     Route::post('/materi/{jadwal_id}/store', [App\Http\Controllers\Guru\MateriController::class, 'store'])->name('store_materi');
-    Route::get('/materi/{jadwal_id}/{type}/{id}/edit', [App\Http\Controllers\Guru\MateriController::class, 'edit'])->name('edit_materi');
-    Route::put('/materi/{jadwal_id}/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'update'])->name('update_materi');
+    
+    // TUGAS ROUTES (Terpisah dari Materi)
+    Route::get('/materi/{jadwal_id}/create-tugas', [App\Http\Controllers\Guru\MateriController::class, 'createTugas'])->name('upload_tugas');
+    Route::post('/materi/{jadwal_id}/store-tugas', [App\Http\Controllers\Guru\MateriController::class, 'storeTugas'])->name('store_tugas');
+    Route::get('/materi/{jadwal_id}/materi/{id}/edit', [App\Http\Controllers\Guru\MateriController::class, 'edit'])->name('edit_materi');
+    Route::put('/materi/{jadwal_id}/materi/{id}', [App\Http\Controllers\Guru\MateriController::class, 'update'])->name('update_materi');
     Route::delete('/materi/{jadwal_id}/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'destroy'])->name('delete_materi');
     Route::get('/materi/download/{type}/{id}', [App\Http\Controllers\Guru\MateriController::class, 'download'])->name('download_materi');
 
-    Route::get('/detail-tugas', function () {
-        return view('Guru.detailTugas');
-    })->name('detail_tugas');
+    Route::get('/detail-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'detailTugas'])->name('detail_tugas');
+    Route::get('/edit-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'editTugas'])->name('edit_tugas');
+    Route::put('/update-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateTugas'])->name('update_tugas');
+    Route::post('/detail-tugas/nilai/{detail_tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateNilaiTugas'])->name('update_nilai_tugas');
 
     Route::get('/raport-siswa', function () {
         return view('Guru.raportSiswa');
@@ -205,10 +209,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
         return view('Admin.akademik');
     })->name('akademik');
 
-    Route::get('/pengumuman', [App\Http\Controllers\Admin\PengumumanController::class, 'index'])->name('pengumuman');
-    Route::post('/pengumuman', [App\Http\Controllers\Admin\PengumumanController::class, 'store'])->name('pengumuman.store');
-    Route::put('/pengumuman/{id}', [App\Http\Controllers\Admin\PengumumanController::class, 'update'])->name('pengumuman.update');
-    Route::delete('/pengumuman/{id}', [App\Http\Controllers\Admin\PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
+    Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman');
+    Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
+    Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
+    Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
     Route::get('/pembayaran', function () {
         return view('Admin.pembayaran');
