@@ -1,355 +1,247 @@
 @extends('layouts.guru.app')
 
+@section('title', 'Detail Presensi')
+
 @section('content')
 
-    <div x-data="{ showModal: false }">
+<div x-data="{ 
+    showModal: false, 
+    currentSiswa: null,
+    currentStatus: '',
+    currentKeterangan: ''
+}">
 
-        <div class="flex items-center space-x-4 mb-6">
-            <a href="{{ url()->previous() }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
-            <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </img>
+    <div class="flex items-center space-x-4 mb-6">
+        <a href="{{ route('guru.presensi') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
         </a>
-            <h2 class="text-3xl font-bold text-slate-800">Nama Mata Pelajaran</h2>
+        <div>
+            <h2 class="text-3xl font-bold text-slate-800">{{ $pertemuan->jadwal->mataPelajaran->nama_mapel }}</h2>
+            <p class="text-sm text-slate-500 mt-1">
+                {{ $pertemuan->jadwal->kelas->nama_kelas }} • Pertemuan ke-{{ $pertemuan->nomor_pertemuan }} • 
+                {{ \Carbon\Carbon::parse($pertemuan->tanggal_pertemuan)->isoFormat('dddd, D MMMM Y') }}
+            </p>
+            @if($pertemuan->topik_bahasan)
+                <p class="text-sm text-blue-600 mt-1 font-medium">
+                    📚 {{ $pertemuan->topik_bahasan }}
+                </p>
+            @endif
         </div>
+    </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-            
-            <div class="grid grid-cols-12 gap-4 mb-6 px-4 text-lg font-bold text-blue-600">
-                <div class="col-span-2">Pertemuan</div>
-                <div class="col-span-5 text-center">Materi</div>
-                <div class="col-span-3 text-center">Waktu Absensi</div>
-                <div class="col-span-2 text-right">Detail</div>
+    {{-- Status Card --}}
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="text-center">
+                <p class="text-sm text-slate-500 mb-1">Total Siswa</p>
+                <p class="text-2xl font-bold text-blue-600">{{ $siswaList->count() }}</p>
             </div>
-
-            <div class="space-y-4">
-                <div class="grid grid-cols-12 gap-4 items-center bg-slate-50 rounded-2xl py-4 px-6">
-                    <div class="col-span-2">
-                        <span class="flex items-center justify-center w-10 h-10 bg-blue-100 text-slate-900 font-bold rounded-lg text-lg">1</span>
-                    </div>
-                    <div class="col-span-5 text-center font-medium text-slate-900">Nama Materi</div>
-                    <div class="col-span-3 flex items-center justify-center space-x-2 font-medium text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600">
-                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-                        </svg>
-                        <span>08:00-9:30</span>
-                    </div>
-                    <div class="col-span-2 text-right flex justify-end">
-                        <a href="{{ route('guru.presensi_mapel_detail') }}" class="text-blue-700 hover:text-blue-900">
-                            <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-blue-700">
-                        </a>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-12 gap-4 items-center bg-slate-50 rounded-2xl py-4 px-6">
-                    <div class="col-span-2">
-                        <span class="flex items-center justify-center w-10 h-10 bg-blue-100 text-slate-900 font-bold rounded-lg text-lg">2</span>
-                    </div>
-                    <div class="col-span-5 text-center font-medium text-slate-900">Nama Materi</div>
-                    <div class="col-span-3 flex items-center justify-center space-x-2 font-medium text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600">
-                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-                        </svg>
-                        <span>08:00-9:30</span>
-                    </div>
-                    <div class="col-span-2 text-right flex justify-end">
-                        <a href="{{ route('guru.presensi_mapel_detail') }}" class="text-blue-700 hover:text-blue-900">
-                            <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-blue-700">
-                        </a>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-12 gap-4 items-center bg-slate-50 rounded-2xl py-4 px-6">
-                    <div class="col-span-2">
-                        <span class="flex items-center justify-center w-10 h-10 bg-blue-100 text-slate-900 font-bold rounded-lg text-lg">3</span>
-                    </div>
-                    <div class="col-span-5 text-center font-medium text-slate-900">Nama Materi</div>
-                    <div class="col-span-3 flex items-center justify-center space-x-2 font-medium text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600">
-                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-                        </svg>
-                        <span>08:00-9:30</span>
-                    </div>
-                    <div class="col-span-2 text-right flex justify-end">
-                        <a href="{{ route('guru.presensi_mapel_detail') }}" class="text-blue-700 hover:text-blue-900">
-                            <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-blue-700">
-                        </a>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-12 gap-4 items-center bg-slate-50 rounded-2xl py-4 px-6">
-                    <div class="col-span-2">
-                        <span class="flex items-center justify-center w-10 h-10 bg-blue-100 text-slate-900 font-bold rounded-lg text-lg">4</span>
-                    </div>
-                    <div class="col-span-5 text-center font-medium text-slate-900">Nama Materi</div>
-                    <div class="col-span-3 flex items-center justify-center space-x-2 font-medium text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600">
-                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-                        </svg>
-                        <span>08:00-9:30</span>
-                    </div>
-                    <div class="col-span-2 text-right flex justify-end">
-                        <a href="{{ route('guru.presensi_mapel_detail') }}" class="text-blue-700 hover:text-blue-900">
-                            <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-blue-700">
-                        </a>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-12 gap-4 items-center bg-slate-50 rounded-2xl py-4 px-6">
-                    <div class="col-span-2">
-                        <span class="flex items-center justify-center w-10 h-10 bg-blue-100 text-slate-900 font-bold rounded-lg text-lg">5</span>
-                    </div>
-                    <div class="col-span-5 text-center font-medium text-slate-900">Nama Materi</div>
-                    <div class="col-span-3 flex items-center justify-center space-x-2 font-medium text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600">
-                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-                        </svg>
-                        <span>08:00-9:30</span>
-                    </div>
-                    <div class="col-span-2 text-right flex justify-end">
-                        <a href="{{ route('guru.presensi_mapel_detail') }}" class="text-blue-700 hover:text-blue-900">
-                            <img src="{{ asset('images/material-symbols_list-alt.png') }}" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-blue-700">
-                        </a>
-                    </div>
-                </div>
-
+            <div class="text-center">
+                <p class="text-sm text-slate-500 mb-1">Hadir</p>
+                <p class="text-2xl font-bold text-green-600">{{ $siswaList->where('status_kehadiran', 'Hadir')->count() }}</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-slate-500 mb-1">Sakit/Izin</p>
+                <p class="text-2xl font-bold text-yellow-600">{{ $siswaList->whereIn('status_kehadiran', ['Sakit', 'Izin'])->count() }}</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-slate-500 mb-1">Alfa</p>
+                <p class="text-2xl font-bold text-red-600">{{ $siswaList->where('status_kehadiran', 'Alfa')->count() }}</p>
             </div>
         </div>
-
-        <div class="flex justify-end mt-8">
-            <button @click="showModal = true" class="flex items-center space-x-2 bg-blue-400 text-white font-bold px-6 py-3 rounded-full hover:bg-blue-500 transition-colors shadow-md shadow-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                <span>Buat Absensi</span>
-            </button>
-        </div>
-
-
-        <div
-            x-show="showModal"
-            x-cloak 
-            class="fixed inset-0 z-50 overflow-y-auto"
-            aria-labelledby="modal-title" role="dialog" aria-modal="true"
-        >
-            <div
-                x-show="showModal"
-                x-transition:enter="ease-out duration-300"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="fixed inset-0 bg-gray-900/75 transition-opacity"
-                @click="showModal = false"
-            ></div>
-
-            <div class="flex min-h-full items-center justify-center p-4 text-center">
-                <div
-                    x-show="showModal"
-                    x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    class="relative transform overflow-visible rounded-3xl bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-md p-8"
-                    @click.stop
-                >
-                    <h3 class="text-2xl font-bold text-blue-600 mb-6">Membuat Absensi</h3>
-
-                    <form action="#" method="POST" class="space-y-6">
+        
+        @if($pertemuan->waktu_absen_dibuka && $pertemuan->waktu_absen_ditutup)
+            <div class="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
+                <div class="text-sm text-slate-600">
+                    <span class="font-medium">Waktu Absensi:</span>
+                    <span class="text-green-600">
+                        {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_dibuka)->isoFormat('DD MMM Y, HH:mm') }}
+                    </span>
+                    - 
+                    <span class="text-red-600">
+                        {{ \Carbon\Carbon::parse($pertemuan->waktu_absen_ditutup)->isoFormat('DD MMM Y, HH:mm') }}
+                    </span>
+                    
+                    @if($pertemuan->isAbsensiOpen())
+                        <span class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">● Sedang Berlangsung</span>
+                    @elseif(now()->greaterThan($pertemuan->waktu_absen_ditutup))
+                        <span class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">Sudah Ditutup</span>
+                    @else
+                        <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">Belum Dibuka</span>
+                    @endif
+                </div>
+                
+                @if($pertemuan->is_submitted)
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                            ✓ Sudah Di-submit
+                        </span>
+                        @if(auth()->user()->role === 'admin')
+                            <form action="{{ route('guru.unlock_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin membuka kembali absensi ini?')">
+                                @csrf
+                                <button type="submit" class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-200">
+                                    🔓 Buka Kembali
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @else
+                    <form action="{{ route('guru.submit_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin submit? Data akan terkunci.')">
                         @csrf
-                        <div>
-                            <label for="nama_materi" class="block text-base font-bold text-slate-900 mb-2">Nama Materi</label>
-                            <textarea id="nama_materi" name="nama_materi" rows="3" class="w-full border-2 border-blue-300 rounded-xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Maksimal 40 Karakter"></textarea>
-                        </div>
-
-                        <div class="relative" x-data="datepicker()">
-                            <label class="block text-base font-bold text-slate-900 mb-2">Tanggal</label>
-                            
-                            <div @click="showDatepicker = !showDatepicker" class="w-full border-2 border-blue-300 rounded-xl py-3 px-4 flex items-center justify-between cursor-pointer hover:border-blue-400">
-                                <span x-text="formattedDate" class="text-slate-500 font-medium"></span>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-600 transition-transform" :class="{'rotate-180': showDatepicker}">
-                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <input type="hidden" name="tanggal" x-model="selectedDate">
-
-                            <div 
-                                x-show="showDatepicker" 
-                                @click.away="showDatepicker = false"
-                                x-transition:enter="transition ease-out duration-100"
-                                x-transition:enter-start="transform opacity-0 scale-95"
-                                x-transition:enter-end="transform opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-75"
-                                x-transition:leave-start="transform opacity-100 scale-100"
-                                x-transition:leave-end="transform opacity-0 scale-95"
-                                class="absolute z-10 mt-2 w-[320px] bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.2)] p-6 right-0"
-                            >
-                                <div class="flex items-center justify-between mb-6">
-                                    <button type="button" @click="prevMonth" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-                                    </button>
-                                    <div class="text-lg font-bold text-slate-800" x-text="monthNames[month] + ' ' + year"></div>
-                                    <button type="button" @click="nextMonth" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                                    </button>
-                                </div>
-
-                                <div class="grid grid-cols-7 text-center mb-2">
-                                    <template x-for="(day, index) in dayNames" :key="index">
-                                        <div class="text-sm font-medium text-slate-400" x-text="day"></div>
-                                    </template>
-                                </div>
-
-                                <div class="grid grid-cols-7 text-center gap-y-1">
-                                    <template x-for="blank in blankDays" :key="blank">
-                                        <div class="p-1"></div>
-                                    </template>
-                                    <template x-for="(date, dateIndex) in no_of_days" :key="dateIndex">
-                                        <div class="p-1">
-                                            <div
-                                                @click="getDateValue(date)"
-                                                x-text="date"
-                                                class="w-8 h-8 mx-auto flex items-center justify-center text-sm font-semibold rounded-lg cursor-pointer transition-colors"
-                                                :class="{
-                                                    'bg-blue-100 text-blue-600 border border-blue-500': isSelectedDate(date),
-                                                    'text-slate-700 hover:bg-slate-100': !isSelectedDate(date)
-                                                }"
-                                            ></div>
-                                        </div>
-                                    </template>
-                                </div>
-
-                                <div class="mt-6 flex justify-end">
-                                    <button type="button" @click="showDatepicker = false" class="bg-blue-400 text-white font-bold text-sm px-6 py-2 rounded-xl hover:bg-blue-500 transition-colors">
-                                        Done
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-base font-bold text-slate-900 mb-2">Waktu</label>
-                            <div class="flex items-center space-x-4">
-                                <div>
-                                    <div class="text-blue-400 text-xs font-medium mb-1 ml-1">Dibuka</div>
-                                    <input type="text" name="waktu_dibuka" value="00:00" class="w-full text-center border-2 border-blue-300 rounded-xl py-3 text-slate-600 focus:outline-none focus:border-blue-500">
-                                </div>
-                                <div class="pt-6">
-                                    <div class="w-5 h-1.5 bg-blue-600 rounded-full"></div>
-                                </div>
-                                <div>
-                                    <div class="text-blue-400 text-xs font-medium mb-1 ml-1">Ditutup</div>
-                                    <input type="text" name="waktu_ditutup" value="00:00" class="w-full text-center border-2 border-blue-300 rounded-xl py-3 text-slate-600 focus:outline-none focus:border-blue-500">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-4">
-                            <button type="submit" class="w-full bg-blue-400 text-white font-bold text-lg py-3.5 rounded-full hover:bg-blue-500 transition-colors shadow-md shadow-blue-200">
-                                Buat Absensi
-                            </button>
-                        </div>
+                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors font-medium">
+                            Submit & Lock Presensi
+                        </button>
                     </form>
-                </div>
+                @endif
             </div>
+        @endif
+    </div>
+
+    {{-- Daftar Siswa --}}
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <h3 class="text-xl font-bold text-slate-800 mb-6">Daftar Kehadiran Siswa</h3>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b-2 border-slate-200">
+                        <th class="text-left py-4 px-4 font-semibold text-slate-700">No</th>
+                        <th class="text-left py-4 px-4 font-semibold text-slate-700">NIS</th>
+                        <th class="text-left py-4 px-4 font-semibold text-slate-700">Nama Siswa</th>
+                        <th class="text-center py-4 px-4 font-semibold text-slate-700">Status</th>
+                        <th class="text-left py-4 px-4 font-semibold text-slate-700">Keterangan</th>
+                        <th class="text-center py-4 px-4 font-semibold text-slate-700">Waktu</th>
+                        <th class="text-center py-4 px-4 font-semibold text-slate-700">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($siswaList as $index => $siswa)
+                        <tr class="border-b border-slate-100 hover:bg-slate-50">
+                            <td class="py-4 px-4 text-slate-600">{{ $index + 1 }}</td>
+                            <td class="py-4 px-4 text-slate-600">{{ $siswa->nis }}</td>
+                            <td class="py-4 px-4">
+                                <span class="font-medium text-slate-800">{{ $siswa->nama_lengkap }}</span>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                @if($siswa->status_kehadiran)
+                                    @php
+                                        $badgeColors = [
+                                            'Hadir' => 'bg-green-100 text-green-700',
+                                            'Sakit' => 'bg-yellow-100 text-yellow-700',
+                                            'Izin' => 'bg-blue-100 text-blue-700',
+                                            'Alfa' => 'bg-red-100 text-red-700',
+                                        ];
+                                    @endphp
+                                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {{ $badgeColors[$siswa->status_kehadiran] ?? 'bg-gray-100 text-gray-700' }}">
+                                        {{ $siswa->status_kehadiran }}
+                                    </span>
+                                @else
+                                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-500">
+                                        Belum Absen
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-4 px-4 text-sm text-slate-600">
+                                {{ $siswa->keterangan ?? '-' }}
+                            </td>
+                            <td class="py-4 px-4 text-center text-xs text-slate-500">
+                                @if($siswa->dicatat_pada)
+                                    {{ \Carbon\Carbon::parse($siswa->dicatat_pada)->isoFormat('HH:mm, DD/MM/Y') }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                @if($pertemuan->canEditAbsensi(auth()->user()))
+                                    <button 
+                                        @click="showModal = true; currentSiswa = {{ $siswa->id_siswa }}; currentStatus = '{{ $siswa->status_kehadiran ?? 'Hadir' }}'; currentKeterangan = '{{ $siswa->keterangan ?? '' }}'"
+                                        class="bg-blue-500 text-white px-4 py-1.5 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                                    >
+                                        {{ $siswa->status_kehadiran ? 'Ubah' : 'Set Status' }}
+                                    </button>
+                                @else
+                                    <span class="text-xs text-gray-400">Terkunci</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-        </div> <script>
-        // Mendefinisikan konstanta di luar agar bersih
-        const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        const DAY_NAMES = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']; // Sesuai gambar: Senin pertama
+    </div>
 
-        function datepicker() {
-            return {
-                showDatepicker: false,
-                selectedDate: '', // Format YYYY-MM-DD (untuk backend)
-                formattedDate: 'DD/MM/YEAR', // Format DD/MM/YYYY (untuk tampilan)
-                month: '',
-                year: '',
-                no_of_days: [],
-                blankDays: [],
-                dayNames: DAY_NAMES,
-                monthNames: MONTH_NAMES,
+    {{-- Modal Update Status --}}
+    <div 
+        x-show="showModal" 
+        x-cloak
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        @click.self="showModal = false"
+    >
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md" @click.stop>
+            <h3 class="text-2xl font-bold text-slate-800 mb-6">Update Status Kehadiran</h3>
+            
+            <form :action="`{{ route('guru.update_status_presensi', $pertemuan->id_pertemuan) }}`" method="POST">
+                @csrf
+                <input type="hidden" name="siswa_id" :value="currentSiswa">
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-700 mb-3">Pilih Status</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer hover:bg-green-50 transition-colors" :class="currentStatus === 'Hadir' ? 'border-green-500 bg-green-50' : 'border-slate-200'">
+                            <input type="radio" name="status_kehadiran" value="Hadir" x-model="currentStatus" class="w-5 h-5 text-green-600">
+                            <span class="ml-3 font-medium text-slate-700">Hadir</span>
+                        </label>
+                        <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer hover:bg-yellow-50 transition-colors" :class="currentStatus === 'Sakit' ? 'border-yellow-500 bg-yellow-50' : 'border-slate-200'">
+                            <input type="radio" name="status_kehadiran" value="Sakit" x-model="currentStatus" class="w-5 h-5 text-yellow-600">
+                            <span class="ml-3 font-medium text-slate-700">Sakit</span>
+                        </label>
+                        <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors" :class="currentStatus === 'Izin' ? 'border-blue-500 bg-blue-50' : 'border-slate-200'">
+                            <input type="radio" name="status_kehadiran" value="Izin" x-model="currentStatus" class="w-5 h-5 text-blue-600">
+                            <span class="ml-3 font-medium text-slate-700">Izin</span>
+                        </label>
+                        <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer hover:bg-red-50 transition-colors" :class="currentStatus === 'Alfa' ? 'border-red-500 bg-red-50' : 'border-slate-200'">
+                            <input type="radio" name="status_kehadiran" value="Alfa" x-model="currentStatus" class="w-5 h-5 text-red-600">
+                            <span class="ml-3 font-medium text-slate-700">Alfa (Tanpa Keterangan)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Keterangan (Opsional)</label>
+                    <textarea 
+                        name="keterangan" 
+                        rows="3" 
+                        x-model="currentKeterangan"
+                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Contoh: Sakit demam, Izin urusan keluarga, dll"
+                    ></textarea>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button 
+                        type="button" 
+                        @click="showModal = false"
+                        class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+                    >
+                        Batal
+                    </button>
+                    <button 
+                        type="submit"
+                        class="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                    >
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                init() {
-                    let today = new Date();
-                    this.month = today.getMonth();
-                    this.year = today.getFullYear();
-                    this.getNoOfDays();
-                },
+</div>
 
-                // Pengecekan apakah tanggal ini yang dipilih
-                isSelectedDate(date) {
-                    const d = new Date(this.year, this.month, date);
-                    return this.selectedDate === d.toISOString().split('T')[0];
-                },
-
-                // Saat tanggal diklik
-                getDateValue(date) {
-                    let selectedDate = new Date(this.year, this.month, date);
-                    // Set nilai hidden input (format YYYY-MM-DD untuk backend)
-                    this.selectedDate = selectedDate.toISOString().split('T')[0]; 
-                    // Set nilai tampilan (format DD/MM/YYYY)
-                    this.formattedDate = ('0' + date).slice(-2) + '/' + ('0' + (this.month + 1)).slice(-2) + '/' + this.year;
-                },
-
-                // Menghitung hari dalam sebulan dan hari kosong
-                getNoOfDays() {
-                    let daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
-                    let dayOfWeek = new Date(this.year, this.month).getDay(); // 0=Minggu, 1=Senin, ...
-                    
-                    // Sesuaikan 'dayOfWeek' agar Senin = 0, Minggu = 6
-                    let adjustedDay = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
-                    
-                    let blankdaysArray = [];
-                    for (var i = 1; i <= adjustedDay; i++) {
-                        blankdaysArray.push(i);
-                    }
-
-                    let daysArray = [];
-                    for (var i = 1; i <= daysInMonth; i++) {
-                        daysArray.push(i);
-                    }
-
-                    this.blankDays = blankdaysArray;
-                    this.no_of_days = daysArray;
-                },
-
-                prevMonth() {
-                    if (this.month == 0) {
-                        this.month = 11;
-                        this.year--;
-                    } else {
-                        this.month--;
-                    }
-                    this.getNoOfDays();
-                },
-
-                nextMonth() {
-                    if (this.month == 11) {
-                        this.month = 0;
-                        this.year++;
-                    } else {
-                        this.month++;
-                    }
-                    this.getNoOfDays();
-                }
-            }
-        }
-
-        // Daftarkan komponen datepicker ke Alpine
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('datepicker', datepicker);
-        });
-    </script>
-
-    <style>
-        /* Sembunyikan elemen x-cloak saat Alpine sedang loading */
-        [x-cloak] { 
-            display: none !important; 
-        }
-    </style>
+<style>
+    [x-cloak] { display: none !important; }
+</style>
 
 @endsection

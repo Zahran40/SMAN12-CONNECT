@@ -27,9 +27,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->group(function () {
     Route::get('/beranda', [SiswaController::class, 'beranda'])->name('beranda');
 
-    Route::get('/presensi', function () {
-        return view('siswa.presensi');
-    })->name('presensi');
+    // PRESENSI ROUTES - Using Controller
+    // Presensi (Absensi Siswa)
+    Route::get('/presensi', [App\Http\Controllers\Siswa\PresensiController::class, 'index'])->name('presensi');
+    Route::get('/presensi/{jadwal_id}/list', [App\Http\Controllers\Siswa\PresensiController::class, 'listPertemuan'])->name('list_presensi');
+    Route::get('/presensi/detail/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'detail'])->name('detail_presensi');
+    Route::post('/presensi/absen/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'absen'])->name('absen');
 
     // MATERI ROUTES - Using Controller
     Route::get('/materi', [App\Http\Controllers\Siswa\MateriController::class, 'index'])->name('materi');
@@ -54,10 +57,6 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
 
     Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
 
-    Route::get('/detail-presensi', function () {
-        return view('siswa.detailpresensi');
-    })->name('detail_presensi');
-
     Route::get('/detail-raport', function () {
         return view('siswa.detailRaport');
     })->name('detail_raport');
@@ -69,10 +68,6 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/detail-tagihan-sudah-dibayar', function () {
         return view('siswa.detailTagihanSudahDibayar');
     })->name('detail_tagihan_sudah_dibayar');
-
-    Route::get('/upload-tugas', function () {
-        return view('siswa.uploadTugas');
-    })->name('upload_tugas');
 });
 
 // ============================================
@@ -82,13 +77,15 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
 Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(function () {
     Route::get('/beranda', [GuruController::class, 'beranda'])->name('beranda');
 
-    Route::get('/presensi', function () {
-        return view('Guru.presensi');
-    })->name('presensi');
-
-    Route::get('/detail-presensi', function () {
-        return view('Guru.detailpresensi');
-    })->name('detail_presensi');
+    // PRESENSI ROUTES - Using Controller
+    Route::get('/presensi', [App\Http\Controllers\Guru\PresensiController::class, 'index'])->name('presensi');
+    Route::get('/presensi/list/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'listPertemuan'])->name('list_pertemuan');
+    Route::get('/presensi/slot-tersedia/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'getSlotTersedia'])->name('slot_tersedia');
+    Route::get('/presensi/{pertemuan_id}', [App\Http\Controllers\Guru\PresensiController::class, 'detail'])->name('detail_presensi');
+    Route::post('/presensi/{pertemuan_id}/update', [App\Http\Controllers\Guru\PresensiController::class, 'updateStatus'])->name('update_status_presensi');
+    Route::post('/presensi/{pertemuan_id}/submit', [App\Http\Controllers\Guru\PresensiController::class, 'submit'])->name('submit_presensi');
+    Route::post('/presensi/{pertemuan_id}/unlock', [App\Http\Controllers\Guru\PresensiController::class, 'unlock'])->name('unlock_presensi');
+    Route::post('/presensi/buat-pertemuan/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'buatPertemuan'])->name('buat_pertemuan');
 
     // MATERI ROUTES - Using Controller
     Route::get('/materi', [App\Http\Controllers\Guru\MateriController::class, 'index'])->name('materi');
