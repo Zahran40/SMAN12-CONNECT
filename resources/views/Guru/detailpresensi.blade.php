@@ -116,6 +116,7 @@
                         <th class="text-left py-4 px-4 font-semibold text-slate-700">NIS</th>
                         <th class="text-left py-4 px-4 font-semibold text-slate-700">Nama Siswa</th>
                         <th class="text-center py-4 px-4 font-semibold text-slate-700">Status</th>
+                        <th class="text-left py-4 px-4 font-semibold text-slate-700">Lokasi</th>
                         <th class="text-left py-4 px-4 font-semibold text-slate-700">Keterangan</th>
                         <th class="text-center py-4 px-4 font-semibold text-slate-700">Waktu</th>
                         <th class="text-center py-4 px-4 font-semibold text-slate-700">Aksi</th>
@@ -146,6 +147,34 @@
                                     <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-500">
                                         Belum Absen
                                     </span>
+                                @endif
+                            </td>
+                            <td class="py-4 px-4">
+                                @if($siswa->latitude && $siswa->longitude)
+                                    <div class="text-xs">
+                                        <div class="flex items-start space-x-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                            </svg>
+                                            <div class="flex-1">
+                                                @if($siswa->alamat_lengkap)
+                                                    <p class="text-slate-700 mb-1 line-clamp-2">{{ $siswa->alamat_lengkap }}</p>
+                                                @endif
+                                                <p class="text-slate-500 mb-1">{{ $siswa->latitude }}, {{ $siswa->longitude }}</p>
+                                                <a href="https://www.google.com/maps?q={{ $siswa->latitude }},{{ $siswa->longitude }}" 
+                                                   target="_blank" 
+                                                   class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 mr-1">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                                                    </svg>
+                                                    Lihat Maps
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-xs text-slate-400">-</span>
                                 @endif
                             </td>
                             <td class="py-4 px-4 text-sm text-slate-600">

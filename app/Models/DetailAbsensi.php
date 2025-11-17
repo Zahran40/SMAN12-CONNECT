@@ -16,6 +16,9 @@ class DetailAbsensi extends Model
         'status_kehadiran',
         'keterangan',
         'dicatat_pada',
+        'latitude',
+        'longitude',
+        'alamat_lengkap',
     ];
 
     protected $casts = [

@@ -72,7 +72,10 @@ class PresensiController extends Controller
                 'detail_absensi.id_detail_absensi',
                 'detail_absensi.status_kehadiran',
                 'detail_absensi.keterangan',
-                'detail_absensi.dicatat_pada'
+                'detail_absensi.dicatat_pada',
+                'detail_absensi.latitude',
+                'detail_absensi.longitude',
+                'detail_absensi.alamat_lengkap'
             )
             ->orderBy('siswa.nama_lengkap')
             ->get();

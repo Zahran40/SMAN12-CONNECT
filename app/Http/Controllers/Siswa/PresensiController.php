@@ -115,9 +115,9 @@ class PresensiController extends Controller
     }
 
     /**
-     * Siswa melakukan absensi (one-click "Hadir")
+     * Siswa melakukan absensi (one-click "Hadir") dengan GPS
      */
-    public function absen($pertemuanId)
+    public function absen(Request $request, $pertemuanId)
     {
         $user = Auth::user();
         $siswa = Siswa::where('user_id', $user->id)->firstOrFail();
@@ -160,13 +160,23 @@ class PresensiController extends Controller
             return redirect()->back()->with('info', 'Anda sudah melakukan absensi sebelumnya');
         }
 
-        // Create absensi dengan status Hadir
+        // Validasi data GPS
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'alamat_lengkap' => 'nullable|string',
+        ]);
+
+        // Create absensi dengan status Hadir dan lokasi GPS
         DetailAbsensi::create([
             'pertemuan_id' => $pertemuanId,
             'siswa_id' => $siswa->id_siswa,
             'status_kehadiran' => 'Hadir',
             'keterangan' => null,
             'dicatat_pada' => now(),
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'alamat_lengkap' => $request->alamat_lengkap,
         ]);
 
         return redirect()->back()->with('success', 'Absensi berhasil! Status: Hadir');
