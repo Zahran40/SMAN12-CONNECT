@@ -14,82 +14,99 @@
     <div class="bg-white p-8 rounded-2xl shadow-sm">
         <h3 class="text-xl font-bold text-blue-600 mb-6">Data Mata Pelajaran</h3>
 
-        <div class="space-y-5 max-w-2xl">
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div class="font-bold mb-2">Terjadi kesalahan:</div>
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form action="{{ route('admin.akademik.mapel.store') }}" method="POST" class="space-y-5 max-w-2xl">
+            @csrf
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Mata Pelajaran</label>
-                <input type="text" placeholder="Nama Mapel" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-400">
+                <input type="text" name="nama_mapel" value="{{ old('nama_mapel') }}" required placeholder="Contoh: Bahasa Indonesia" 
+                       class="w-full border-2 {{ $errors->has('nama_mapel') ? 'border-red-500' : 'border-blue-200' }} rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-400">
+                @error('nama_mapel')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Kode Mata Pelajaran (Otomatis terbuat)</label>
-                <input type="text" placeholder="XXXXXXXX" class="w-48 border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 bg-blue-50/50 focus:outline-none cursor-not-allowed" readonly>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Kode Mata Pelajaran</label>
+                <input type="text" name="kode_mapel" value="{{ old('kode_mapel') }}" required placeholder="Contoh: BIND" 
+                       class="w-full border-2 {{ $errors->has('kode_mapel') ? 'border-red-500' : 'border-blue-200' }} rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-400">
+                @error('kode_mapel')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Tahun Ajaran</label>
-                <div class="relative w-64">
-                    <select class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 pr-10 focus:outline-none focus:border-blue-500 bg-white">
-                        <option>2024/2025</option>
-                        <option>2025/2026</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Kategori</label>
+                <select name="kategori" class="w-full border-2 {{ $errors->has('kategori') ? 'border-red-500' : 'border-blue-200' }} rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="Umum" {{ old('kategori') == 'Umum' ? 'selected' : '' }}>Umum (Wajib)</option>
+                    <option value="Kelas X" {{ old('kategori') == 'Kelas X' ? 'selected' : '' }}>Kelas X (Fase E)</option>
+                    <option value="MIPA" {{ old('kategori') == 'MIPA' ? 'selected' : '' }}>MIPA (Fase F)</option>
+                    <option value="IPS" {{ old('kategori') == 'IPS' ? 'selected' : '' }}>IPS (Fase F)</option>
+                    <option value="Bahasa" {{ old('kategori') == 'Bahasa' ? 'selected' : '' }}>Bahasa & Budaya</option>
+                    <option value="Mulok" {{ old('kategori') == 'Mulok' ? 'selected' : '' }}>Muatan Lokal</option>
+                </select>
+                @error('kategori')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Mulai</label>
+                    <input type="time" name="jam_mulai" value="{{ old('jam_mulai', '07:00') }}" required 
+                           class="w-full border-2 {{ $errors->has('jam_mulai') ? 'border-red-500' : 'border-blue-200' }} rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    @error('jam_mulai')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Selesai</label>
+                    <input type="time" name="jam_selesai" value="{{ old('jam_selesai', '08:00') }}" required 
+                           class="w-full border-2 {{ $errors->has('jam_selesai') ? 'border-red-500' : 'border-blue-200' }} rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    @error('jam_selesai')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Semester</label>
-                <div class="relative w-64">
-                    <select class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 pr-10 focus:outline-none focus:border-blue-500 bg-white">
-                        <option>Genap</option>
-                        <option>Ganjil</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Deskripsi (Opsional)</label>
+                <textarea name="deskripsi" rows="3" placeholder="Deskripsi mata pelajaran" 
+                          class="w-full border-2 {{ $errors->has('deskripsi') ? 'border-red-500' : 'border-blue-200' }} rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-400">{{ old('deskripsi') }}</textarea>
+                @error('deskripsi')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Guru Pengajar</label>
-                <div class="relative w-full max-w-md">
-                    <input type="text" placeholder="Nama Guru" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 pr-10 focus:outline-none focus:border-blue-500 placeholder-slate-400">
-                    <div class="absolute inset-y-0 right-0 flex items-center px-3 text-blue-500 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
+                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
+                    <span>Simpan</span>
+                </button>
             </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Jadwal</label>
-                <div class="flex items-center space-x-4">
-                    <div>
-                        <span class="block text-xs text-blue-400 mb-1 ml-1">Masuk</span>
-                        <input type="text" placeholder="00:00" class="w-32 border-2 border-blue-200 rounded-lg px-4 py-2.5 text-center text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-300">
-                    </div>
-                    <span class="text-blue-400 font-bold text-xl mt-5">-</span>
-                    <div>
-                        <span class="block text-xs text-blue-400 mb-1 ml-1">Keluar</span>
-                        <input type="text" placeholder="00:00" class="w-32 border-2 border-blue-200 rounded-lg px-4 py-2.5 text-center text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-300">
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="flex justify-end mt-6 px-4">
-        <a href="" class="bg-green-400 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
-            <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6  ">
-            <span>Simpan</span>
-        </a>
+        </form>
     </div>
 </div>
 @endsection
