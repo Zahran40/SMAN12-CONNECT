@@ -11,6 +11,7 @@ class Guru extends Model
 
     protected $table = 'guru';
     protected $primaryKey = 'id_guru';
+    public $timestamps = false;
     
     protected $fillable = [
         'user_id',
@@ -24,6 +25,7 @@ class Guru extends Model
         'email',
         'agama',
         'golongan_darah',
+        'mapel_id',
         'foto_profil',
     ];
 
@@ -35,6 +37,12 @@ class Guru extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Relasi ke Mata Pelajaran
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mapel_id', 'id_mapel');
     }
 
     // Relasi ke Jadwal Pelajaran

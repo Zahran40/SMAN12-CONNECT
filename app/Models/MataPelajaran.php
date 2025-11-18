@@ -15,6 +15,8 @@ class MataPelajaran extends Model
         'nama_mapel',
         'kategori',
         'deskripsi',
+        'jam_mulai',
+        'jam_selesai',
     ];
 
     /**
@@ -23,6 +25,22 @@ class MataPelajaran extends Model
     public function jadwalPelajaran()
     {
         return $this->hasMany(JadwalPelajaran::class, 'mapel_id', 'id_mapel');
+    }
+
+    /**
+     * Alias untuk jadwalPelajaran
+     */
+    public function jadwal()
+    {
+        return $this->jadwalPelajaran();
+    }
+
+    /**
+     * Relasi ke Guru (one to many)
+     */
+    public function guru()
+    {
+        return $this->hasMany(Guru::class, 'mapel_id', 'id_mapel');
     }
 
     /**
