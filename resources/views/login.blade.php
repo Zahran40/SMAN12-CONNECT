@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | SMA Negeri 12 Medan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         * {
             font-family: 'Poppins', sans-serif;
@@ -17,7 +17,7 @@
 <body class="bg-[#e6f0fa] flex items-center justify-center min-h-screen relative">
 
     <div class="absolute top-8 left-8">
-        <a href="{{ url('/') }}""
+        <a href="{{ url('/') }}"
             class="inline-flex items-center bg-white rounded-xl shadow-md px-4 py-2 text-[#2a5db0] font-medium text-[18px] hover:shadow-lg transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="#2a5db0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 18 9 12 15 6" />

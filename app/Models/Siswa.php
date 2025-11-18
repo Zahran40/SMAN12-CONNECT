@@ -11,6 +11,7 @@ class Siswa extends Model
 
     protected $table = 'siswa';
     protected $primaryKey = 'id_siswa';
+    public $timestamps = false;
     
     protected $fillable = [
         'user_id',
@@ -51,5 +52,18 @@ class Siswa extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id', 'id_kelas');
+    }
+
+    // Relasi ke Tahun Ajaran (melalui kelas)
+    public function tahunAjaran()
+    {
+        return $this->hasOneThrough(
+            TahunAjaran::class,
+            Kelas::class,
+            'id_kelas',
+            'id_tahun_ajaran',
+            'kelas_id',
+            'tahun_ajaran_id'
+        );
     }
 }
