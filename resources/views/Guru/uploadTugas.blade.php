@@ -42,6 +42,23 @@
                 </div>
             </div>
 
+            <div>
+                <label for="semester" class="block text-xl font-bold text-slate-900 mb-4">
+                    Semester <span class="text-red-500">*</span>
+                    <span class="text-sm font-normal text-slate-500">(Tugas akan dihitung di nilai raport semester yang dipilih)</span>
+                </label>
+                <div class="relative w-full max-w-xs">
+                    <select id="semester" name="semester" class="block w-full appearance-none bg-white border-2 border-blue-300 text-slate-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500" required>
+                        <option value="">-- Pilih Semester --</option>
+                        <option value="Ganjil" {{ old('semester') == 'Ganjil' ? 'selected' : '' }}>Semester 1 (Ganjil)</option>
+                        <option value="Genap" {{ old('semester') == 'Genap' ? 'selected' : '' }}>Semester 2 (Genap)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-600">
+                        <svg class="fill-current h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+
             <h3 class="text-2xl font-bold text-blue-600">Upload Berkas Tugas</h3>
 
             <div>
