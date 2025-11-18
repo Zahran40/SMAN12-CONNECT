@@ -9,6 +9,7 @@ use App\Models\JadwalPelajaran;
 use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class RaportController extends Controller
 {
@@ -17,7 +18,7 @@ class RaportController extends Controller
      */
     public function index()
     {
-        $guru = auth()->user()->guru;
+        $guru = Auth::user()->guru;
         
         // Ambil semua jadwal mengajar guru (unique per mapel dan kelas)
         $jadwalList = JadwalPelajaran::where('guru_id', $guru->id_guru)
@@ -76,7 +77,11 @@ class RaportController extends Controller
             ->where('semester', 'Ganjil')
             ->first();
         
-        return view('Guru.chartRaportSiswaS1', compact('jadwal', 'siswa', 'raport', 'tahunAjaran', 'tahunAjaranLabel'));
+        // Auto-calculate nilai tugas dari stored procedure untuk semester Ganjil
+        DB::statement('CALL sp_calculate_average_tugas(?, ?, ?, @avg)', [$siswaId, $jadwal->mapel_id, 'Ganjil']);
+        $averageTugas = DB::select('SELECT @avg as average')[0]->average;
+        
+        return view('Guru.chartRaportSiswaS1', compact('jadwal', 'siswa', 'raport', 'tahunAjaran', 'tahunAjaranLabel', 'averageTugas'));
     }
 
     /**
@@ -99,7 +104,11 @@ class RaportController extends Controller
             ->where('semester', 'Genap')
             ->first();
         
-        return view('Guru.chartRaportSiswaS2', compact('jadwal', 'siswa', 'raport', 'tahunAjaran', 'tahunAjaranLabel'));
+        // Auto-calculate nilai tugas dari stored procedure untuk semester Genap
+        DB::statement('CALL sp_calculate_average_tugas(?, ?, ?, @avg)', [$siswaId, $jadwal->mapel_id, 'Genap']);
+        $averageTugas = DB::select('SELECT @avg as average')[0]->average;
+        
+        return view('Guru.chartRaportSiswaS2', compact('jadwal', 'siswa', 'raport', 'tahunAjaran', 'tahunAjaranLabel', 'averageTugas'));
     }
 
     /**
@@ -108,11 +117,15 @@ class RaportController extends Controller
     public function simpanNilai(Request $request, $jadwalId, $siswaId)
     {
         $request->validate([
-            'nilai_tugas' => 'nullable|numeric|min:0|max:100',
-            'nilai_uts' => 'nullable|numeric|min:0|max:100',
-            'nilai_uas' => 'nullable|numeric|min:0|max:100',
+            'nilai_uts' => 'nullable|integer|min:1|max:100',
+            'nilai_uas' => 'nullable|integer|min:1|max:100',
             'deskripsi' => 'nullable|string|max:250',
             'semester' => 'required|in:Ganjil,Genap'
+        ], [
+            'nilai_uts.min' => 'Nilai UTS minimal adalah 1',
+            'nilai_uts.max' => 'Nilai UTS maksimal adalah 100',
+            'nilai_uas.min' => 'Nilai UAS minimal adalah 1',
+            'nilai_uas.max' => 'Nilai UAS maksimal adalah 100',
         ]);
         
         $jadwal = JadwalPelajaran::findOrFail($jadwalId);
@@ -130,36 +143,19 @@ class RaportController extends Controller
                 'semester' => $request->semester
             ],
             [
-                'nilai_tugas' => $request->nilai_tugas,
                 'nilai_uts' => $request->nilai_uts,
                 'nilai_uas' => $request->nilai_uas,
                 'deskripsi' => $request->deskripsi
             ]
         );
         
-        // Hitung nilai akhir
+        // Auto-calculate nilai tugas dari stored procedure
+        $raport->calculateNilaiTugas();
+        
+        // Hitung nilai akhir (akan auto-calculate nilai_huruf juga)
         $raport->hitungNilaiAkhir();
         $raport->save();
         
-        return redirect()->back()->with('success', 'Nilai berhasil disimpan!');
-    }
-
-    /**
-     * Lihat Chart Perkembangan Siswa
-     */
-    public function chartPerkembangan($jadwalId, $siswaId)
-    {
-        $jadwal = JadwalPelajaran::with(['mataPelajaran', 'kelas'])->findOrFail($jadwalId);
-        $siswa = Siswa::with('user')->findOrFail($siswaId);
-        
-        $tahunAjaran = '2024/2025';
-        
-        // Ambil nilai siswa untuk mata pelajaran ini
-        $raport = Raport::where('siswa_id', $siswaId)
-            ->where('mapel_id', $jadwal->id_mapel)
-            ->where('tahun_ajaran_id', $tahunAjaran)
-            ->first();
-        
-        return view('Guru.chartPerkembangan', compact('jadwal', 'siswa', 'raport'));
+        return redirect()->back()->with('success', 'Nilai berhasil disimpan! Nilai tugas dihitung otomatis dari rata-rata semua tugas siswa.');
     }
 }

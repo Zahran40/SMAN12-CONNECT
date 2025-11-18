@@ -197,6 +197,7 @@ class MateriController extends Controller
         
         $validated = $request->validate([
             'id_pertemuan' => 'required|exists:pertemuan,id_pertemuan',
+            'semester' => 'required|in:Ganjil,Genap',
             'judul' => 'required|string|max:250',
             'deskripsi' => 'nullable|string',
             'file' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,zip,rar|max:10240', // max 10MB
@@ -206,6 +207,8 @@ class MateriController extends Controller
             'jam_tutup' => 'required|date_format:H:i',
         ], [
             'id_pertemuan.required' => 'Pertemuan wajib dipilih',
+            'semester.required' => 'Semester wajib dipilih',
+            'semester.in' => 'Semester harus Ganjil atau Genap',
             'judul.required' => 'Judul tugas wajib diisi',
             'file.required' => 'File wajib diupload',
             'file.mimes' => 'File harus berformat PDF, DOC, DOCX, PPT, PPTX, ZIP, atau RAR',
@@ -237,6 +240,7 @@ class MateriController extends Controller
             $tugas = Tugas::create([
                 'jadwal_id' => $jadwal_id,
                 'pertemuan_id' => $validated['id_pertemuan'],
+                'semester' => $validated['semester'],
                 'judul_tugas' => $validated['judul'],
                 'deskripsi_tugas' => $validated['deskripsi'],
                 'file_path' => $filePath,
@@ -446,18 +450,53 @@ class MateriController extends Controller
      */
     public function updateNilaiTugas(Request $request, $detail_tugas_id)
     {
+        Log::info('Update Nilai Tugas Called', [
+            'detail_tugas_id' => $detail_tugas_id,
+            'request_data' => $request->all()
+        ]);
+
         $validated = $request->validate([
-            'nilai' => 'nullable|numeric|min:0|max:100',
-            'komentar_guru' => 'nullable|string',
-            'komentar_guru' => 'nullable|string',
+            'nilai' => 'required|integer|min:1|max:100',
+        ], [
+            'nilai.required' => 'Nilai wajib diisi',
+            'nilai.min' => 'Nilai minimal adalah 1',
+            'nilai.max' => 'Nilai maksimal adalah 100',
+            'nilai.integer' => 'Nilai harus berupa angka bulat',
         ]);
 
         $detailTugas = DetailTugas::findOrFail($detail_tugas_id);
+        
+        Log::info('DetailTugas Before Update', [
+            'id' => $detailTugas->id_detail_tugas,
+            'nilai_lama' => $detailTugas->nilai,
+            'nilai_baru' => $validated['nilai']
+        ]);
+        
         $detailTugas->nilai = $validated['nilai'];
+        $saved = $detailTugas->save();
+        
+        Log::info('DetailTugas After Save', [
+            'saved' => $saved,
+            'nilai_final' => $detailTugas->nilai
+        ]);
+
+        return back()->with('success', 'Nilai berhasil disimpan!');
+    }
+
+    /**
+     * Update komentar guru untuk tugas siswa
+     */
+    public function updateKomentarTugas(Request $request, $detail_tugas_id)
+    {
+        $validated = $request->validate([
+            'komentar_guru' => 'nullable|string|max:500',
+        ]);
+
+        $detailTugas = DetailTugas::findOrFail($detail_tugas_id);
         $detailTugas->komentar_guru = $validated['komentar_guru'];
         $detailTugas->save();
 
-        return back()->with('success', 'Nilai berhasil disimpan!');
+        return back()->with('success', 'Komentar berhasil disimpan!');
     }
 
     /**

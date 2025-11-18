@@ -103,6 +103,7 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('/edit-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'editTugas'])->name('edit_tugas');
     Route::put('/update-tugas/{tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateTugas'])->name('update_tugas');
     Route::post('/detail-tugas/nilai/{detail_tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateNilaiTugas'])->name('update_nilai_tugas');
+    Route::post('/detail-tugas/komentar/{detail_tugas_id}', [App\Http\Controllers\Guru\MateriController::class, 'updateKomentarTugas'])->name('update_komentar_tugas');
 
     // RAPORT ROUTES
     Route::get('/raport-siswa', [App\Http\Controllers\Guru\RaportController::class, 'index'])->name('raport_siswa');
