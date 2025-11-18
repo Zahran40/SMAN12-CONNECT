@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Siswa;
 use App\Models\Pertemuan;
 use App\Models\DetailAbsensi;
+use App\Models\JadwalPelajaran;
 use Carbon\Carbon;
 
 class SiswaController extends Controller
@@ -17,31 +18,39 @@ class SiswaController extends Controller
         $user = Auth::user();
         $siswa = Siswa::where('user_id', $user->id)->first();
         
-        // Get presensi yang sedang berlangsung hari ini
-        $hari = Carbon::now()->locale('id')->dayName;
+        // Get current day in Indonesian
+        $hariIni = Carbon::now()->locale('id')->dayName;
         $today = Carbon::now()->toDateString();
         
-        $presensiAktif = Pertemuan::with(['jadwal.mataPelajaran', 'jadwal.guru'])
-            ->whereHas('jadwal', function($q) use ($siswa, $hari) {
-                $q->where('kelas_id', $siswa->kelas_id)
-                  ->where('hari', $hari);
-            })
-            ->whereDate('tanggal_pertemuan', $today)
-            ->whereNotNull('waktu_absen_dibuka')
-            ->whereNotNull('waktu_absen_ditutup')
-            ->get()
-            ->filter(function($pertemuan) {
-                return $pertemuan->isAbsensiOpen();
-            });
+        // Get all days for tabs
+        $allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         
-        // Cek status absensi masing-masing
-        foreach ($presensiAktif as $pertemuan) {
-            $pertemuan->sudah_absen = DetailAbsensi::where('pertemuan_id', $pertemuan->id_pertemuan)
-                ->where('siswa_id', $siswa->id_siswa)
-                ->exists();
+        // Get all schedules for the week (grouped by day) - USING VIEW
+        $jadwalPerHari = [];
+        foreach ($allDays as $hari) {
+            $jadwalPerHari[$hari] = DB::table('view_jadwal_siswa')
+                ->where('kelas_id', $siswa->kelas_id)
+                ->where('hari', $hari)
+                ->get();
         }
         
-        return view('siswa.beranda', compact('siswa', 'presensiAktif'));
+        // Get presensi yang sedang berlangsung hari ini - USING VIEW
+        $presensiAktif = DB::table('view_presensi_aktif')
+            ->where('kelas_id', $siswa->kelas_id)
+            ->where('hari', $hariIni)
+            ->where('is_open', 1)
+            ->get()
+            ->map(function($pertemuan) use ($siswa) {
+                // Cek apakah siswa sudah absen
+                $sudahAbsen = DetailAbsensi::where('pertemuan_id', $pertemuan->id_pertemuan)
+                    ->where('siswa_id', $siswa->id_siswa)
+                    ->exists();
+                
+                $pertemuan->sudah_absen = $sudahAbsen;
+                return $pertemuan;
+            });
+        
+        return view('siswa.beranda', compact('siswa', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari'));
     }
     
     public function profil()

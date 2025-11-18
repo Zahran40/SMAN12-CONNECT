@@ -66,7 +66,9 @@ class MateriController extends Controller
             ->get()
             ->map(function($tugas) use ($siswa) {
                 $detailTugas = $tugas->detailTugas->first();
-                $waktuTutup = \Carbon\Carbon::parse($tugas->waktu_ditutup);
+                
+                // Gunakan accessor waktu_ditutup dari model
+                $waktuTutup = $tugas->waktu_ditutup;
                 $now = now();
                 
                 // Tentukan status pengumpulan
@@ -83,7 +85,7 @@ class MateriController extends Controller
                     'deskripsi' => $tugas->deskripsi,
                     'nomor_pertemuan' => $tugas->pertemuan->nomor_pertemuan ?? '-',
                     'deadline' => $tugas->deadline,
-                    'waktu_ditutup' => $tugas->waktu_ditutup,
+                    'waktu_ditutup' => $waktuTutup ? $waktuTutup->format('Y-m-d H:i:s') : null,
                     'tgl_kumpul' => $detailTugas->tgl_kumpul ?? null,
                     'nilai' => $detailTugas->nilai ?? null,
                     'komentar_guru' => $detailTugas->komentar_guru ?? null,
@@ -148,7 +150,7 @@ class MateriController extends Controller
     public function uploadTugas(Request $request, $tugas_id)
     {
         // Debug: Pastikan method ini dipanggil
-        \Log::info('Upload Tugas Called', [
+        Log::info('Upload Tugas Called', [
             'tugas_id' => $tugas_id,
             'has_file' => $request->hasFile('file'),
             'user_id' => Auth::id()
@@ -163,7 +165,7 @@ class MateriController extends Controller
                 'file.max' => 'Ukuran file maksimal 20MB',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation Failed', $e->errors());
+            Log::error('Validation Failed', $e->errors());
             return back()->withErrors($e->errors())->withInput();
         }
 
@@ -171,11 +173,11 @@ class MateriController extends Controller
         $siswa = Auth::user()->siswa;
         
         if (!$siswa) {
-            \Log::error('Siswa not found', ['user_id' => Auth::id()]);
+            Log::error('Siswa not found', ['user_id' => Auth::id()]);
             return back()->with('error', 'Data siswa tidak ditemukan');
         }
         
-        \Log::info('Siswa found', ['siswa_id' => $siswa->id_siswa]);
+        Log::info('Siswa found', ['siswa_id' => $siswa->id_siswa]);
 
         // Cek apakah masih dalam waktu pengumpulan
         $now = now();

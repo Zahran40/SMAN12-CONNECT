@@ -53,27 +53,28 @@
             
             <div class="space-y-6">
                 
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
                     <div>
                         <h4 class="text-base font-bold text-slate-800">Nilai Tugas</h4>
+                        <p class="text-xs text-blue-600 mt-1">✓ Dihitung otomatis dari rata-rata semua tugas siswa</p>
                     </div>
-                    <input type="number" step="0.01" min="0" max="100" name="nilai_tugas" value="{{ $raport->nilai_tugas ?? '' }}" 
-                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none" 
-                           placeholder="0-100">
+                    <div class="w-32 bg-white border-2 border-blue-300 rounded-lg px-4 py-2 text-center font-bold text-blue-600">
+                        {{ $averageTugas ? number_format($averageTugas, 2) : '0.00' }}
+                    </div>
                 </div>
 
                 <div class="flex justify-between items-center">
                     <h4 class="text-base font-medium text-slate-800">Nilai Ujian Tengah Semester</h4>
-                    <input type="number" step="0.01" min="0" max="100" name="nilai_uts" value="{{ $raport->nilai_uts ?? '' }}"
+                    <input type="number" min="1" max="100" step="1" inputmode="numeric" pattern="[0-9]*" name="nilai_uts" value="{{ $raport->nilai_uts ?? '' }}"
                            class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none"
-                           placeholder="0-100">
+                           placeholder="1-100">
                 </div>
 
                 <div class="flex justify-between items-center">
                     <h4 class="text-base font-medium text-slate-800">Nilai Ujian Akhir Semester</h4>
-                    <input type="number" step="0.01" min="0" max="100" name="nilai_uas" value="{{ $raport->nilai_uas ?? '' }}"
+                    <input type="number" min="1" max="100" step="1" inputmode="numeric" pattern="[0-9]*" name="nilai_uas" value="{{ $raport->nilai_uas ?? '' }}"
                            class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none"
-                           placeholder="0-100">
+                           placeholder="1-100">
                 </div>
 
                 <div class="flex justify-between items-center">
@@ -84,11 +85,11 @@
                 <div class="pt-6 mt-10 border-t-[3px] border-black"> 
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-xl font-bold text-slate-900">Nilai Akhir</h4>
-                        <span class="text-3xl font-bold text-slate-900">{{ $raport->nilai_akhir ?? '-' }}</span>
+                        <span class="text-3xl font-bold text-slate-900">{{ $raport && $raport->nilai_akhir ? number_format($raport->nilai_akhir, 2) : '-' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <h4 class="text-lg font-semibold text-slate-700">Grade</h4>
-                        <span class="text-2xl font-bold text-blue-600">{{ $raport->grade ?? '-' }}</span>
+                        <h4 class="text-lg font-semibold text-slate-700">Grade (Nilai Huruf)</h4>
+                        <span class="text-2xl font-bold text-blue-600">{{ $raport->nilai_huruf ?? $raport->grade ?? '-' }}</span>
                     </div>
                 </div>
 
@@ -111,7 +112,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('nilaiChart').getContext('2d');
         
-        const nilaiTugas = {{ $raport->nilai_tugas ?? 0 }};
+        const nilaiTugas = {{ $averageTugas ?? 0 }};
         const nilaiUTS = {{ $raport->nilai_uts ?? 0 }};
         const nilaiUAS = {{ $raport->nilai_uas ?? 0 }};
         const nilaiAkhir = {{ $raport->nilai_akhir ?? 0 }};

@@ -13,6 +13,7 @@ class Tugas extends Model
     protected $fillable = [
         'jadwal_id',
         'pertemuan_id',
+        'semester',
         'judul_tugas',
         'deskripsi_tugas',
         'file_path',
@@ -59,5 +60,51 @@ class Tugas extends Model
     public function detailTugas()
     {
         return $this->hasMany(DetailTugas::class, 'tugas_id', 'id_tugas');
+    }
+
+    /**
+     * Accessor untuk waktu_ditutup (tanggal_ditutup + jam_tutup)
+     */
+    public function getWaktuDitutupAttribute()
+    {
+        if (!$this->tanggal_ditutup) {
+            return null;
+        }
+        
+        $tanggalDitutup = \Carbon\Carbon::parse($this->tanggal_ditutup);
+        
+        if ($this->jam_tutup) {
+            $jamTutupParts = explode(':', $this->jam_tutup);
+            $tanggalDitutup->setTime(
+                (int)$jamTutupParts[0], 
+                (int)$jamTutupParts[1], 
+                isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0
+            );
+        }
+        
+        return $tanggalDitutup;
+    }
+
+    /**
+     * Accessor untuk waktu_dibuka (tanggal_dibuka + jam_buka)
+     */
+    public function getWaktuDibukaAttribute()
+    {
+        if (!$this->tanggal_dibuka) {
+            return null;
+        }
+        
+        $tanggalDibuka = \Carbon\Carbon::parse($this->tanggal_dibuka);
+        
+        if ($this->jam_buka) {
+            $jamBukaParts = explode(':', $this->jam_buka);
+            $tanggalDibuka->setTime(
+                (int)$jamBukaParts[0], 
+                (int)$jamBukaParts[1], 
+                isset($jamBukaParts[2]) ? (int)$jamBukaParts[2] : 0
+            );
+        }
+        
+        return $tanggalDibuka;
     }
 }

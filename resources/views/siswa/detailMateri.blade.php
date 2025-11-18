@@ -290,19 +290,22 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3 px-4 bg-gray-50 font-medium text-gray-700 align-top">Komentar pengajuan</td>
+                                        <td class="py-3 px-4 bg-gray-50 font-medium text-gray-700 align-top">Komentar Guru</td>
                                         <td class="py-3 px-4">
                                             @if($detailTugas->komentar_guru)
-                                                <div class="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-gray-800">
-                                                    {{ $detailTugas->komentar_guru }}
+                                                <div class="bg-blue-50 border-l-4 border-blue-500 rounded p-4">
+                                                    <div class="flex items-start space-x-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-blue-600 mt-0.5 shrink-0">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                                        </svg>
+                                                        <div class="flex-1">
+                                                            <p class="text-xs font-semibold text-blue-700 mb-1">💬 Feedback dari Guru:</p>
+                                                            <p class="text-sm text-gray-800 leading-relaxed">{{ $detailTugas->komentar_guru }}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             @else
-                                                <button type="button" class="text-sm text-gray-600 flex items-center hover:text-gray-800">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                                    </svg>
-                                                    Komentar (0)
-                                                </button>
+                                                <span class="text-sm text-gray-500 italic">Belum ada komentar dari guru</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -506,16 +509,37 @@
                         @endif
 
                         @if($tugas->nilai)
-                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                            <div class="flex items-center space-x-2 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-blue-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                                </svg>
-                                <p class="text-sm font-semibold text-blue-700">Nilai: {{ $tugas->nilai }}</p>
+                        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border-2 border-green-200">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-3 flex-1">
+                                    <div class="bg-green-500 text-white rounded-full p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-baseline space-x-2 mb-2">
+                                            <span class="text-2xl font-bold text-green-700">{{ $tugas->nilai }}</span>
+                                            <span class="text-sm text-gray-600">/ 100</span>
+                                        </div>
+                                        @if($tugas->komentar_guru)
+                                        <div class="bg-white rounded-md p-3 border-l-4 border-blue-400 mt-2">
+                                            <p class="text-xs font-semibold text-blue-700 mb-1">💬 Feedback dari Guru:</p>
+                                            <p class="text-sm text-gray-800 leading-relaxed">{{ $tugas->komentar_guru }}</p>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                            @if($tugas->komentar_guru)
-                            <p class="text-xs text-slate-600 italic">Komentar: {{ $tugas->komentar_guru }}</p>
-                            @endif
+                        </div>
+                        @elseif($tugas->tgl_kumpul)
+                        <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                            <div class="flex items-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-yellow-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <p class="text-sm font-medium text-yellow-700">⏳ Sedang diproses oleh guru</p>
+                            </div>
                         </div>
                         @endif
                     </div>
