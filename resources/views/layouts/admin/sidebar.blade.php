@@ -3,9 +3,9 @@
         <ul class="space-y-2">
 
                         <li>
-                                                  <a href="{{ route('admin.tahun_ajaran') }}"
-                                                          aria-current="{{ request()->routeIs('admin.tahun_ajaran') ? 'page' : '' }}"
-                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.tahun_ajaran') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
+                                                  <a href="{{ route('admin.tahun-ajaran.index') }}"
+                                                          aria-current="{{ request()->routeIs('admin.tahun-ajaran.*') ? 'page' : '' }}"
+                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.tahun-ajaran.*') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
                                         <img src="{{ asset('images/iwwa_year.png') }}"  viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-3">
                                             <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z" clip-rule="evenodd" />
                                         </img>
@@ -14,8 +14,8 @@
                         </li>
 
                         <li>
-                                                  <a href="{{ route('admin.data_master') }}"
-                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.data_master') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
+                                                  <a href="{{ route('admin.data-master.index') }}"
+                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.data-master.*') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
                                         <img src="{{ asset('images/Group.png') }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
                                         </img>
@@ -24,8 +24,8 @@
                         </li>
 
                         <li>
-                                                  <a href="{{ route('admin.pendataan_siswa') }}"
-                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.pendataan_siswa') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
+                                                  <a href="{{ route('admin.data-master.siswa.create') }}"
+                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.data-master.siswa.*') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                                         </svg>
@@ -34,8 +34,8 @@
                         </li>
 
                         <li>
-                                                  <a href="{{ route('admin.pendataan_guru') }}"
-                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.pendataan_guru') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
+                                                  <a href="{{ route('admin.data-master.guru.create') }}"
+                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.data-master.guru.*') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                         </svg>
@@ -44,7 +44,7 @@
                         </li>
 
                         <li>
-                                                  <a href="{{ route('admin.akademik') }}"
+                                                  <a href="{{ route('admin.akademik.index') }}"
                                                           class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.akademik') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
                                         <img src="{{ asset('images/Vector (2).png') }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
