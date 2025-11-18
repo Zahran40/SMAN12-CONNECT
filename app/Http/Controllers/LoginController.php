@@ -111,7 +111,7 @@ class LoginController extends Controller
     {
         switch ($user->role) {
             case 'admin':
-                return redirect()->intended(route('admin.tahun_ajaran'))->with('success', 'Selamat datang, ' . $user->name);
+                return redirect()->intended(route('admin.tahun-ajaran.index'))->with('success', 'Selamat datang, ' . $user->name);
             
             case 'guru':
                 return redirect()->intended(route('guru.beranda'))->with('success', 'Selamat datang, ' . $user->getFullName());

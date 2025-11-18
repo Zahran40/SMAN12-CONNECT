@@ -4,7 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PengumumanController;
+use App\Http\Controllers\Admin\TahunAjaranController;
+use App\Http\Controllers\Admin\DataMasterController;
+use App\Http\Controllers\Admin\AkademikController;
 
 
 // ============================================
@@ -125,86 +129,91 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
 // ============================================
 
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    Route::get('/tahun-ajaran', function () {
-        return view('Admin.tahunAjaran');
-    })->name('tahun_ajaran');
+    
+    // DASHBOARD
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // TAHUN AJARAN ROUTES
+    Route::get('/tahun-ajaran', [TahunAjaranController::class, 'index'])->name('tahun-ajaran.index');
+    Route::get('/tahun-ajaran/create', [TahunAjaranController::class, 'create'])->name('tahun-ajaran.create');
+    Route::post('/tahun-ajaran', [TahunAjaranController::class, 'store'])->name('tahun-ajaran.store');
+    Route::get('/tahun-ajaran/{id}', [TahunAjaranController::class, 'show'])->name('tahun-ajaran.show');
+    Route::put('/tahun-ajaran/{id}/status', [TahunAjaranController::class, 'updateStatus'])->name('tahun-ajaran.update-status');
+    Route::delete('/tahun-ajaran/{id}', [TahunAjaranController::class, 'destroy'])->name('tahun-ajaran.destroy');
 
-    Route::get('/buat-tahun-ajaran', function () {
-        return view('Admin.buatTahunAjaran');
-    })->name('buat_tahun_ajaran');
+    // DATA MASTER ROUTES
+    Route::get('/data-master', [DataMasterController::class, 'index'])->name('data-master.index');
+    
+    // Siswa
+    Route::get('/data-master/siswa/create', [DataMasterController::class, 'showSiswaForm'])->name('data-master.siswa.create');
+    Route::get('/data-master/siswa/{id}/edit', [DataMasterController::class, 'showSiswaForm'])->name('data-master.siswa.edit');
+    Route::post('/data-master/siswa', [DataMasterController::class, 'storeSiswa'])->name('data-master.siswa.store');
+    Route::put('/data-master/siswa/{id}', [DataMasterController::class, 'storeSiswa'])->name('data-master.siswa.update');
+    Route::get('/data-master/siswa/{id}', [DataMasterController::class, 'detailSiswa'])->name('data-master.siswa.show');
+    Route::delete('/data-master/siswa/{id}', [DataMasterController::class, 'deleteSiswa'])->name('data-master.siswa.destroy');
+    
+    // Guru
+    Route::get('/data-master/guru/create', [DataMasterController::class, 'showGuruForm'])->name('data-master.guru.create');
+    Route::get('/data-master/guru/{id}/edit', [DataMasterController::class, 'showGuruForm'])->name('data-master.guru.edit');
+    Route::post('/data-master/guru', [DataMasterController::class, 'storeGuru'])->name('data-master.guru.store');
+    Route::put('/data-master/guru/{id}', [DataMasterController::class, 'storeGuru'])->name('data-master.guru.update');
+    Route::get('/data-master/guru/{id}', [DataMasterController::class, 'detailGuru'])->name('data-master.guru.show');
+    Route::delete('/data-master/guru/{id}', [DataMasterController::class, 'deleteGuru'])->name('data-master.guru.destroy');
 
-    Route::get('/buat-mapel', function () {
-        return view('Admin.buatMapel');
-    })->name('buat_mapel');
+    // Detail Kelas (Siswa/Guru/Mapel per kelas)
+    Route::get('/data-master/kelas/{id}/siswa', [DataMasterController::class, 'detailKelasSiswa'])->name('data-master.kelas.siswa');
+    Route::get('/data-master/kelas/{id}/guru', [DataMasterController::class, 'detailKelasGuru'])->name('data-master.kelas.guru');
+    Route::get('/data-master/kelas/{id}/mapel', [DataMasterController::class, 'detailKelasMapel'])->name('data-master.kelas.mapel');
 
-    Route::get('/buat-pengumuman', function () {
-        return view('Admin.buatPengumuman');
-    })->name('buatPengumuman');
+    // List view (underscore files - semua siswa/guru/mapel)
+    Route::get('/data-master/list-siswa', [DataMasterController::class, 'listSiswa'])->name('data-master.list-siswa');
+    Route::get('/data-master/list-guru', [DataMasterController::class, 'listGuru'])->name('data-master.list-guru');
+    Route::get('/data-master/list-mapel', [DataMasterController::class, 'listMapel'])->name('data-master.list-mapel');
 
-    Route::get('/data-master', function () {
-        return view('Admin.dataMaster');
-    })->name('data_master');
+    // AKADEMIK ROUTES
+    Route::get('/akademik', [AkademikController::class, 'index'])->name('akademik.index');
+    Route::get('/akademik/mapel/create', [AkademikController::class, 'createMapel'])->name('akademik.mapel.create');
+    Route::post('/akademik/mapel', [AkademikController::class, 'storeMapel'])->name('akademik.mapel.store');
+    Route::get('/akademik/mapel/{id}', [AkademikController::class, 'detailMapel'])->name('akademik.mapel.show');
+    Route::put('/akademik/mapel/{id}', [AkademikController::class, 'updateMapel'])->name('akademik.mapel.update');
+    Route::delete('/akademik/mapel/{id}', [AkademikController::class, 'deleteMapel'])->name('akademik.mapel.destroy');
+    
+    // Jadwal
+    Route::get('/akademik/jadwal', [AkademikController::class, 'jadwal'])->name('akademik.jadwal.index');
+    Route::post('/akademik/jadwal', [AkademikController::class, 'storeJadwal'])->name('akademik.jadwal.store');
+    Route::delete('/akademik/jadwal/{id}', [AkademikController::class, 'deleteJadwal'])->name('akademik.jadwal.destroy');
 
-    Route::get('/data-master-siswa', function () {
-        return view('Admin.dataMaster_Siswa');
-    })->name('data_master_siswa');
-
-    Route::get('/data-master-guru', function () {
-        return view('Admin.dataMaster_Guru');
-    })->name('data_master_guru');
-
-    Route::get('/data-master-mapel', function () {
-        return view('Admin.dataMaster_Mapel');
-    })->name('data_master_mapel');
-
-    Route::get('/data-master-siswa1', function () {
-        return view('Admin.dataMasterSiswa');
-    })->name('data_master_siswa1');
-
-    Route::get('/data-master-guru1', function () {
-        return view('Admin.dataMasterGuru');
-    })->name('data_master_guru1');
-
-    Route::get('/data-master-mapel1', function () {
-        return view('Admin.dataMasterMapel');
-    })->name('data_master_mapel1');
-
-    Route::get('/detail-mapel', function () {
-        return view('Admin.detailMapel');
-    })->name('detail_mapel');
-
-    Route::get('/detail-guru', function () {
-        return view('Admin.detailGuru');
-    })->name('detail_guru');
-
-    Route::get('/detail-pembayaran', function () {
-        return view('Admin.detailPembayaran');
-    })->name('detail_pembayaran');
-
-    Route::get('/detail-siswa', function () {
-        return view('Admin.detailSiswa');
-    })->name('detail_siswa');
-
-    Route::get('/pendataan-siswa', function () {
-        return view('Admin.pendataanSiswa');
-    })->name('pendataan_siswa');
-
-    Route::get('/pendataan-guru', function () {
-        return view('Admin.pendataanGuru');
-    })->name('pendataan_guru');
-
-    Route::get('/akademik', function () {
-        return view('Admin.akademik');
-    })->name('akademik');
-
+    // PENGUMUMAN ROUTES (sudah ada)
     Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman');
     Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
     Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
+    // PEMBAYARAN ROUTES (skip sesuai request)
     Route::get('/pembayaran', function () {
         return view('Admin.pembayaran');
     })->name('pembayaran');
+    
+    Route::get('/detail-pembayaran', function () {
+        return view('Admin.detailPembayaran');
+    })->name('detail_pembayaran');
+
+    // Legacy routes untuk compatibility (redirect ke yang baru)
+    Route::get('/tahun-ajaran-old', function() {
+        return redirect()->route('admin.tahun-ajaran.index');
+    });
+    Route::get('/buat-tahun-ajaran', function() {
+        return redirect()->route('admin.tahun-ajaran.create');
+    });
+    Route::get('/buat-mapel', function() {
+        return redirect()->route('admin.akademik.mapel.create');
+    });
+    Route::get('/pendataan-siswa', function() {
+        return redirect()->route('admin.data-master.siswa.create');
+    });
+    Route::get('/pendataan-guru', function() {
+        return redirect()->route('admin.data-master.guru.create');
+    });
 });
 
 
