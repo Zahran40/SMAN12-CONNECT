@@ -17,6 +17,11 @@ class PengumumanController extends Controller
         return view('Admin.pengumuman', compact('pengumuman'));
     }
 
+    public function create()
+    {
+        return view('Admin.buatPengumuman');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

@@ -24,6 +24,12 @@ Route::get('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Forgot Password Routes
+Route::get('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showRequestForm'])->name('password.request');
+Route::post('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendOtp'])->name('password.send-otp');
+Route::get('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('/reset-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+
 // ============================================
 // SISWA ROUTES (Protected by role middleware)
 // ============================================
@@ -142,20 +148,31 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/tahun-ajaran/{id}/status', [TahunAjaranController::class, 'updateStatus'])->name('tahun-ajaran.update-status');
     Route::delete('/tahun-ajaran/{id}', [TahunAjaranController::class, 'destroy'])->name('tahun-ajaran.destroy');
 
+    // KELAS ROUTES
+    Route::get('/kelas', [App\Http\Controllers\Admin\KelasController::class, 'all'])->name('kelas.all');
+    Route::get('/tahun-ajaran/{tahunAjaranId}/kelas', [App\Http\Controllers\Admin\KelasController::class, 'index'])->name('kelas.index');
+    Route::get('/tahun-ajaran/{tahunAjaranId}/kelas/create', [App\Http\Controllers\Admin\KelasController::class, 'create'])->name('kelas.create');
+    Route::post('/tahun-ajaran/{tahunAjaranId}/kelas', [App\Http\Controllers\Admin\KelasController::class, 'store'])->name('kelas.store');
+    Route::get('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}', [App\Http\Controllers\Admin\KelasController::class, 'show'])->name('kelas.show');
+    Route::post('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/add-siswa', [App\Http\Controllers\Admin\KelasController::class, 'addSiswa'])->name('kelas.add-siswa');
+    Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/siswa/{siswaId}', [App\Http\Controllers\Admin\KelasController::class, 'removeSiswa'])->name('kelas.remove-siswa');
+    Route::put('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/wali-kelas', [App\Http\Controllers\Admin\KelasController::class, 'updateWaliKelas'])->name('kelas.update-wali');
+    Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}', [App\Http\Controllers\Admin\KelasController::class, 'destroy'])->name('kelas.destroy');
+
     // DATA MASTER ROUTES
     Route::get('/data-master', [DataMasterController::class, 'index'])->name('data-master.index');
     
     // Siswa
-    Route::get('/data-master/siswa/create', [DataMasterController::class, 'showSiswaForm'])->name('data-master.siswa.create');
-    Route::get('/data-master/siswa/{id}/edit', [DataMasterController::class, 'showSiswaForm'])->name('data-master.siswa.edit');
+    Route::get('/data-master/siswa/create', [DataMasterController::class, 'createSiswa'])->name('data-master.siswa.create');
+    Route::get('/data-master/siswa/{id}/edit', [DataMasterController::class, 'editSiswa'])->name('data-master.siswa.edit');
     Route::post('/data-master/siswa', [DataMasterController::class, 'storeSiswa'])->name('data-master.siswa.store');
     Route::put('/data-master/siswa/{id}', [DataMasterController::class, 'storeSiswa'])->name('data-master.siswa.update');
     Route::get('/data-master/siswa/{id}', [DataMasterController::class, 'detailSiswa'])->name('data-master.siswa.show');
     Route::delete('/data-master/siswa/{id}', [DataMasterController::class, 'deleteSiswa'])->name('data-master.siswa.destroy');
     
     // Guru
-    Route::get('/data-master/guru/create', [DataMasterController::class, 'showGuruForm'])->name('data-master.guru.create');
-    Route::get('/data-master/guru/{id}/edit', [DataMasterController::class, 'showGuruForm'])->name('data-master.guru.edit');
+    Route::get('/data-master/guru/create', [DataMasterController::class, 'createGuru'])->name('data-master.guru.create');
+    Route::get('/data-master/guru/{id}/edit', [DataMasterController::class, 'editGuru'])->name('data-master.guru.edit');
     Route::post('/data-master/guru', [DataMasterController::class, 'storeGuru'])->name('data-master.guru.store');
     Route::put('/data-master/guru/{id}', [DataMasterController::class, 'storeGuru'])->name('data-master.guru.update');
     Route::get('/data-master/guru/{id}', [DataMasterController::class, 'detailGuru'])->name('data-master.guru.show');
@@ -176,6 +193,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/akademik/mapel/create', [AkademikController::class, 'createMapel'])->name('akademik.mapel.create');
     Route::post('/akademik/mapel', [AkademikController::class, 'storeMapel'])->name('akademik.mapel.store');
     Route::get('/akademik/mapel/{id}', [AkademikController::class, 'detailMapel'])->name('akademik.mapel.show');
+    Route::get('/akademik/mapel/{id}/edit', [AkademikController::class, 'editMapel'])->name('akademik.mapel.edit');
     Route::put('/akademik/mapel/{id}', [AkademikController::class, 'updateMapel'])->name('akademik.mapel.update');
     Route::delete('/akademik/mapel/{id}', [AkademikController::class, 'deleteMapel'])->name('akademik.mapel.destroy');
     
@@ -186,6 +204,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
     // PENGUMUMAN ROUTES (sudah ada)
     Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman');
+    Route::get('/pengumuman/create', [PengumumanController::class, 'create'])->name('pengumuman.create');
     Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
     Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');

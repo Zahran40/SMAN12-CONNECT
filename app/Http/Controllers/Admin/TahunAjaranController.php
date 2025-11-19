@@ -49,14 +49,12 @@ class TahunAjaranController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tahun_mulai' => 'required|integer|min:2020|max:2100',
-            'tahun_selesai' => 'required|integer|min:2020|max:2100|gt:tahun_mulai',
+            'tahun_ajaran' => 'required|string|regex:/^\d{4}\/\d{4}$/',
             'semester' => 'required|in:Ganjil,Genap',
             'status' => 'required|in:Aktif,Tidak Aktif',
         ], [
-            'tahun_mulai.required' => 'Tahun mulai wajib diisi',
-            'tahun_selesai.required' => 'Tahun selesai wajib diisi',
-            'tahun_selesai.gt' => 'Tahun selesai harus lebih besar dari tahun mulai',
+            'tahun_ajaran.required' => 'Tahun ajaran wajib dipilih',
+            'tahun_ajaran.regex' => 'Format tahun ajaran tidak valid',
             'semester.required' => 'Semester wajib dipilih',
             'status.required' => 'Status wajib dipilih',
         ]);
@@ -64,14 +62,28 @@ class TahunAjaranController extends Controller
         try {
             DB::beginTransaction();
 
+            // Parse tahun ajaran
+            list($tahunMulai, $tahunSelesai) = explode('/', $request->tahun_ajaran);
+
+            // Cek duplikasi
+            $exists = TahunAjaran::where('tahun_mulai', $tahunMulai)
+                ->where('tahun_selesai', $tahunSelesai)
+                ->where('semester', $request->semester)
+                ->exists();
+
+            if ($exists) {
+                return back()->with('error', 'Tahun ajaran dan semester ini sudah ada')
+                    ->withInput();
+            }
+
             // Jika status Aktif, nonaktifkan tahun ajaran lain
             if ($request->status === 'Aktif') {
                 TahunAjaran::where('status', 'Aktif')->update(['status' => 'Tidak Aktif']);
             }
 
             TahunAjaran::create([
-                'tahun_mulai' => $request->tahun_mulai,
-                'tahun_selesai' => $request->tahun_selesai,
+                'tahun_mulai' => $tahunMulai,
+                'tahun_selesai' => $tahunSelesai,
                 'semester' => $request->semester,
                 'status' => $request->status,
             ]);
