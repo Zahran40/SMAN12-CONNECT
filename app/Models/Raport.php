@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Raport extends Model
 {
@@ -19,6 +20,7 @@ class Raport extends Model
         'nilai_uts',
         'nilai_uas',
         'nilai_akhir',
+        'nilai_huruf',
         'deskripsi'
     ];
 
@@ -54,6 +56,28 @@ class Raport extends Model
     }
 
     /**
+     * Auto-calculate nilai tugas menggunakan stored procedure
+     * Hitung rata-rata dari semua tugas yang sudah dinilai untuk semester tertentu
+     */
+    public function calculateNilaiTugas()
+    {
+        // Panggil stored procedure dengan semester
+        $result = DB::select('CALL sp_calculate_average_tugas(?, ?, ?, @average)', [
+            $this->siswa_id,
+            $this->mapel_id,
+            $this->semester  // Tambahkan parameter semester
+        ]);
+        
+        // Ambil hasil dari OUT parameter
+        $average = DB::select('SELECT @average as average')[0]->average;
+        
+        // Update nilai_tugas dengan hasil dari stored procedure
+        $this->nilai_tugas = $average;
+        
+        return $average;
+    }
+
+    /**
      * Hitung nilai akhir berdasarkan bobot:
      * Tugas 30%, UTS 30%, UAS 40%
      */
@@ -61,23 +85,29 @@ class Raport extends Model
     {
         if ($this->nilai_tugas !== null && $this->nilai_uts !== null && $this->nilai_uas !== null) {
             $this->nilai_akhir = ($this->nilai_tugas * 0.3) + ($this->nilai_uts * 0.3) + ($this->nilai_uas * 0.4);
+            
+            // Auto-calculate nilai huruf menggunakan function
+            $this->nilai_huruf = DB::select('SELECT fn_convert_grade_letter(?) as grade', [
+                $this->nilai_akhir
+            ])[0]->grade;
+            
             return $this->nilai_akhir;
         }
         return null;
     }
 
     /**
-     * Tentukan grade berdasarkan nilai akhir
+     * Tentukan grade berdasarkan nilai akhir menggunakan function
      */
     public function getGradeAttribute()
     {
         if (!$this->nilai_akhir) return '-';
         
-        $nilai = $this->nilai_akhir;
-        if ($nilai >= 90) return 'A';
-        if ($nilai >= 80) return 'B';
-        if ($nilai >= 70) return 'C';
-        if ($nilai >= 60) return 'D';
-        return 'E';
+        // Gunakan function dari database
+        $grade = DB::select('SELECT fn_convert_grade_letter(?) as grade', [
+            $this->nilai_akhir
+        ])[0]->grade;
+        
+        return $grade;
     }
 }

@@ -24,45 +24,66 @@
     <section class="mb-8">
         <h3 class="text-xl font-semibold text-slate-800 mb-4">Jadwal Mata Pelajaran</h3>
         <div class="flex space-x-2 mb-4">
-            <button class="px-8 py-10 rounded-lg bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium">Senin</button>
-            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">Selasa</button>
-            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">Rabu</button>
-            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">Kamis</button>
-            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">Jumat</button>
-            <button class="px-8 py-10 rounded-lg bg-white text-slate-700 text-sm font-medium border border-slate-300 hover:bg-slate-50">Sabtu</button>
+            @foreach($allDays as $day)
+                <button onclick="switchDay('{{ $day }}')" 
+                        class="day-tab px-8 py-10 rounded-lg text-sm font-medium {{ $day == $hariIni ? 'bg-blue-400 text-white' : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50' }}"
+                        data-day="{{ $day }}">
+                    {{ $day }}
+                </button>
+            @endforeach
         </div>
         
-        <div class="bg-white rounded-xl shadow-lg p-6">
-            <div class="space-y-4">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <div>
-                        <h4 class="font-semibold text-slate-800">Mata Pelajaran 1</h4>
-                        <p class="text-sm text-slate-500">Nama Guru</p>
+        @foreach($allDays as $day)
+            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-lg p-6 {{ $day != $hariIni ? 'hidden' : '' }}">
+                @if($jadwalPerHari[$day]->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($jadwalPerHari[$day] as $jadwal)
+                            <div class="flex items-center justify-between {{ !$loop->last ? 'pb-4 border-b border-slate-100' : '' }}">
+                                <div>
+                                    <h4 class="font-semibold text-slate-800">{{ $jadwal->nama_mapel }}</h4>
+                                    <p class="text-sm text-slate-500">{{ $jadwal->nama_guru }}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 text-sm text-slate-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+                                    <span>{{ substr($jadwal->jam_mulai, 0, 5) }} - {{ substr($jadwal->jam_selesai, 0, 5) }}</span>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="flex items-center space-x-2 text-sm text-slate-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                @else
+                    <div class="text-center py-8 text-slate-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto mb-3 opacity-50">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                         </svg>
-                        <span>08:00 - 9:30</span>
+                        <p class="font-medium">Tidak ada jadwal pelajaran</p>
+                        <p class="text-sm mt-1">Tidak ada mata pelajaran pada hari {{ $day }}</p>
                     </div>
-                </div>
-                <div class="flex items-center justify-between pt-0">
-                    <div>
-                        <h4 class="font-semibold text-slate-800">Mata Pelajaran 2</h4>
-                        <p class="text-sm text-slate-500">Nama Guru</p>
-                    </div>
-                    <div class="flex items-center space-x-2 text-sm text-slate-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        <span>09:30 - 10:30</span>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <a href="#" class="text-blue-400 font-medium text-sm tracking-widest hover:underline">...</a>
-                </div>
+                @endif
             </div>
-        </div>
+        @endforeach
+        
+        <script>
+            function switchDay(day) {
+                // Hide all schedules
+                document.querySelectorAll('.day-schedule').forEach(el => el.classList.add('hidden'));
+                
+                // Show selected day schedule
+                document.getElementById('jadwal-' + day).classList.remove('hidden');
+                
+                // Update button styles
+                document.querySelectorAll('.day-tab').forEach(btn => {
+                    if (btn.dataset.day === day) {
+                        btn.classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-300', 'hover:bg-slate-50');
+                        btn.classList.add('bg-blue-400', 'text-white');
+                    } else {
+                        btn.classList.remove('bg-blue-400', 'text-white');
+                        btn.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-300', 'hover:bg-slate-50');
+                    }
+                });
+            }
+        </script>
     </section>
 
     <section>
@@ -73,8 +94,8 @@
                     @foreach($presensiAktif as $pertemuan)
                         <div class="flex items-center justify-between {{ !$loop->last ? 'pb-5 border-b border-slate-100' : '' }}">
                             <div>
-                                <h4 class="font-semibold text-slate-800">{{ $pertemuan->jadwal->mataPelajaran->nama_mapel }}</h4>
-                                <p class="text-sm text-slate-500">{{ $pertemuan->jadwal->guru->nama_lengkap }}</p>
+                                <h4 class="font-semibold text-slate-800">{{ $pertemuan->nama_mapel }}</h4>
+                                <p class="text-sm text-slate-500">{{ $pertemuan->nama_guru }}</p>
                                 <p class="text-xs text-blue-400 mt-1">
                                     Dibuka: {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '-' }} - 
                                     {{ $pertemuan->jam_absen_tutup ? substr($pertemuan->jam_absen_tutup, 0, 5) : '-' }}
