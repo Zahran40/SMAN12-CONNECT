@@ -40,15 +40,12 @@ class AkademikController extends Controller
             'nama_mapel' => 'required|string|max:255|unique:mata_pelajaran,nama_mapel',
             'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel',
             'kategori' => 'required|in:Umum,Kelas X,MIPA,IPS,Bahasa,Mulok',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
         ], [
             'nama_mapel.required' => 'Nama mata pelajaran wajib diisi',
             'nama_mapel.unique' => 'Mata pelajaran sudah terdaftar',
             'kode_mapel.required' => 'Kode mata pelajaran wajib diisi',
             'kode_mapel.unique' => 'Kode mata pelajaran sudah digunakan',
             'kategori.required' => 'Kategori wajib dipilih',
-            'jam_selesai.after' => 'Jam selesai harus setelah jam mulai',
         ]);
 
         try {
@@ -73,6 +70,15 @@ class AkademikController extends Controller
     }
 
     /**
+     * Form edit mata pelajaran
+     */
+    public function editMapel($id)
+    {
+        $mapel = MataPelajaran::findOrFail($id);
+        return view('Admin.editMapel', compact('mapel'));
+    }
+
+    /**
      * Update mata pelajaran
      */
     public function updateMapel(Request $request, $id)
@@ -83,16 +89,16 @@ class AkademikController extends Controller
             'nama_mapel' => 'required|string|max:255|unique:mata_pelajaran,nama_mapel,' . $id . ',id_mapel',
             'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel,' . $id . ',id_mapel',
             'kategori' => 'required|in:Umum,Kelas X,MIPA,IPS,Bahasa,Mulok',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
         ]);
 
         try {
             $mapel->update($validated);
 
-            return back()->with('success', 'Mata pelajaran berhasil diperbarui');
+            return redirect()->route('admin.akademik.mapel.show', $id)
+                ->with('success', 'Mata pelajaran berhasil diperbarui');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memperbarui mata pelajaran: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui mata pelajaran: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -167,6 +173,10 @@ class AkademikController extends Controller
         ]);
 
         try {
+            // Get tahun_ajaran_id from kelas
+            $kelas = Kelas::findOrFail($validated['kelas_id']);
+            $validated['tahun_ajaran_id'] = $kelas->tahun_ajaran_id;
+
             // Cek bentrok jadwal
             $bentrok = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
                 ->where('hari', $validated['hari'])

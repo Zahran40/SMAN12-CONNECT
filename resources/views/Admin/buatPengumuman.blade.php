@@ -95,12 +95,6 @@
                     <textarea name="isi" placeholder="Isi pengumuman..." rows="6" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-400 resize-none" required>{{ old('isi') }}</textarea>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">File Lampiran (Opsional)</label>
-                    <input type="file" name="file_lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                    <p class="text-xs text-slate-500 mt-1">Format: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</p>
-                </div>
-
             </div>
 
             <div class="flex justify-end mt-6">

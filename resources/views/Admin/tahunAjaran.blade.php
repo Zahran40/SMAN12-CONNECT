@@ -24,6 +24,18 @@
         </a>
     </div>
 
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {{ session('error') }}
+        </div>
+    @endif
+
 
     @forelse($tahunAjaran as $index => $ta)
     <div class="bg-white rounded-2xl shadow p-5 {{ $index < count($tahunAjaran) - 1 ? 'mb-6' : '' }}">
@@ -33,11 +45,21 @@
                 <i class="fa-solid fa-school text-blue-700 text-xl"></i>
                 <h2 class="font-semibold text-gray-700">Tahun Ajaran {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }}</h2>
             </div>
-            @if($ta->status == 'Berlangsung')
-                <span class="text-xs bg-yellow-100 text-yellow-700 font-medium px-3 py-1 rounded-lg">{{ $ta->status }}</span>
-            @else
-                <span class="text-xs bg-red-100 text-red-600 font-medium px-3 py-1 rounded-lg">{{ $ta->status }}</span>
-            @endif
+            <div class="flex items-center gap-3">
+                @if($ta->status == 'Aktif')
+                    <span class="text-xs bg-green-100 text-green-700 font-medium px-3 py-1 rounded-lg">{{ $ta->status }}</span>
+                @else
+                    <span class="text-xs bg-red-100 text-red-600 font-medium px-3 py-1 rounded-lg">{{ $ta->status }}</span>
+                @endif
+                <form action="{{ route('admin.tahun-ajaran.update-status', $ta->id_tahun_ajaran) }}" method="POST" class="inline">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="status" value="{{ $ta->status == 'Aktif' ? 'Tidak Aktif' : 'Aktif' }}">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
+                        {{ $ta->status == 'Aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
+                    </button>
+                </form>
+            </div>
         </div>
 
         <h3 class="font-semibold text-blue-700 mb-4">Data Tahun Ajaran</h3>
@@ -50,10 +72,10 @@
                     <img src="{{ asset('images/noto_school.png') }}" alt="Icon Kelas" class="w-12 h-12">
                     <p class="text-2xl font-bold text-blue-700">{{ $ta->jumlah_kelas }}</p>
                 </div>
-                <div class="flex flex-col items-center">
-                    <a href="{{ route('admin.data-master.index') }}"
-                        class="mt-4 w-fit bg-blue-400 hover:bg-[#1e4b8b] text-white font-medium text-sm px-4 py-1.5 rounded-full shadow-sm transition">
-                        Detail
+                <div class="flex flex-col items-center gap-2">
+                    <a href="{{ route('admin.kelas.index', $ta->id_tahun_ajaran) }}"
+                        class="w-fit bg-blue-400 hover:bg-[#1e4b8b] text-white font-medium text-sm px-4 py-1.5 rounded-full shadow-sm transition">
+                        Kelola Kelas
                     </a>
                 </div>
             </div>

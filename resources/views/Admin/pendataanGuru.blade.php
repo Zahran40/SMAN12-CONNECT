@@ -34,7 +34,7 @@
         @endif
 
         <div class="bg-white rounded-xl shadow-sm p-8">
-            <form action="{{ isset($guru) ? route('admin.data-master.guru.update', $guru->id_guru) : route('admin.data-master.guru.store') }}" method="POST" class="space-y-6">
+            <form action="{{ isset($guru) ? route('admin.data-master.guru.update', $guru->id_guru) : route('admin.data-master.guru.store') }}" method="POST" class="space-y-6" autocomplete="off">
                 @csrf
                 @if(isset($guru))
                     @method('PUT')
@@ -70,7 +70,7 @@
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                     <label class="text-slate-800 font-medium w-1/3">Tanggal Lahir</label>
                     <div class="w-full md:w-2/3">
-                        <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir', $guru->tgl_lahir ?? '') }}" required class="w-full border {{ $errors->has('tgl_lahir') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+                        <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir', $guru->tgl_lahir ?? '') }}" required max="{{ date('Y-m-d') }}" class="w-full border {{ $errors->has('tgl_lahir') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
                         @error('tgl_lahir')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -134,10 +134,29 @@
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                     <label class="text-slate-800 font-medium w-1/3">Email</label>
                     <div class="w-full md:w-2/3">
-                        <input type="email" name="email" value="{{ old('email', $guru->email ?? '') }}" required placeholder="example@gmail.com" class="w-full border {{ $errors->has('email') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="example@gmail.com" class="w-full border {{ $errors->has('email') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
                         @error('email')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                    <label class="text-slate-800 font-medium w-1/3">Password</label>
+                    <div class="w-full md:w-2/3">
+                        <div class="relative">
+                            <input type="password" id="passwordGuru" name="password" value="" autocomplete="new-password" required placeholder="Masukkan password" class="w-full border {{ $errors->has('password') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 pr-10 focus:outline-none focus:border-blue-500">
+                            <button type="button" onclick="togglePasswordField('passwordGuru', 'eyeIconGuru')" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+                                <svg id="eyeIconGuru" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                        @error('password')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                        <p class="text-sm text-gray-500 mt-1">Minimal 8 karakter</p>
                     </div>
                 </div>
 
@@ -184,4 +203,21 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function togglePasswordField(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                // Change to eye-slash icon
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />';
+            } else {
+                input.type = 'password';
+                // Change back to eye icon
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+            }
+        }
+    </script>
 @endsection

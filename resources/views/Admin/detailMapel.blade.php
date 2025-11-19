@@ -12,6 +12,19 @@
         <h1 class="text-2xl font-bold text-blue-700">Detail Mata Pelajaran</h1>
     </div>
 
+    {{-- Success/Error Messages --}}
+    @if(session('success'))
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg">
+        <p class="font-medium">{{ session('success') }}</p>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
+        <p class="font-medium">{{ session('error') }}</p>
+    </div>
+    @endif
+
     <div class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center">
         <div class="flex items-center space-x-6">
             <div class="w-24 h-24 bg-blue-100 rounded-2xl flex items-center justify-center">
@@ -37,7 +50,7 @@
     <div>
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-blue-600">Data Mata Pelajaran</h3>
-            <a href="{{ route('admin.akademik.mapel.create') }}" class="bg-green-400 hover:bg-green-500 text-white px-4 py-1.5 rounded-full flex items-center space-x-2 transition-colors text-sm font-medium">
+            <a href="{{ route('admin.akademik.mapel.edit', $mapel->id_mapel) }}" class="bg-green-400 hover:bg-green-500 text-white px-4 py-1.5 rounded-full flex items-center space-x-2 transition-colors text-sm font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
@@ -59,5 +72,125 @@
         </div>
     </div>
 
+    {{-- Jadwal Per Kelas --}}
+    <div class="bg-white p-8 rounded-2xl shadow-sm">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-blue-600">Jadwal Per Kelas</h3>
+            <button onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden')" class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-full font-bold flex items-center space-x-2 shadow-sm transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                <span>Tambah Jadwal</span>
+            </button>
+        </div>
+
+        @if($mapel->jadwal->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b-2 border-blue-200">
+                        <th class="text-left py-3 px-4 font-semibold text-slate-700">Kelas</th>
+                        <th class="text-left py-3 px-4 font-semibold text-slate-700">Hari</th>
+                        <th class="text-left py-3 px-4 font-semibold text-slate-700">Jam</th>
+                        <th class="text-left py-3 px-4 font-semibold text-slate-700">Guru</th>
+                        <th class="text-center py-3 px-4 font-semibold text-slate-700">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($mapel->jadwal as $jadwal)
+                    <tr class="border-b border-slate-100 hover:bg-blue-50">
+                        <td class="py-3 px-4 font-medium">{{ $jadwal->kelas->nama_kelas ?? '-' }}</td>
+                        <td class="py-3 px-4">{{ $jadwal->hari }}</td>
+                        <td class="py-3 px-4">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
+                        <td class="py-3 px-4">{{ $jadwal->guru->nama_lengkap ?? '-' }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <form action="{{ route('admin.akademik.jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @else
+        <p class="text-center text-slate-500 py-8">Belum ada jadwal untuk mata pelajaran ini</p>
+        @endif
+    </div>
+
+</div>
+
+{{-- Modal Tambah Jadwal --}}
+<div id="modalTambahJadwal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-blue-600">Tambah Jadwal</h3>
+            <button onclick="document.getElementById('modalTambahJadwal').classList.add('hidden')" class="text-slate-500 hover:text-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form action="{{ route('admin.akademik.jadwal.store') }}" method="POST" class="space-y-4">
+            @csrf
+            <input type="hidden" name="mapel_id" value="{{ $mapel->id_mapel }}">
+            
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Kelas</label>
+                <select name="kelas_id" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="">Pilih Kelas</option>
+                    @foreach(\App\Models\Kelas::all() as $kelas)
+                        <option value="{{ $kelas->id_kelas }}">{{ $kelas->nama_kelas }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Hari</label>
+                <select name="hari" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="">Pilih Hari</option>
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Mulai</label>
+                    <input type="time" name="jam_mulai" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Selesai</label>
+                    <input type="time" name="jam_selesai" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Guru Pengampu</label>
+                <select name="guru_id" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="">Pilih Guru</option>
+                    @foreach(\App\Models\Guru::all() as $guru)
+                        <option value="{{ $guru->id_guru }}">{{ $guru->nama_lengkap }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="document.getElementById('modalTambahJadwal').classList.add('hidden')" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-bold transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-6 py-2 rounded-lg font-bold transition-colors">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

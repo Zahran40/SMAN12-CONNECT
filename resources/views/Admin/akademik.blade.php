@@ -40,10 +40,7 @@
                         <p class="text-xs text-slate-500 mb-1">{{ now()->year }}/{{ now()->year + 1 }}</p>
                         <h4 class="text-blue-600 font-bold text-lg mb-1">{{ $mapel->nama_mapel }}</h4>
                         <div class="flex items-center text-slate-600 text-sm font-medium">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-                            </svg>
-                            <span>{{ $mapel->jam_mulai }}-{{ $mapel->jam_selesai }}</span>
+                             <span>Kode: {{ $mapel->kode_mapel }}</span>
                         </div>
                     </div>
                     <a href="{{ route('admin.akademik.mapel.show', $mapel->id_mapel) }}" class="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold transition-colors mt-auto text-center">

@@ -69,11 +69,22 @@ class DataMasterController extends Controller
     }
 
     /**
-     * Halaman detail siswa untuk form input/edit
+     * Halaman form create siswa baru (kosong)
      */
-    public function showSiswaForm($id = null)
+    public function createSiswa()
     {
-        $siswa = $id ? Siswa::with('kelas', 'user')->findOrFail($id) : null;
+        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+        
+        return view('Admin.pendataanSiswa', compact('tahunAjaranList', 'kelasList'));
+    }
+
+    /**
+     * Halaman form edit siswa
+     */
+    public function editSiswa($id)
+    {
+        $siswa = Siswa::with('kelas', 'user')->findOrFail($id);
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
         $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
         
@@ -94,17 +105,21 @@ class DataMasterController extends Controller
             'nis' => 'required|string|max:50|unique:siswa,nis' . ($id ? ",$id,id_siswa" : ''),
             'nisn' => 'required|string|max:50|unique:siswa,nisn' . ($id ? ",$id,id_siswa" : ''),
             'no_telepon' => 'required|string|max:20',
-            'email' => 'required|email|unique:siswa,email' . ($id ? ",$id,id_siswa" : ''),
+            'email' => 'required|email|unique:users,email' . ($id ? "," . Siswa::find($id)?->user_id . ",id" : ''),
             'agama' => 'required|string',
             'golongan_darah' => 'nullable|string|max:5',
             'kelas_id' => 'required|exists:kelas,id_kelas',
+            'password' => 'required|string|min:8',
         ];
 
         $validated = $request->validate($rules, [
             'nama_lengkap.required' => 'Nama wajib diisi',
+            'email.required' => 'Email wajib diisi',
             'email.unique' => 'Email sudah terdaftar',
             'nis.unique' => 'NIS sudah terdaftar',
             'nisn.unique' => 'NISN sudah terdaftar',
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal 8 karakter',
         ]);
 
         try {
@@ -115,10 +130,13 @@ class DataMasterController extends Controller
                 $siswa = Siswa::findOrFail($id);
                 $user = User::findOrFail($siswa->user_id);
                 
-                $user->update([
+                $userData = [
                     'name' => $validated['nama_lengkap'],
                     'email' => $validated['email'],
-                ]);
+                    'password' => Hash::make($validated['password']),
+                ];
+
+                $user->update($userData);
 
                 $siswa->update([
                     'nama_lengkap' => $validated['nama_lengkap'],
@@ -137,11 +155,11 @@ class DataMasterController extends Controller
 
                 $message = 'Data siswa berhasil diperbarui';
             } else {
-                // Create - Auto-generate password default: siswa123
+                // Create
                 $user = User::create([
                     'name' => $validated['nama_lengkap'],
                     'email' => $validated['email'],
-                    'password' => Hash::make('siswa123'),
+                    'password' => Hash::make($validated['password']),
                     'role' => 'siswa',
                 ]);
 
@@ -175,11 +193,21 @@ class DataMasterController extends Controller
     }
 
     /**
-     * Halaman detail guru untuk form input/edit
+     * Halaman form create guru baru (kosong)
      */
-    public function showGuruForm($id = null)
+    public function createGuru()
     {
-        $guru = $id ? Guru::with('mataPelajaran', 'user')->findOrFail($id) : null;
+        $mapelList = MataPelajaran::orderBy('nama_mapel')->get();
+        
+        return view('Admin.pendataanGuru', compact('mapelList'));
+    }
+
+    /**
+     * Halaman form edit guru
+     */
+    public function editGuru($id)
+    {
+        $guru = Guru::with('mataPelajaran', 'user')->findOrFail($id);
         $mapelList = MataPelajaran::orderBy('nama_mapel')->get();
         
         return view('Admin.pendataanGuru', compact('guru', 'mapelList'));
@@ -198,16 +226,20 @@ class DataMasterController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'nip' => 'required|string|max:50|unique:guru,nip' . ($id ? ",$id,id_guru" : ''),
             'no_telepon' => 'required|string|max:20',
-            'email' => 'required|email|unique:guru,email' . ($id ? ",$id,id_guru" : ''),
+            'email' => 'required|email|unique:users,email' . ($id ? "," . Guru::find($id)?->user_id . ",id" : ''),
             'agama' => 'required|string',
             'golongan_darah' => 'nullable|string|max:5',
             'mapel_id' => 'required|exists:mata_pelajaran,id_mapel',
+            'password' => 'required|string|min:8',
         ];
 
         $validated = $request->validate($rules, [
             'nama_lengkap.required' => 'Nama wajib diisi',
+            'email.required' => 'Email wajib diisi',
             'email.unique' => 'Email sudah terdaftar',
             'nip.unique' => 'NIP sudah terdaftar',
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal 8 karakter',
         ]);
 
         try {
@@ -218,10 +250,13 @@ class DataMasterController extends Controller
                 $guru = Guru::findOrFail($id);
                 $user = User::findOrFail($guru->user_id);
                 
-                $user->update([
+                $userData = [
                     'name' => $validated['nama_lengkap'],
                     'email' => $validated['email'],
-                ]);
+                    'password' => Hash::make($validated['password']),
+                ];
+
+                $user->update($userData);
 
                 $guru->update([
                     'nama_lengkap' => $validated['nama_lengkap'],
@@ -239,11 +274,11 @@ class DataMasterController extends Controller
 
                 $message = 'Data guru berhasil diperbarui';
             } else {
-                // Create - Auto-generate password default: guru123
+                // Create
                 $user = User::create([
                     'name' => $validated['nama_lengkap'],
                     'email' => $validated['email'],
-                    'password' => Hash::make('guru123'),
+                    'password' => Hash::make($validated['password']),
                     'role' => 'guru',
                 ]);
 
