@@ -80,11 +80,21 @@
                 </div>
                 <div class="md:col-span-2">
                     <p class="text-xs text-slate-500">Metode Pembayaran</p>
-                    <select id="metode_pembayaran" class="mt-1 block w-full py-2 px-3 border border-slate-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <select id="metode_pembayaran" onchange="toggleBankSelect()" class="mt-1 block w-full py-2 px-3 border border-slate-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed">
                         <option value="">-- Pilih Metode --</option>
                         <option value="bank_transfer">Transfer Bank (Virtual Account)</option>
                         <option value="gopay">GoPay</option>
                         <option value="shopeepay">ShopeePay</option>
+                    </select>
+                </div>
+                <div id="bank-select" class="hidden md:col-span-2">
+                    <p class="text-xs text-slate-500">Pilih Bank</p>
+                    <select id="bank" class="mt-1 block w-full py-2 px-3 border border-slate-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed">
+                        <option value="">-- Pilih Bank --</option>
+                        <option value="bca">BCA</option>
+                        <option value="bni">BNI</option>
+                        <option value="bri">BRI</option>
+                        <option value="permata">Permata</option>
                     </select>
                 </div>
             </div>
@@ -120,7 +130,7 @@
         </div>
 
         <div class="flex justify-end space-x-4 mt-12">
-            <button id="btn-bayar" onclick="createPayment()" class="bg-blue-600 text-white font-semibold px-8 py-2.5 rounded-full hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">
+            <button id="btn-bayar" onclick="confirmPayment()" class="bg-blue-600 text-white font-semibold px-8 py-2.5 rounded-full hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">
                 Bayar Sekarang
             </button>
             <button id="btn-cek-status" onclick="checkStatus()" class="hidden bg-green-500 text-white font-semibold px-8 py-2.5 rounded-full hover:bg-green-600 transition-colors shadow-lg shadow-green-500/30">
@@ -130,16 +140,141 @@
 
     </div>
 
+    <!-- Modal Konfirmasi Pembayaran -->
+    <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
+                    <svg class="h-10 w-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Konfirmasi Pembayaran</h3>
+                <p class="text-sm text-slate-600">Pastikan informasi pembayaran Anda sudah benar</p>
+            </div>
+
+            <div class="bg-blue-50 rounded-lg p-4 mb-6 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Nominal:</span>
+                    <span class="font-bold text-slate-900">Rp {{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Metode:</span>
+                    <span id="modal-metode" class="font-bold text-slate-900"></span>
+                </div>
+                <div id="modal-bank-info" class="hidden flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Bank:</span>
+                    <span id="modal-bank" class="font-bold text-slate-900"></span>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+                <p class="text-xs text-yellow-800">
+                    <strong>Perhatian:</strong> Setelah konfirmasi, Anda tidak dapat mengubah metode pembayaran. Pastikan pilihan Anda sudah benar.
+                </p>
+            </div>
+
+            <div class="flex space-x-3">
+                <button onclick="closeModal()" class="flex-1 bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-300 transition-colors">
+                    Batal
+                </button>
+                <button onclick="proceedPayment()" class="flex-1 bg-blue-600 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-700 transition-colors">
+                    Ya, Lanjutkan
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const tagihanId = {{ $tagihan->id_pembayaran }};
         let currentOrderId = '{{ $tagihan->midtrans_order_id }}';
 
-        async function createPayment() {
+        function toggleBankSelect() {
+            const metode = document.getElementById('metode_pembayaran').value;
+            const bankSelect = document.getElementById('bank-select');
+            
+            if (metode === 'bank_transfer') {
+                bankSelect.classList.remove('hidden');
+            } else {
+                bankSelect.classList.add('hidden');
+            }
+        }
+
+        function confirmPayment() {
             const metodePembayaran = document.getElementById('metode_pembayaran').value;
             
             if (!metodePembayaran) {
                 alert('Silakan pilih metode pembayaran terlebih dahulu');
                 return;
+            }
+
+            // Check if bank selected for bank transfer
+            if (metodePembayaran === 'bank_transfer') {
+                const bank = document.getElementById('bank').value;
+                if (!bank) {
+                    alert('Silakan pilih bank terlebih dahulu');
+                    return;
+                }
+            }
+
+            // Show confirmation modal with payment details
+            showConfirmationModal();
+        }
+
+        function showConfirmationModal() {
+            const metodePembayaran = document.getElementById('metode_pembayaran').value;
+            const bank = document.getElementById('bank').value;
+            
+            // Map metode to readable text
+            const metodeText = {
+                'bank_transfer': 'Transfer Bank (Virtual Account)',
+                'gopay': 'GoPay',
+                'shopeepay': 'ShopeePay'
+            };
+
+            const bankText = {
+                'bca': 'BCA',
+                'bni': 'BNI',
+                'bri': 'BRI',
+                'permata': 'Permata'
+            };
+
+            // Update modal content
+            document.getElementById('modal-metode').textContent = metodeText[metodePembayaran] || metodePembayaran;
+            
+            if (metodePembayaran === 'bank_transfer' && bank) {
+                document.getElementById('modal-bank-info').classList.remove('hidden');
+                document.getElementById('modal-bank').textContent = bankText[bank] || bank.toUpperCase();
+            } else {
+                document.getElementById('modal-bank-info').classList.add('hidden');
+            }
+
+            // Show modal
+            document.getElementById('confirmation-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('confirmation-modal').classList.add('hidden');
+        }
+
+        async function proceedPayment() {
+            // Close modal
+            closeModal();
+
+            // Disable dropdowns
+            document.getElementById('metode_pembayaran').disabled = true;
+            document.getElementById('bank').disabled = true;
+
+            const metodePembayaran = document.getElementById('metode_pembayaran').value;
+            
+            const requestBody = {
+                metode_pembayaran: metodePembayaran
+            };
+
+            // Add bank if bank transfer selected
+            if (metodePembayaran === 'bank_transfer') {
+                const bank = document.getElementById('bank').value;
+                requestBody.bank = bank;
             }
 
             const btnBayar = document.getElementById('btn-bayar');
@@ -153,9 +288,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({
-                        metode_pembayaran: metodePembayaran
-                    })
+                    body: JSON.stringify(requestBody)
                 });
 
                 const data = await response.json();
@@ -169,12 +302,18 @@
                     btnBayar.classList.add('hidden');
                 } else {
                     alert('Gagal membuat pembayaran: ' + data.message);
+                    // Re-enable dropdowns on error
+                    document.getElementById('metode_pembayaran').disabled = false;
+                    document.getElementById('bank').disabled = false;
                     btnBayar.disabled = false;
                     btnBayar.innerHTML = 'Bayar Sekarang';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Terjadi kesalahan saat membuat pembayaran');
+                // Re-enable dropdowns on error
+                document.getElementById('metode_pembayaran').disabled = false;
+                document.getElementById('bank').disabled = false;
                 btnBayar.disabled = false;
                 btnBayar.innerHTML = 'Bayar Sekarang';
             }
@@ -254,6 +393,16 @@
             if (currentOrderId) {
                 document.getElementById('btn-bayar').classList.add('hidden');
                 document.getElementById('btn-cek-status').classList.remove('hidden');
+                // Disable dropdowns if payment already exists
+                document.getElementById('metode_pembayaran').disabled = true;
+                document.getElementById('bank').disabled = true;
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('confirmation-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
             }
         });
     </script>
