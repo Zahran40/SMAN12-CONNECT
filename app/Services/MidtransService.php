@@ -5,6 +5,7 @@ namespace App\Services;
 use Midtrans\Config;
 use Midtrans\CoreApi;
 use Midtrans\Notification;
+use Midtrans\Transaction;
 
 class MidtransService
 {
@@ -90,7 +91,16 @@ class MidtransService
     public function checkStatus($orderId)
     {
         try {
-            return CoreApi::status($orderId);
+            return Transaction::status($orderId);
+        } catch (\Exception $e) {
+            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+        }
+    }
+
+    public function cancel($orderId)
+    {
+        try {
+            return Transaction::cancel($orderId);
         } catch (\Exception $e) {
             throw new \Exception('Midtrans Error: ' . $e->getMessage());
         }

@@ -73,8 +73,8 @@
                                 </a>
                         </li>
                         <li>
-                                                  <a href="{{ route('admin.pembayaran') }}"
-                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.pembayaran') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
+                                                  <a href="{{ route('admin.pembayaran.index') }}"
+                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('admin.pembayaran*') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
                                         <img src="{{ asset('images/si_money-fill.png') }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.5 1.5 0 0 1 18 21.75H6a1.5 1.5 0 0 1-1.499-1.632Z" />
                                         </img>
