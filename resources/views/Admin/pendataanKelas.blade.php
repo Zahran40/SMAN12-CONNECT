@@ -33,6 +33,21 @@
                     <p class="text-slate-500 text-sm">Total {{ $kelasList->count() }} kelas terdaftar</p>
                 </div>
             </div>
+            
+            {{-- Filter Tahun Ajaran --}}
+            <div class="flex items-center space-x-3">
+                <label class="text-sm font-medium text-slate-700">Filter Tahun Ajaran:</label>
+                <form action="{{ route('admin.kelas.all') }}" method="GET" class="flex items-center space-x-2">
+                    <select name="tahun_ajaran_id" onchange="this.form.submit()" class="border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[200px]">
+                        <option value="">Semua Tahun Ajaran</option>
+                        @foreach($tahunAjaranList as $ta)
+                            <option value="{{ $ta->id_tahun_ajaran }}" {{ $selectedTahunAjaran == $ta->id_tahun_ajaran ? 'selected' : '' }}>
+                                {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} - {{ $ta->status }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
         </div>
     </div>
 

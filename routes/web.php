@@ -56,26 +56,22 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/detail-raport', [App\Http\Controllers\Siswa\RaportController::class, 'detailAll'])->name('detail_raport');
     Route::get('/detail-raport/{mapel_id}', [App\Http\Controllers\Siswa\RaportController::class, 'detail'])->name('detail_raport_mapel');
 
-    Route::get('/tagihan', function () {
-        return view('siswa.tagihan');
-    })->name('tagihan');
-
-    Route::get('/tagihan/sudah', function () {
-        return view('siswa.tagihanSudahDibayar');
-    })->name('tagihan_sudah_dibayar');
+    // TAGIHAN & PEMBAYARAN ROUTES
+    Route::get('/tagihan', [App\Http\Controllers\Siswa\PembayaranController::class, 'index'])->name('tagihan');
+    Route::get('/tagihan/sudah-dibayar', [App\Http\Controllers\Siswa\PembayaranController::class, 'tagihanSudahDibayar'])->name('tagihan_sudah_dibayar');
+    Route::get('/tagihan/{id}', [App\Http\Controllers\Siswa\PembayaranController::class, 'detailTagihan'])->name('detail_tagihan');
+    Route::get('/tagihan/{id}/sudah-dibayar', [App\Http\Controllers\Siswa\PembayaranController::class, 'detailTagihanSudahDibayar'])->name('detail_tagihan_sudah_dibayar');
+    Route::post('/tagihan/{id}/bayar', [App\Http\Controllers\Siswa\PembayaranController::class, 'createPayment'])->name('tagihan.bayar');
+    Route::get('/tagihan/{id}/check-status', [App\Http\Controllers\Siswa\PembayaranController::class, 'checkStatus'])->name('tagihan.check_status');
+    Route::get('/tagihan/callback', [App\Http\Controllers\Siswa\PembayaranController::class, 'callback'])->name('tagihan.callback');
 
     Route::get('/pengumuman', [App\Http\Controllers\Siswa\MateriController::class, 'pengumuman'])->name('pengumuman');
 
     Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
-
-    Route::get('/detail-tagihan', function () {
-        return view('siswa.detailTagihan');
-    })->name('detail_tagihan');
-
-    Route::get('/detail-tagihan-sudah-dibayar', function () {
-        return view('siswa.detailTagihanSudahDibayar');
-    })->name('detail_tagihan_sudah_dibayar');
 });
+
+// Midtrans Notification Handler (tidak perlu auth karena dari server Midtrans)
+Route::post('/payment/midtrans/notification', [App\Http\Controllers\Siswa\PembayaranController::class, 'handleNotification'])->name('payment.midtrans.notification');
 
 // ============================================
 // GURU ROUTES (Protected by role middleware)

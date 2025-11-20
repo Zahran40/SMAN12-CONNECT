@@ -3,13 +3,25 @@
 @section('content')
 
     <div class="flex items-center space-x-4 mb-8">
-        <a href="{{ url()->previous() }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
+        <a href="{{ route('siswa.tagihan') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
            <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-blue-500">Nama Tagihan</h2>
+        <h2 class="text-3xl font-bold text-blue-500">{{ $tagihan->nama_tagihan }}</h2>
     </div>
+
+    @if(session('success'))
+        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="bg-white rounded-xl shadow-lg border-2 border-blue-300 p-6 md:p-8">
         
@@ -27,15 +39,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-6 pl-5">
                 <div>
                     <p class="text-xs text-slate-500">Nama</p>
-                    <p class="font-bold text-slate-900">Nama Siswa</p>
+                    <p class="font-bold text-slate-900">{{ $siswa->nama_lengkap }}</p>
                 </div>
                 <div>
                     <p class="text-xs text-slate-500">NIS</p>
-                    <p class="font-bold text-slate-900">19013810922</p>
+                    <p class="font-bold text-slate-900">{{ $siswa->nis }}</p>
                 </div>
                 <div>
                     <p class="text-xs text-slate-500">Kelas</p>
-                    <p class="font-bold text-slate-900">Kelas 12-A</p>
+                    <p class="font-bold text-slate-900">{{ $siswa->kelas->nama_kelas ?? '-' }}</p>
                 </div>
             </div>
         </div>
@@ -49,37 +61,201 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-y-5 gap-x-6 pl-5">
                 <div>
                     <p class="text-xs text-slate-500">Nama Tagihan</p>
-                    <p class="font-bold text-slate-900">Uang Sekolah Bulanan</p>
+                    <p class="font-bold text-slate-900">{{ $tagihan->nama_tagihan }}</p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-500">Waktu Tagihan dibuat</p>
-                    <p class="font-bold text-slate-900">01 Desember 2025</p>
-                </div>
-                <div>
-                    <p class="text-xs text-slate-500">Metode Pembayaran</p>
-                    <select class="mt-1 block w-full py-1.5 px-3 border border-slate-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        <option>E-Wallet</option>
-                        <option>Transfer Bank</option>
-                        <option>Lainnya</option>
-                    </select>
+                    <p class="text-xs text-slate-500">Periode</p>
+                    @php
+                        $bulanText = [
+                            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                        ];
+                    @endphp
+                    <p class="font-bold text-slate-900">{{ $bulanText[$tagihan->bulan] }} {{ $tagihan->tahun }}</p>
                 </div>
                 <div>
                     <p class="text-xs text-slate-500">Nominal</p>
-                    <p class="font-bold text-slate-900">Rp 200.000</p>
+                    <p class="font-bold text-slate-900">Rp {{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</p>
                 </div>
-                <div>
-                    <p class="text-xs text-slate-500">Nomor VA</p>
-                    <p class="font-bold text-slate-900">8741389123012948931</p>
+                <div class="md:col-span-2">
+                    <p class="text-xs text-slate-500">Metode Pembayaran</p>
+                    <select id="metode_pembayaran" class="mt-1 block w-full py-2 px-3 border border-slate-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">-- Pilih Metode --</option>
+                        <option value="bank_transfer">Transfer Bank (Virtual Account)</option>
+                        <option value="gopay">GoPay</option>
+                        <option value="shopeepay">ShopeePay</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Payment Information Area (Hidden initially) -->
+            <div id="payment-info" class="hidden mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="va-info" class="hidden">
+                        <p class="text-xs text-slate-500">Nomor Virtual Account</p>
+                        <div class="flex items-center space-x-2">
+                            <p id="va-number" class="font-bold text-slate-900 text-lg"></p>
+                            <button onclick="copyVA()" class="text-blue-600 hover:text-blue-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Bank BCA</p>
+                    </div>
+                    
+                    <div id="ewallet-info" class="hidden">
+                        <p class="text-xs text-slate-500 mb-2">QR Code Pembayaran</p>
+                        <div id="qr-code-container" class="bg-white p-2 rounded inline-block">
+                            <!-- QR Code will be displayed here -->
+                        </div>
+                        <a id="deeplink-button" href="#" target="_blank" class="hidden mt-2 inline-block bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                            Buka Aplikasi
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="flex justify-end mt-12">
-            <button class="bg-green-500 text-white font-semibold px-8 py-2.5 rounded-full hover:bg-green-600 transition-colors shadow-lg shadow-green-500/30">
-                Cek Status
+        <div class="flex justify-end space-x-4 mt-12">
+            <button id="btn-bayar" onclick="createPayment()" class="bg-blue-600 text-white font-semibold px-8 py-2.5 rounded-full hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">
+                Bayar Sekarang
+            </button>
+            <button id="btn-cek-status" onclick="checkStatus()" class="hidden bg-green-500 text-white font-semibold px-8 py-2.5 rounded-full hover:bg-green-600 transition-colors shadow-lg shadow-green-500/30">
+                Cek Status Pembayaran
             </button>
         </div>
 
     </div>
+
+    <script>
+        const tagihanId = {{ $tagihan->id_pembayaran }};
+        let currentOrderId = '{{ $tagihan->midtrans_order_id }}';
+
+        async function createPayment() {
+            const metodePembayaran = document.getElementById('metode_pembayaran').value;
+            
+            if (!metodePembayaran) {
+                alert('Silakan pilih metode pembayaran terlebih dahulu');
+                return;
+            }
+
+            const btnBayar = document.getElementById('btn-bayar');
+            btnBayar.disabled = true;
+            btnBayar.innerHTML = '<span class="animate-pulse">Memproses...</span>';
+
+            try {
+                const response = await fetch(`/siswa/tagihan/${tagihanId}/bayar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        metode_pembayaran: metodePembayaran
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentOrderId = data.data.order_id;
+                    showPaymentInfo(data.data);
+                    
+                    // Show check status button
+                    document.getElementById('btn-cek-status').classList.remove('hidden');
+                    btnBayar.classList.add('hidden');
+                } else {
+                    alert('Gagal membuat pembayaran: ' + data.message);
+                    btnBayar.disabled = false;
+                    btnBayar.innerHTML = 'Bayar Sekarang';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat membuat pembayaran');
+                btnBayar.disabled = false;
+                btnBayar.innerHTML = 'Bayar Sekarang';
+            }
+        }
+
+        function showPaymentInfo(paymentData) {
+            const paymentInfo = document.getElementById('payment-info');
+            paymentInfo.classList.remove('hidden');
+
+            if (paymentData.va_number) {
+                // Virtual Account
+                const vaInfo = document.getElementById('va-info');
+                vaInfo.classList.remove('hidden');
+                document.getElementById('va-number').textContent = paymentData.va_number;
+            } else if (paymentData.qr_code || paymentData.deeplink) {
+                // E-Wallet
+                const ewalletInfo = document.getElementById('ewallet-info');
+                ewalletInfo.classList.remove('hidden');
+                
+                if (paymentData.qr_code) {
+                    // Display QR Code as image
+                    const qrContainer = document.getElementById('qr-code-container');
+                    qrContainer.innerHTML = `<img src="${paymentData.qr_code}" alt="QR Code" class="w-48 h-48">`;
+                }
+                
+                if (paymentData.deeplink) {
+                    const deeplinkBtn = document.getElementById('deeplink-button');
+                    deeplinkBtn.href = paymentData.deeplink;
+                    deeplinkBtn.classList.remove('hidden');
+                }
+            }
+        }
+
+        async function checkStatus() {
+            const btnCekStatus = document.getElementById('btn-cek-status');
+            btnCekStatus.disabled = true;
+            btnCekStatus.innerHTML = '<span class="animate-pulse">Mengecek...</span>';
+
+            try {
+                const response = await fetch(`/siswa/tagihan/${tagihanId}/check-status`);
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.data.status_tagihan === 'Lunas') {
+                        alert('Pembayaran berhasil! Halaman akan dimuat ulang.');
+                        window.location.href = '{{ route("siswa.tagihan") }}';
+                    } else {
+                        const statusText = data.data.transaction_status === 'pending' ? 
+                            'Pembayaran masih menunggu' : 
+                            'Status: ' + data.data.transaction_status;
+                        alert(statusText);
+                        btnCekStatus.disabled = false;
+                        btnCekStatus.innerHTML = 'Cek Status Pembayaran';
+                    }
+                } else {
+                    alert('Gagal mengecek status: ' + data.message);
+                    btnCekStatus.disabled = false;
+                    btnCekStatus.innerHTML = 'Cek Status Pembayaran';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mengecek status');
+                btnCekStatus.disabled = false;
+                btnCekStatus.innerHTML = 'Cek Status Pembayaran';
+            }
+        }
+
+        function copyVA() {
+            const vaNumber = document.getElementById('va-number').textContent;
+            navigator.clipboard.writeText(vaNumber).then(() => {
+                alert('Nomor VA berhasil disalin!');
+            });
+        }
+
+        // Auto check status if payment already exists
+        window.addEventListener('load', function() {
+            if (currentOrderId) {
+                document.getElementById('btn-bayar').classList.add('hidden');
+                document.getElementById('btn-cek-status').classList.remove('hidden');
+            }
+        });
+    </script>
 
 @endsection
