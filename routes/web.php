@@ -205,14 +205,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
-    // PEMBAYARAN ROUTES (skip sesuai request)
-    Route::get('/pembayaran', function () {
-        return view('Admin.pembayaran');
-    })->name('pembayaran');
-    
-    Route::get('/detail-pembayaran', function () {
-        return view('Admin.detailPembayaran');
-    })->name('detail_pembayaran');
+    // PEMBAYARAN ROUTES
+    Route::get('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::get('/pembayaran/create', [App\Http\Controllers\Admin\PembayaranController::class, 'create'])->name('pembayaran.create');
+    Route::post('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'store'])->name('pembayaran.store');
+    Route::get('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'show'])->name('pembayaran.show');
+    Route::put('/pembayaran/{id}/status', [App\Http\Controllers\Admin\PembayaranController::class, 'updateStatus'])->name('pembayaran.update_status');
+    Route::delete('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
 
     // Legacy routes untuk compatibility (redirect ke yang baru)
     Route::get('/tahun-ajaran-old', function() {

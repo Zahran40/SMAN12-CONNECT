@@ -11,7 +11,10 @@ class PembayaranSpp extends Model
 
     protected $table = 'pembayaran_spp';
     protected $primaryKey = 'id_pembayaran';
-    public $timestamps = false;
+    
+    // Custom timestamps - hanya created_at
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'siswa_id',

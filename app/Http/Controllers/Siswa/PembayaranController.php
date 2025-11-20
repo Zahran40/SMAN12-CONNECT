@@ -149,11 +149,11 @@ class PembayaranController extends Controller
                     $orderId,
                     $tagihan->jumlah_bayar,
                     $customerDetails,
-                    $itemDetails
+                    $itemDetails,
                     $request->bank
                 );
                 
-                $paymentType = 'Transfer Bank ' . strtoupper($request->bank);
+                $metodeEnum = 'Transfer'; // Nilai ENUM yang valid
                 $nomorVa = $response->va_numbers[0]->va_number ?? null;
             } else {
                 $response = $this->midtransService->createEwalletPayment(
@@ -164,7 +164,7 @@ class PembayaranController extends Controller
                     $validated['metode_pembayaran']
                 );
                 
-                $paymentType = ucfirst($validated['metode_pembayaran']);
+                $metodeEnum = 'E-Wallet'; // Nilai ENUM yang valid
                 $nomorVa = null;
             }
 
@@ -172,14 +172,29 @@ class PembayaranController extends Controller
             $tagihan->update([
                 'midtrans_order_id' => $orderId,
                 'midtrans_transaction_id' => $response->transaction_id,
-                'midtrans_payment_type' => $validated['metode_pembayaran'],
+                'midtrans_payment_type' => $validated['metode_pembayaran'], // Simpan detail: gopay, shopeepay, bank_transfer
                 'midtrans_transaction_status' => $response->transaction_status,
                 'midtrans_response' => json_encode($response),
-                'metode_pembayaran' => $paymentType,
+                'metode_pembayaran' => $metodeEnum, // ENUM value: Transfer atau E-Wallet
                 'nomor_va' => $nomorVa,
             ]);
 
             DB::commit();
+
+            // Extract payment info based on type
+            $qrCodeUrl = null;
+            $deeplinkUrl = null;
+            
+            if (isset($response->actions)) {
+                foreach ($response->actions as $action) {
+                    if ($action->name === 'generate-qr-code' && $action->method === 'GET') {
+                        $qrCodeUrl = $action->url;
+                    }
+                    if ($action->name === 'deeplink-redirect' && $action->method === 'GET') {
+                        $deeplinkUrl = $action->url;
+                    }
+                }
+            }
 
             return response()->json([
                 'success' => true,
@@ -189,8 +204,8 @@ class PembayaranController extends Controller
                     'transaction_status' => $response->transaction_status,
                     'payment_type' => $validated['metode_pembayaran'],
                     'va_number' => $nomorVa,
-                    'qr_code' => $response->actions[0]->url ?? null, // For e-wallet
-                    'deeplink' => $response->actions[1]->url ?? null, // For e-wallet app
+                    'qr_code' => $qrCodeUrl,
+                    'deeplink' => $deeplinkUrl,
                 ]
             ]);
 
