@@ -15,15 +15,28 @@ class KelasController extends Controller
     /**
      * Halaman pendataan semua kelas (tidak terikat tahun ajaran)
      */
-    public function all()
+    public function all(Request $request)
     {
-        $kelasList = Kelas::with(['waliKelas', 'siswa', 'tahunAjaran'])
-            ->orderBy('tahun_ajaran_id', 'desc')
-            ->orderBy('tingkat')
-            ->orderBy('nama_kelas')
-            ->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
         
-        return view('Admin.pendataanKelas', compact('kelasList'));
+        // Filter berdasarkan tahun ajaran yang dipilih
+        $selectedTahunAjaran = $request->get('tahun_ajaran_id');
+        
+        if ($selectedTahunAjaran) {
+            $kelasList = Kelas::with(['waliKelas', 'siswa', 'tahunAjaran'])
+                ->where('tahun_ajaran_id', $selectedTahunAjaran)
+                ->orderBy('tingkat')
+                ->orderBy('nama_kelas')
+                ->get();
+        } else {
+            $kelasList = Kelas::with(['waliKelas', 'siswa', 'tahunAjaran'])
+                ->orderBy('tahun_ajaran_id', 'desc')
+                ->orderBy('tingkat')
+                ->orderBy('nama_kelas')
+                ->get();
+        }
+        
+        return view('Admin.pendataanKelas', compact('kelasList', 'tahunAjaranList', 'selectedTahunAjaran'));
     }
 
     /**
@@ -85,12 +98,22 @@ class KelasController extends Controller
     }
 
     /**
-     * Detail kelas dengan daftar siswa
+     * Detail kelas dengan daftar siswa dan mata pelajaran
      */
     public function show($tahunAjaranId, $kelasId)
     {
         $tahunAjaran = TahunAjaran::findOrFail($tahunAjaranId);
         $kelas = Kelas::with(['waliKelas', 'siswa'])->findOrFail($kelasId);
+        
+        // Ambil jadwal mata pelajaran untuk kelas ini
+        $jadwalMapel = DB::table('jadwal_pelajaran')
+            ->join('mata_pelajaran', 'jadwal_pelajaran.mapel_id', '=', 'mata_pelajaran.id_mapel')
+            ->join('guru', 'jadwal_pelajaran.guru_id', '=', 'guru.id_guru')
+            ->where('jadwal_pelajaran.kelas_id', $kelasId)
+            ->select('jadwal_pelajaran.*', 'mata_pelajaran.nama_mapel', 'mata_pelajaran.kode_mapel', 'guru.nama_lengkap as nama_guru')
+            ->orderBy('jadwal_pelajaran.hari')
+            ->orderBy('jadwal_pelajaran.jam_mulai')
+            ->get();
         
         // Siswa yang belum masuk kelas ini
         $siswaAvailable = Siswa::whereDoesntHave('kelas', function($query) use ($kelasId) {
@@ -99,7 +122,7 @@ class KelasController extends Controller
         
         $guruList = Guru::all();
         
-        return view('Admin.detailKelas', compact('tahunAjaran', 'kelas', 'siswaAvailable', 'guruList'));
+        return view('Admin.detailKelas', compact('tahunAjaran', 'kelas', 'siswaAvailable', 'guruList', 'jadwalMapel'));
     }
 
     /**

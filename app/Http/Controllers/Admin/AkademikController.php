@@ -28,7 +28,8 @@ class AkademikController extends Controller
      */
     public function createMapel()
     {
-        return view('Admin.buatMapel');
+        $guruList = Guru::orderBy('nama_lengkap', 'asc')->get();
+        return view('Admin.buatMapel', compact('guruList'));
     }
 
     /**
@@ -40,16 +41,29 @@ class AkademikController extends Controller
             'nama_mapel' => 'required|string|max:255|unique:mata_pelajaran,nama_mapel',
             'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel',
             'kategori' => 'required|in:Umum,Kelas X,MIPA,IPS,Bahasa,Mulok',
+            'guru_id' => 'nullable|exists:guru,id_guru',
         ], [
             'nama_mapel.required' => 'Nama mata pelajaran wajib diisi',
             'nama_mapel.unique' => 'Mata pelajaran sudah terdaftar',
             'kode_mapel.required' => 'Kode mata pelajaran wajib diisi',
             'kode_mapel.unique' => 'Kode mata pelajaran sudah digunakan',
             'kategori.required' => 'Kategori wajib dipilih',
+            'guru_id.exists' => 'Guru yang dipilih tidak valid',
         ]);
 
         try {
-            MataPelajaran::create($validated);
+            // Simpan mata pelajaran
+            $mapel = MataPelajaran::create([
+                'nama_mapel' => $validated['nama_mapel'],
+                'kode_mapel' => $validated['kode_mapel'],
+                'kategori' => $validated['kategori'],
+            ]);
+
+            // Update guru jika dipilih
+            if (!empty($validated['guru_id'])) {
+                Guru::where('id_guru', $validated['guru_id'])
+                    ->update(['mapel_id' => $mapel->id_mapel]);
+            }
 
             return redirect()->route('admin.akademik.index')
                 ->with('success', 'Mata pelajaran berhasil ditambahkan');

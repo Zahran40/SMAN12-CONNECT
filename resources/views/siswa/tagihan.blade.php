@@ -13,23 +13,43 @@
         </button>
     </div>
 
+    @if(session('success'))
+        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="flex space-x-4 mb-6">
-        <button class="bg-blue-600 text-white font-medium px-6 py-2 rounded-lg text-sm shadow-md">
+        <a href="{{ route('siswa.tagihan') }}" class="bg-blue-600 text-white font-medium px-6 py-2 rounded-lg text-sm shadow-md">
             Belum Dibayar
-        </button>
-        <button data-tab="sudah" class="bg-white text-slate-600 font-medium px-6 py-2 rounded-lg text-sm border border-slate-300 hover:bg-slate-50">
+        </a>
+        <a href="{{ route('siswa.tagihan_sudah_dibayar') }}" class="bg-white text-slate-600 font-medium px-6 py-2 rounded-lg text-sm border border-slate-300 hover:bg-slate-50">
             Sudah Dibayarkan
-        </button>
+        </a>
     </div>
 
     <div class="space-y-6">
         
+        @forelse($tagihanBelumLunas as $tagihan)
         <div class="bg-white rounded-xl border-2 border-blue-600 overflow-hidden">
             
             <div class="p-5 flex justify-between items-start border-b border-slate-200">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800">Semester Genap 25/26</h3>
-                    <p class="text-sm text-slate-500">Desember</p>
+                    <h3 class="text-lg font-bold text-slate-800">{{ $tahunAjaranAktif->tahun_mulai }}/{{ $tahunAjaranAktif->tahun_selesai }}</h3>
+                    @php
+                        $bulanText = [
+                            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                        ];
+                    @endphp
+                    <p class="text-sm text-slate-500">{{ $bulanText[$tagihan->bulan] }} {{ $tagihan->tahun }}</p>
                 </div>
                 <span class="bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full">
                     Belum dibayar
@@ -46,15 +66,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
                         <div>
                             <p class="text-xs text-slate-500">Nama</p>
-                            <p class="font-medium text-slate-800">Nama Siswa</p>
+                            <p class="font-medium text-slate-800">{{ $siswa->nama_lengkap }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">NIS</p>
-                            <p class="font-medium text-slate-800">19013810922</p>
+                            <p class="font-medium text-slate-800">{{ $siswa->nis }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">Kelas</p>
-                            <p class="font-medium text-slate-800">Kelas 12-A</p>
+                            <p class="font-medium text-slate-800">{{ $siswa->kelas->nama_kelas ?? '-' }}</p>
                         </div>
                     </div>
                 </div>
@@ -67,15 +87,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
                         <div>
                             <p class="text-xs text-slate-500">Nama Tagihan</p>
-                            <p class="font-medium text-slate-800">Uang Sekolah Bulanan</p>
+                            <p class="font-medium text-slate-800">{{ $tagihan->nama_tagihan }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">Waktu Tagihan dibuat</p>
-                            <p class="font-medium text-slate-800">01 Desember 2025</p>
+                            <p class="font-medium text-slate-800">{{ $tagihan->created_at ? \Carbon\Carbon::parse($tagihan->created_at)->isoFormat('DD MMMM Y') : '-' }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">Nominal</p>
-                            <p class="font-medium text-slate-800">Rp 200.000</p>
+                            <p class="font-medium text-slate-800">Rp {{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</p>
                         </div>
                     </div>
                 </div>
@@ -83,18 +103,21 @@
             </div>
 
             <div class="p-5 flex justify-end border-t border-slate-200 bg-slate-50/50">
-                <a href="{{ route('siswa.detail_tagihan') }}" class="bg-blue-600 text-white font-medium px-10 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                <a href="{{ route('siswa.detail_tagihan', $tagihan->id_pembayaran) }}" class="bg-blue-600 text-white font-medium px-10 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
                     Bayar
                 </a>
             </div>
 
         </div>
-
+        @empty
+        <div class="bg-white rounded-xl border-2 border-slate-200 p-8 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-slate-500 text-lg">Tidak ada tagihan yang belum dibayar</p>
         </div>
+        @endforelse
 
-    <script>
-        window.TAGIHAN_PAID_URL = "{{ route('siswa.tagihan_sudah_dibayar') }}";
-    </script>
-    @vite('resources/js/tagihan.js')
+    </div>
 
 @endsection

@@ -379,37 +379,30 @@ class DataMasterController extends Controller
     }
 
     /**
-     * Detail kelas - Tab Siswa
+     * Detail kelas - Redirect ke detail kelas tahun ajaran
      */
     public function detailKelasSiswa($kelasId)
     {
-        $kelas = Kelas::with(['tahunAjaran', 'siswa.user'])->findOrFail($kelasId);
-        $siswaList = $kelas->siswa;
-        
-        return view('Admin.dataMasterSiswa', compact('kelas', 'siswaList'));
+        $kelas = Kelas::findOrFail($kelasId);
+        return redirect()->route('admin.kelas.show', [$kelas->tahun_ajaran_id, $kelasId]);
     }
 
     /**
-     * Detail kelas - Tab Guru
+     * Detail kelas - Redirect ke detail kelas tahun ajaran
      */
     public function detailKelasGuru($kelasId)
     {
-        $kelas = Kelas::with(['tahunAjaran'])->findOrFail($kelasId);
-        // Ambil guru yang mengajar di kelas ini melalui jadwal
-        $guruList = Guru::with('mataPelajaran')->get(); // Untuk sekarang ambil semua guru
-        
-        return view('Admin.dataMasterGuru', compact('kelas', 'guruList'));
+        $kelas = Kelas::findOrFail($kelasId);
+        return redirect()->route('admin.kelas.show', [$kelas->tahun_ajaran_id, $kelasId]);
     }
 
     /**
-     * Detail kelas - Tab Mapel
+     * Detail kelas - Redirect ke detail kelas tahun ajaran
      */
     public function detailKelasMapel($kelasId)
     {
-        $kelas = Kelas::with(['tahunAjaran'])->findOrFail($kelasId);
-        $mapelList = MataPelajaran::withCount('guru')->get();
-        
-        return view('Admin.dataMasterMapel', compact('kelas', 'mapelList'));
+        $kelas = Kelas::findOrFail($kelasId);
+        return redirect()->route('admin.kelas.show', [$kelas->tahun_ajaran_id, $kelasId]);
     }
 
     /**
@@ -418,30 +411,36 @@ class DataMasterController extends Controller
     public function listSiswa(Request $request)
     {
         $tahunAjaranId = $request->get('tahun_ajaran');
-        $semester = $request->get('semester', 'Genap');
+        $semester = $request->get('semester', 'Ganjil');
         $kelasId = $request->get('kelas');
 
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
-        
-        if (!$tahunAjaranId && $tahunAjaranAktif) {
-            $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran;
+
+        // Jika tidak ada tahun ajaran dipilih, gunakan yang aktif
+        if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
+            $tahunAjaranId = $tahunAjaranList->first()->id_tahun_ajaran;
         }
 
+        // Ambil daftar kelas berdasarkan tahun ajaran
+        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
+            ->get();
+        
         $query = Siswa::with(['kelas.tahunAjaran', 'user']);
         
         if ($tahunAjaranId) {
-            $kelasIds = Kelas::where('tahun_ajaran_id', $tahunAjaranId)->pluck('id_kelas');
-            $query->whereIn('kelas_id', $kelasIds);
+            $query->whereHas('kelas', function($q) use ($tahunAjaranId) {
+                $q->where('tahun_ajaran_id', $tahunAjaranId);
+            });
         }
-        
+
         if ($kelasId) {
             $query->where('kelas_id', $kelasId);
         }
         
-        $siswaList = $query->orderBy('nama_lengkap', 'asc')->get();
-        $kelasList = $tahunAjaranId ? Kelas::where('tahun_ajaran_id', $tahunAjaranId)->get() : collect();
-
+        $siswaList = $query->orderBy('nama_lengkap')->get();
+        
         return view('Admin.dataMaster_Siswa', compact('siswaList', 'tahunAjaranList', 'tahunAjaranId', 'semester', 'kelasId', 'kelasList'));
     }
 
@@ -451,42 +450,34 @@ class DataMasterController extends Controller
     public function listGuru(Request $request)
     {
         $tahunAjaranId = $request->get('tahun_ajaran');
-        $semester = $request->get('semester', 'Genap');
+        $semester = $request->get('semester', 'Ganjil');
         $kelasId = $request->get('kelas');
 
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
-        
-        if (!$tahunAjaranId && $tahunAjaranAktif) {
-            $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran;
+
+        // Jika tidak ada tahun ajaran dipilih, gunakan yang aktif
+        if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
+            $tahunAjaranId = $tahunAjaranList->first()->id_tahun_ajaran;
         }
 
+        // Ambil daftar kelas berdasarkan tahun ajaran
+        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
+            ->get();
+
         $guruList = Guru::with('mataPelajaran')->orderBy('nama_lengkap', 'asc')->get();
-        $kelasList = $tahunAjaranId ? Kelas::where('tahun_ajaran_id', $tahunAjaranId)->get() : collect();
 
         return view('Admin.dataMaster_Guru', compact('guruList', 'tahunAjaranList', 'tahunAjaranId', 'semester', 'kelasId', 'kelasList'));
     }
 
     /**
-     * Tampilan list mapel dengan filter
+     * Tampilan list mapel
      */
-    public function listMapel(Request $request)
+    public function listMapel()
     {
-        $tahunAjaranId = $request->get('tahun_ajaran');
-        $semester = $request->get('semester', 'Genap');
-        $kelasId = $request->get('kelas');
-
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
-        
-        if (!$tahunAjaranId && $tahunAjaranAktif) {
-            $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran;
-        }
-
         $mapelList = MataPelajaran::withCount('guru')->orderBy('nama_mapel', 'asc')->get();
-        $kelasList = $tahunAjaranId ? Kelas::where('tahun_ajaran_id', $tahunAjaranId)->get() : collect();
 
-        return view('Admin.dataMaster_Mapel', compact('mapelList', 'tahunAjaranList', 'tahunAjaranId', 'semester', 'kelasId', 'kelasList'));
+        return view('Admin.dataMaster_Mapel', compact('mapelList'));
     }
 }
-
