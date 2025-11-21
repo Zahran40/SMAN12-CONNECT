@@ -293,6 +293,7 @@
             const hour = document.getElementById('jam_buka_hour').value;
             const minute = document.getElementById('jam_buka_minute').value;
             document.getElementById('jam_absen_buka').value = hour + ':' + minute;
+            validateWaktuAbsen(); // Validasi setelah update
         }
 
         // Update hidden input jam tutup
@@ -300,6 +301,43 @@
             const hour = document.getElementById('jam_tutup_hour').value;
             const minute = document.getElementById('jam_tutup_minute').value;
             document.getElementById('jam_absen_tutup').value = hour + ':' + minute;
+            validateWaktuAbsen(); // Validasi setelah update
+        }
+
+        // Validasi waktu tutup harus setelah waktu buka
+        function validateWaktuAbsen() {
+            const jamBuka = document.getElementById('jam_absen_buka').value;
+            const jamTutup = document.getElementById('jam_absen_tutup').value;
+            const submitBtn = document.querySelector('#buatPertemuanForm button[type="submit"]');
+            const errorMsg = document.getElementById('waktu_error_msg');
+            
+            if (jamBuka && jamTutup) {
+                // Convert to minutes for comparison
+                const [bukaHour, bukaMenit] = jamBuka.split(':').map(Number);
+                const [tutupHour, tutupMenit] = jamTutup.split(':').map(Number);
+                const bukaTotalMenit = bukaHour * 60 + bukaMenit;
+                const tutupTotalMenit = tutupHour * 60 + tutupMenit;
+                
+                if (tutupTotalMenit <= bukaTotalMenit) {
+                    // Waktu tutup lebih awal atau sama dengan waktu buka
+                    if (!errorMsg) {
+                        const msgDiv = document.createElement('div');
+                        msgDiv.id = 'waktu_error_msg';
+                        msgDiv.className = 'text-red-600 text-xs font-semibold mt-1 flex items-center';
+                        msgDiv.innerHTML = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg> Waktu tutup harus setelah waktu buka';
+                        document.getElementById('jam_tutup_minute').parentElement.parentElement.appendChild(msgDiv);
+                    }
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    // Valid
+                    if (errorMsg) {
+                        errorMsg.remove();
+                    }
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
         }
 
         // Event listeners untuk dropdown

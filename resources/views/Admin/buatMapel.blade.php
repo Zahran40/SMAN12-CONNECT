@@ -72,29 +72,6 @@
                 @enderror
             </div>
 
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Guru Pengampu <span class="text-slate-400 text-xs">(Opsional)</span></label>
-                <div class="relative">
-                    <select name="guru_id" class="w-full appearance-none border-2 {{ $errors->has('guru_id') ? 'border-red-500' : 'border-blue-200' }} rounded-lg px-4 py-2.5 text-slate-700 pr-10 focus:outline-none focus:border-blue-500 bg-white">
-                        <option value="">-- Pilih Guru --</option>
-                        @foreach($guruList as $guru)
-                            <option value="{{ $guru->id_guru }}" {{ old('guru_id') == $guru->id_guru ? 'selected' : '' }}>
-                                {{ $guru->nama_lengkap }} - {{ $guru->nip }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-                @error('guru_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-                <p class="text-slate-500 text-xs mt-1">Pilih guru yang akan mengajar mata pelajaran ini</p>
-            </div>
-
             <div class="flex justify-end">
                 <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
                     <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
