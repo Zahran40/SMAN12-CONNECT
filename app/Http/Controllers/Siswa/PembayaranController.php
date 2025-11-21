@@ -204,6 +204,7 @@ class PembayaranController extends Controller
                     'transaction_status' => $response->transaction_status,
                     'payment_type' => $validated['metode_pembayaran'],
                     'va_number' => $nomorVa,
+                    'bank' => $request->bank ?? null,
                     'qr_code' => $qrCodeUrl,
                     'deeplink' => $deeplinkUrl,
                 ]
