@@ -87,10 +87,10 @@
                                 </p>
                             </div>
                         @elseif($isOpen)
-                            <a href="{{ route('siswa.detail_presensi', $pertemuan->id_pertemuan) }}"
+                            <button onclick="openAbsensiModal({{ $pertemuan->id_pertemuan }})"
                                class="block w-full md:w-48 py-3 bg-blue-500 text-white text-center text-sm font-bold rounded-lg hover:bg-blue-600 transition-colors shadow-sm shadow-blue-200">
                                 Isi Absensi
-                            </a>
+                            </button>
                         @elseif($isBeforeOpen)
                             <button disabled class="block w-full md:w-48 py-3 bg-slate-100 text-slate-400 text-center text-sm font-bold rounded-lg cursor-not-allowed">
                                 Belum Dibuka
@@ -119,5 +119,296 @@
         </a>
     </div>
 @endif
+
+<!-- Modal Absensi -->
+<div id="modal-absensi" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        
+        <!-- Header Modal -->
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0">
+            <h1 class="text-lg font-bold text-blue-600">Presensi Kelas</h1>
+            <button onclick="closeAbsensiModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content Modal -->
+        <div id="modal-content" class="p-6 space-y-4">
+            <div class="text-center py-8">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="mt-4 text-slate-500">Memuat data...</p>
+            </div>
+        </div>
+
+        <!-- Footer Modal -->
+        <div id="modal-footer" class="p-6 pt-2 flex justify-end space-x-3 bg-white border-t border-slate-100">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+</div>
+
+<script>
+let currentPertemuanId = null;
+let locationData = {
+    latitude: null,
+    longitude: null,
+    alamat_lengkap: null
+};
+
+function openAbsensiModal(pertemuanId) {
+    currentPertemuanId = pertemuanId;
+    const modal = document.getElementById('modal-absensi');
+    modal.classList.remove('hidden');
+    
+    // Reset location data
+    locationData = { latitude: null, longitude: null, alamat_lengkap: null };
+    
+    // Load detail pertemuan via AJAX (GPS detection akan dipanggil setelah content siap)
+    loadPertemuanDetail(pertemuanId);
+}
+
+function closeAbsensiModal() {
+    const modal = document.getElementById('modal-absensi');
+    modal.classList.add('hidden');
+    currentPertemuanId = null;
+}
+
+async function loadPertemuanDetail(pertemuanId) {
+    try {
+        const response = await fetch(`/siswa/pertemuan/${pertemuanId}/detail`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load');
+        
+        const data = await response.json();
+        displayPertemuanDetail(data);
+        
+    } catch (error) {
+        console.error('Error loading pertemuan:', error);
+        document.getElementById('modal-content').innerHTML = `
+            <div class="text-center py-8 text-red-600">
+                <p>Gagal memuat data. Silakan coba lagi.</p>
+            </div>
+        `;
+    }
+}
+
+function displayPertemuanDetail(data) {
+    const content = document.getElementById('modal-content');
+    const footer = document.getElementById('modal-footer');
+    
+    content.innerHTML = `
+        <div class="space-y-3 text-sm">
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Mata Pelajaran</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1 text-slate-800 font-semibold">${data.mapel}</div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Kelas</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1 text-slate-800 font-semibold">${data.kelas}</div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Guru Pengampu</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1 text-slate-800">${data.guru}</div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Deskripsi</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1 text-slate-800">
+                    Pertemuan ${data.nomor_pertemuan}<br>
+                    <span class="text-slate-500 text-xs">${data.topik || '-'}</span>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Tanggal</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1 text-slate-800">${data.tanggal}</div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Jam Presensi</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1 text-slate-800">${data.jam_presensi}</div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Jenis Presensi</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        Mandiri
+                    </span>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-32 text-slate-500 font-medium shrink-0">Lokasi Anda</div>
+                <div class="w-4 text-slate-500 text-center shrink-0">:</div>
+                <div class="flex-1 text-slate-700 text-sm leading-relaxed">
+                    <span id="location-status" class="text-slate-400 italic">Mendeteksi lokasi...</span>
+                    <p id="location-address" class="mt-1"></p>
+                    <p id="location-coords" class="text-xs text-slate-400 mt-1 font-mono"></p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    footer.innerHTML = `
+        <button onclick="closeAbsensiModal()" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors">
+            Batal
+        </button>
+        <button id="btn-submit-absen" onclick="submitAbsensi()" disabled class="px-6 py-2 rounded-lg bg-blue-300 text-white font-bold shadow-md cursor-not-allowed transition-all">
+            <span id="btn-text">Loading GPS...</span>
+        </button>
+    `;
+    
+    // Setelah content siap, baru jalankan GPS detection
+    detectLocation();
+}
+
+function detectLocation() {
+    const locationStatus = document.getElementById('location-status');
+    const locationAddress = document.getElementById('location-address');
+    const locationCoords = document.getElementById('location-coords');
+    const btnSubmit = document.getElementById('btn-submit-absen');
+    const btnText = document.getElementById('btn-text');
+    
+    if (!navigator.geolocation) {
+        if (locationStatus) locationStatus.textContent = '❌ Browser tidak mendukung GPS';
+        return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            locationData.latitude = lat;
+            locationData.longitude = lng;
+            
+            if (locationCoords) locationCoords.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            if (locationStatus) locationStatus.textContent = '';
+            
+            // Reverse geocoding
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        locationData.alamat_lengkap = data.display_name;
+                        if (locationAddress) locationAddress.textContent = data.display_name;
+                    } else {
+                        locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
+                    }
+                    
+                    // Enable button
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
+                    }
+                    if (btnText) btnText.textContent = 'Hadir';
+                })
+                .catch(error => {
+                    console.warn('Geocoding error:', error);
+                    locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
+                    
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
+                    }
+                    if (btnText) btnText.textContent = 'Hadir';
+                });
+        },
+        function(error) {
+            let errorMsg = '';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMsg = '❌ Izin akses lokasi ditolak';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMsg = '❌ Lokasi tidak tersedia';
+                    break;
+                case error.TIMEOUT:
+                    errorMsg = '❌ Waktu deteksi habis';
+                    break;
+                default:
+                    errorMsg = '❌ Error GPS';
+            }
+            if (locationStatus) {
+                locationStatus.textContent = errorMsg;
+                locationStatus.className = 'text-sm text-red-600';
+            }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
+async function submitAbsensi() {
+    if (!currentPertemuanId || !locationData.latitude || !locationData.longitude) {
+        alert('Data lokasi belum tersedia. Mohon tunggu.');
+        return;
+    }
+    
+    const btnSubmit = document.getElementById('btn-submit-absen');
+    const btnText = document.getElementById('btn-text');
+    
+    btnSubmit.disabled = true;
+    btnText.textContent = 'Menyimpan...';
+    
+    try {
+        const response = await fetch(`/siswa/presensi/${currentPertemuanId}/absen`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+                alamat_lengkap: locationData.alamat_lengkap
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Presensi berhasil dicatat!');
+            closeAbsensiModal();
+            // Reload halaman untuk update status
+            window.location.reload();
+        } else {
+            alert('❌ ' + (data.message || 'Gagal menyimpan presensi'));
+            btnSubmit.disabled = false;
+            btnText.textContent = 'Hadir';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Terjadi kesalahan. Silakan coba lagi.');
+        btnSubmit.disabled = false;
+        btnText.textContent = 'Hadir';
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('modal-absensi')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeAbsensiModal();
+    }
+});
+</script>
 
 @endsection
