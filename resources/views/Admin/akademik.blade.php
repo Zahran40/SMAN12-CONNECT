@@ -37,11 +37,11 @@
                         <img src="{{ asset('images/Book.png') }}" alt="Icon Mapel" class="w-16 h-16">
                     </div>
                     <div class="text-left mb-4">
-                        <p class="text-xs text-slate-500 mb-1">{{ now()->year }}/{{ now()->year + 1 }}</p>
                         <h4 class="text-blue-600 font-bold text-lg mb-1">{{ $mapel->nama_mapel }}</h4>
                         <div class="flex items-center text-slate-600 text-sm font-medium">
                              <span>Kode: {{ $mapel->kode_mapel }}</span>
                         </div>
+                        <p class="text-xs text-slate-500 mt-1">Kategori: {{ $mapel->kategori }}</p>
                     </div>
                     <a href="{{ route('admin.akademik.mapel.show', $mapel->id_mapel) }}" class="bg-blue-400 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold transition-colors mt-auto text-center">
                         Detail

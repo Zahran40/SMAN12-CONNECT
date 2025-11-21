@@ -5,7 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
 use App\Models\JadwalPelajaran;
+use App\Models\TahunAjaran;
 use App\Observers\JadwalPelajaranObserver;
+use App\Observers\TahunAjaranObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,7 +29,8 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
         
-        // Register JadwalPelajaran Observer
+        // Register Observers
         JadwalPelajaran::observe(JadwalPelajaranObserver::class);
+        TahunAjaran::observe(TahunAjaranObserver::class);
     }
 }

@@ -41,23 +41,6 @@
                 @endif
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                    <label class="font-bold text-slate-700">Kelas</label>
-                    <div class="md:col-span-2">
-                        <select name="kelas_id" required class="w-full border {{ $errors->has('kelas_id') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 bg-white">
-                            <option value="">Pilih Kelas</option>
-                            @foreach($kelasList as $kelas)
-                                <option value="{{ $kelas->id_kelas }}" {{ (old('kelas_id', isset($siswa) ? $siswa->kelas_id : '') == $kelas->id_kelas) ? 'selected' : '' }}>
-                                    {{ $kelas->nama_kelas }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('kelas_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                     <label class="font-bold text-slate-700">Nama</label>
                     <div class="md:col-span-2">
                         <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $siswa->nama_lengkap ?? '') }}" required placeholder="Masukkan Nama Siswa" class="w-full border {{ $errors->has('nama_lengkap') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
@@ -201,6 +184,34 @@
                         @error('golongan_darah')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
+                    </div>
+                </div>
+
+                {{-- Informasi Kelas (Opsional saat create, bisa diisi lewat Detail Kelas) --}}
+                <div class="border-t border-slate-200 pt-6 mt-6">
+                    <h3 class="text-lg font-bold text-blue-600 mb-4">Informasi Kelas (Opsional)</h3>
+                    <p class="text-sm text-slate-500 mb-4">
+                        Anda bisa melewati bagian ini dan menambahkan siswa ke kelas nanti melalui halaman <strong>Detail Kelas</strong>
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                        <label class="font-bold text-slate-700">Kelas</label>
+                        <div class="md:col-span-2">
+                            <select name="kelas_id" class="w-full border {{ $errors->has('kelas_id') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 bg-white">
+                                <option value="">Tidak Assign Kelas (Bisa diatur nanti)</option>
+                                @foreach($kelasList as $kelas)
+                                    <option value="{{ $kelas->id_kelas }}" {{ (old('kelas_id', isset($siswa) ? $siswa->kelas_id : '') == $kelas->id_kelas) ? 'selected' : '' }}>
+                                        {{ $kelas->nama_kelas }} - {{ $kelas->tahunAjaran->tahun_mulai }}/{{ $kelas->tahunAjaran->tahun_selesai }} {{ $kelas->tahunAjaran->semester }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('kelas_id')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                            <p class="text-sm text-slate-500 mt-2">
+                                <strong>Catatan:</strong> Siswa akan otomatis masuk ke tabel <code>siswa_kelas</code> untuk tracking historis kelas per tahun ajaran
+                            </p>
+                        </div>
                     </div>
                 </div>
 

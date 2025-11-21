@@ -48,22 +48,48 @@ class Siswa extends Model
         return $this->hasMany(Raport::class, 'siswa_id', 'id_siswa');
     }
 
-    // Relasi ke Kelas
+    // Relasi ke Kelas (deprecated - gunakan kelasAktif() untuk data aktual)
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id', 'id_kelas');
     }
 
-    // Relasi ke Tahun Ajaran (melalui kelas)
-    public function tahunAjaran()
+    /**
+     * Relasi Many-to-Many ke Kelas melalui siswa_kelas
+     */
+    public function kelasHistory()
     {
-        return $this->hasOneThrough(
-            TahunAjaran::class,
+        return $this->belongsToMany(
             Kelas::class,
-            'id_kelas',
-            'id_tahun_ajaran',
+            'siswa_kelas',
+            'siswa_id',
             'kelas_id',
-            'tahun_ajaran_id'
-        );
+            'id_siswa',
+            'id_kelas'
+        )->withPivot('tahun_ajaran_id', 'status', 'tanggal_masuk', 'tanggal_keluar');
+    }
+
+    /**
+     * Kelas aktif siswa saat ini
+     */
+    public function kelasAktif()
+    {
+        return $this->belongsToMany(
+            Kelas::class,
+            'siswa_kelas',
+            'siswa_id',
+            'kelas_id',
+            'id_siswa',
+            'id_kelas'
+        )->wherePivot('status', 'Aktif')
+         ->withPivot('tahun_ajaran_id', 'status', 'tanggal_masuk');
+    }
+
+    /**
+     * Relasi ke SiswaKelas
+     */
+    public function siswaKelas()
+    {
+        return $this->hasMany(SiswaKelas::class, 'siswa_id', 'id_siswa');
     }
 }

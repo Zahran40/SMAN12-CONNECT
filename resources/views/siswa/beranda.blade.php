@@ -96,29 +96,28 @@
                             <div>
                                 <h4 class="font-semibold text-slate-800">{{ $pertemuan->nama_mapel }}</h4>
                                 <p class="text-sm text-slate-500">{{ $pertemuan->nama_guru }}</p>
-                                <p class="text-xs text-blue-400 mt-1">
-                                    Dibuka: {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '-' }} - 
+                                <p class="text-xs text-slate-600 mt-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3 inline">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+                                    Waktu Absen: {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '-' }} - 
                                     {{ $pertemuan->jam_absen_tutup ? substr($pertemuan->jam_absen_tutup, 0, 5) : '-' }}
                                 </p>
                             </div>
-                            <div class="flex items-center space-x-2 text-sm text-blue-400 font-medium">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                <span>{{ $pertemuan->waktu_mulai ?? '-' }} - {{ $pertemuan->waktu_selesai ?? '-' }}</span>
+                            <div class="text-center">
+                                @if($pertemuan->sudah_absen)
+                                    <span class="bg-green-100 text-green-700 text-sm font-medium px-5 py-2 rounded-full">
+                                        ✓ Sudah Absen
+                                    </span>
+                                @else
+                                    <form action="{{ route('siswa.absen', $pertemuan->id_pertemuan) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="bg-blue-400 text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-blue-500 transition-colors">
+                                            Presensi Sekarang
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
-                            @if($pertemuan->sudah_absen)
-                                <span class="bg-green-100 text-green-700 text-sm font-medium px-5 py-2 rounded-full">
-                                    ✓ Sudah Absen
-                                </span>
-                            @else
-                                <form action="{{ route('siswa.absen', $pertemuan->id_pertemuan) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="bg-blue-400 text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-blue-500 transition-colors">
-                                        Presensi
-                                    </button>
-                                </form>
-                            @endif
                         </div>
                     @endforeach
                 </div>

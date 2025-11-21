@@ -18,7 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
-        // 2. MATIKAN CSRF KHUSUS MIDTRANS
+        // 2. Global Middleware untuk set database session
+        $middleware->append(\App\Http\Middleware\SetDatabaseSession::class);
+
+        // 3. MATIKAN CSRF KHUSUS MIDTRANS
         // Sesuaikan dengan route yang ada di api.php
         $middleware->validateCsrfTokens(except: [
             'api/payment/midtrans/notification', // <--- INI YANG PALING PENTING (Sesuai api.php)

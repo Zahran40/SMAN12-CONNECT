@@ -164,11 +164,31 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Mulai</label>
-                    <input type="time" name="jam_mulai" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <select name="jam_mulai" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                        <option value="">Pilih Jam Mulai</option>
+                        @for($h = 6; $h <= 20; $h++)
+                            @for($m = 0; $m < 60; $m += 30)
+                                <option value="{{ sprintf('%02d:%02d', $h, $m) }}">
+                                    {{ sprintf('%02d:%02d', $h, $m) }}
+                                </option>
+                            @endfor
+                        @endfor
+                    </select>
+                    <p class="text-xs text-slate-500 mt-1">Format 24 jam (06:00 - 20:30)</p>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Selesai</label>
-                    <input type="time" name="jam_selesai" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <select name="jam_selesai" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                        <option value="">Pilih Jam Selesai</option>
+                        @for($h = 6; $h <= 20; $h++)
+                            @for($m = 0; $m < 60; $m += 30)
+                                <option value="{{ sprintf('%02d:%02d', $h, $m) }}">
+                                    {{ sprintf('%02d:%02d', $h, $m) }}
+                                </option>
+                            @endfor
+                        @endfor
+                    </select>
+                    <p class="text-xs text-slate-500 mt-1">Format 24 jam (06:00 - 20:30)</p>
                 </div>
             </div>
 
