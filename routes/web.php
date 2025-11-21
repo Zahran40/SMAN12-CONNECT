@@ -43,6 +43,9 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/presensi/{jadwal_id}/list', [App\Http\Controllers\Siswa\PresensiController::class, 'listPertemuan'])->name('list_presensi');
     Route::get('/presensi/detail/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'detail'])->name('detail_presensi');
     Route::post('/presensi/absen/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'absen'])->name('absen');
+    // AJAX routes for modal
+    Route::get('/pertemuan/{pertemuan_id}/detail', [App\Http\Controllers\Siswa\PresensiController::class, 'getPertemuanDetail']);
+    Route::post('/presensi/{pertemuan_id}/absen', [App\Http\Controllers\Siswa\PresensiController::class, 'absenAjax']);
 
     // MATERI ROUTES - Using Controller
     Route::get('/materi', [App\Http\Controllers\Siswa\MateriController::class, 'index'])->name('materi');
@@ -143,7 +146,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/tahun-ajaran/{id}', [TahunAjaranController::class, 'show'])->name('tahun-ajaran.show');
     Route::put('/tahun-ajaran/{id}/status', [TahunAjaranController::class, 'updateStatus'])->name('tahun-ajaran.update-status');
     Route::delete('/tahun-ajaran/{id}', [TahunAjaranController::class, 'destroy'])->name('tahun-ajaran.destroy');
-    Route::delete('/tahun-ajaran-inactive/bulk-delete', [TahunAjaranController::class, 'destroyInactive'])->name('tahun-ajaran.destroy-inactive');
+    Route::delete('/tahun-ajaran-inactive/destroy-all', [TahunAjaranController::class, 'destroyInactive'])->name('tahun-ajaran.destroy-inactive');
 
     // KELAS ROUTES
     Route::get('/kelas', [App\Http\Controllers\Admin\KelasController::class, 'all'])->name('kelas.all');
@@ -153,8 +156,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}', [App\Http\Controllers\Admin\KelasController::class, 'show'])->name('kelas.show');
     Route::post('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/add-siswa', [App\Http\Controllers\Admin\KelasController::class, 'addSiswa'])->name('kelas.add-siswa');
     Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/siswa/{siswaId}', [App\Http\Controllers\Admin\KelasController::class, 'removeSiswa'])->name('kelas.remove-siswa');
-    Route::post('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/add-mapel', [App\Http\Controllers\Admin\KelasController::class, 'addMapel'])->name('kelas.add-mapel');
-    Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/jadwal/{jadwalId}', [App\Http\Controllers\Admin\KelasController::class, 'removeMapel'])->name('kelas.remove-mapel');
     Route::put('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/wali-kelas', [App\Http\Controllers\Admin\KelasController::class, 'updateWaliKelas'])->name('kelas.update-wali');
     Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}', [App\Http\Controllers\Admin\KelasController::class, 'destroy'])->name('kelas.destroy');
 
@@ -237,27 +238,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/pendataan-guru', function() {
         return redirect()->route('admin.data-master.guru.create');
     });
-});
-
-// Test route untuk debug kelas siswa
-Route::get('/test-kelas-siswa', function () {
-    $kelas = \App\Models\Kelas::with(['siswaAktif'])->find(1);
-    
-    return response()->json([
-        'kelas_id' => $kelas->id_kelas,
-        'nama_kelas' => $kelas->nama_kelas,
-        'tahun_ajaran_id' => $kelas->tahun_ajaran_id,
-        'jumlah_siswa_aktif' => $kelas->siswaAktif->count(),
-        'siswa_list' => $kelas->siswaAktif->map(function($s) {
-            return [
-                'id' => $s->id_siswa,
-                'nama' => $s->nama_lengkap,
-                'nis' => $s->nis,
-                'pivot_status' => $s->pivot->status,
-                'pivot_tahun_ajaran_id' => $s->pivot->tahun_ajaran_id,
-            ];
-        }),
-    ]);
 });
 
 
