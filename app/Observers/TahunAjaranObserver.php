@@ -10,13 +10,21 @@ class TahunAjaranObserver
 {
     /**
      * Handle the TahunAjaran "created" event.
-     * Auto-create 36 kelas (12 kelas x 3 tingkat) saat tahun ajaran baru dibuat
+     * Auto-create 30 kelas (10 kelas x 3 tingkat) HANYA untuk semester Ganjil
+     * Semester Genap menggunakan kelas yang sama
      */
     public function created(TahunAjaran $tahunAjaran): void
     {
         Log::info("🎓 Observer: Tahun Ajaran baru dibuat - {$tahunAjaran->tahun_mulai}/{$tahunAjaran->tahun_selesai} {$tahunAjaran->semester}");
         
-        // Template kelas untuk SMA Negeri 12 (standar)
+        // HANYA create kelas untuk semester Ganjil
+        // Semester Genap akan menggunakan kelas yang sama
+        if ($tahunAjaran->semester !== 'Ganjil') {
+            Log::info("ℹ️ Observer: Skip create kelas untuk semester {$tahunAjaran->semester} (kelas sudah dibuat di semester Ganjil)");
+            return;
+        }
+        
+        // Template kelas untuk SMA Negeri 12 Medan
         $kelasTemplate = $this->getKelasTemplate();
         
         $createdCount = 0;
@@ -36,7 +44,7 @@ class TahunAjaranObserver
             }
         }
         
-        Log::info("✅ Observer: Berhasil create {$createdCount}/36 kelas untuk tahun ajaran {$tahunAjaran->id_tahun_ajaran}");
+        Log::info("✅ Observer: Berhasil create {$createdCount}/30 kelas untuk tahun ajaran {$tahunAjaran->id_tahun_ajaran}");
     }
 
     /**
@@ -63,44 +71,67 @@ class TahunAjaranObserver
     }
 
     /**
-     * Template 36 kelas standar untuk SMA Negeri 12
+     * Template 30 kelas standar untuk SMA Negeri 12 Medan
      * 
      * Format:
-     * - Tingkat 10: X-1 s/d X-12 (IPA: 8 kelas, IPS: 4 kelas)
-     * - Tingkat 11: XI-1 s/d XI-12 (IPA: 8 kelas, IPS: 4 kelas)
-     * - Tingkat 12: XII-1 s/d XII-12 (IPA: 8 kelas, IPS: 4 kelas)
+     * - Tingkat 10: X-MIPA-1 s/d X-MIPA-5, X-IPS-1 s/d X-IPS-5 (Total: 10 kelas)
+     * - Tingkat 11: XI-MIPA-1 s/d XI-MIPA-5, XI-IPS-1 s/d XI-IPS-5 (Total: 10 kelas)
+     * - Tingkat 12: XII-MIPA-1 s/d XII-MIPA-5, XII-IPS-1 s/d XII-IPS-5 (Total: 10 kelas)
+     * 
+     * Total: 30 kelas per tahun ajaran
      */
     private function getKelasTemplate(): array
     {
         $template = [];
         
-        // Tingkat 10 (Kelas X)
-        for ($i = 1; $i <= 12; $i++) {
+        // Tingkat 10 (Kelas X): 5 MIPA + 5 IPS
+        for ($i = 1; $i <= 5; $i++) {
             $template[] = [
-                'nama_kelas' => "X-{$i}",
+                'nama_kelas' => "X-MIPA-{$i}",
                 'tingkat' => '10',
-                'jurusan' => ($i <= 8) ? 'IPA' : 'IPS', // 1-8: IPA, 9-12: IPS
+                'jurusan' => 'MIPA',
+            ];
+        }
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "X-IPS-{$i}",
+                'tingkat' => '10',
+                'jurusan' => 'IPS',
             ];
         }
         
-        // Tingkat 11 (Kelas XI)
-        for ($i = 1; $i <= 12; $i++) {
+        // Tingkat 11 (Kelas XI): 5 MIPA + 5 IPS
+        for ($i = 1; $i <= 5; $i++) {
             $template[] = [
-                'nama_kelas' => "XI-{$i}",
+                'nama_kelas' => "XI-MIPA-{$i}",
                 'tingkat' => '11',
-                'jurusan' => ($i <= 8) ? 'IPA' : 'IPS',
+                'jurusan' => 'MIPA',
             ];
         }
-        
-        // Tingkat 12 (Kelas XII)
-        for ($i = 1; $i <= 12; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $template[] = [
-                'nama_kelas' => "XII-{$i}",
-                'tingkat' => '12',
-                'jurusan' => ($i <= 8) ? 'IPA' : 'IPS',
+                'nama_kelas' => "XI-IPS-{$i}",
+                'tingkat' => '11',
+                'jurusan' => 'IPS',
             ];
         }
         
-        return $template; // Total: 36 kelas
+        // Tingkat 12 (Kelas XII): 5 MIPA + 5 IPS
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "XII-MIPA-{$i}",
+                'tingkat' => '12',
+                'jurusan' => 'MIPA',
+            ];
+        }
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "XII-IPS-{$i}",
+                'tingkat' => '12',
+                'jurusan' => 'IPS',
+            ];
+        }
+        
+        return $template; // Total: 30 kelas
     }
 }

@@ -72,13 +72,11 @@ class DataMasterController extends Controller
     {
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
         
-        // Ambil kelas yang tersedia (tahun ajaran aktif prioritas)
+        // Ambil kelas dari tahun ajaran aktif saja
         $kelasList = Kelas::with('tahunAjaran')
             ->whereHas('tahunAjaran', function($query) {
-                $query->orderBy('status', 'desc') // Aktif dulu
-                      ->orderBy('tahun_mulai', 'desc');
+                $query->where('status', 'Aktif');
             })
-            ->orderBy('tahun_ajaran_id', 'desc')
             ->orderBy('nama_kelas')
             ->get();
         
@@ -93,9 +91,11 @@ class DataMasterController extends Controller
         $siswa = Siswa::with('kelas', 'user')->findOrFail($id);
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
         
-        // Ambil kelas yang tersedia
+        // Ambil kelas dari tahun ajaran aktif saja
         $kelasList = Kelas::with('tahunAjaran')
-            ->orderBy('tahun_ajaran_id', 'desc')
+            ->whereHas('tahunAjaran', function($query) {
+                $query->where('status', 'Aktif');
+            })
             ->orderBy('nama_kelas')
             ->get();
         
