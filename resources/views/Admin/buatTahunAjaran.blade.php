@@ -45,66 +45,171 @@
             @csrf
         
         <div class="mb-8">
-            <h2 class="text-lg font-semibold text-blue-700 mb-4">Tahun & Semester</h2>
+            <h2 class="text-lg font-semibold text-blue-700 mb-4">Informasi Tahun Ajaran</h2>
+
+            {{-- Info Box --}}
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-semibold text-blue-800">Sistem akan otomatis membuat 2 semester:</p>
+                        <ul class="mt-2 text-sm text-blue-700 space-y-1">
+                            <li>✓ <strong>Semester Ganjil</strong> (Juli - Desember) - Status: <span class="text-green-600 font-semibold">Aktif</span></li>
+                            <li>✓ <strong>Semester Genap</strong> (Januari - Juni) - Status: Tidak Aktif</li>
+                        </ul>
+                        <p class="mt-2 text-xs text-blue-600">💡 Anda bisa mengaktifkan Semester Genap nanti di halaman Manajemen Tahun Ajaran</p>
+                    </div>
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
                 <div>
-                    <label class="block text-gray-700 font-medium mb-1">Tahun Ajaran</label>
-                    <select name="tahun_ajaran" required class="border {{ $errors->has('tahun_ajaran') ? 'border-red-500' : 'border-gray-300' }} rounded-lg p-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-400">
+                    <label class="block text-gray-700 font-medium mb-2">Tahun Mulai <span class="text-red-500">*</span></label>
+                    <select name="tahun_mulai" required class="border {{ $errors->has('tahun_mulai') ? 'border-red-500' : 'border-gray-300' }} rounded-lg p-3 w-full focus:ring focus:ring-blue-200 focus:border-blue-400 text-base">
+                        <option value="">Pilih Tahun Mulai</option>
                         @php
                             $currentYear = date('Y');
-                            $selectedYear = old('tahun_ajaran', $currentYear . '/' . ($currentYear + 1));
+                            $defaultTahunMulai = old('tahun_mulai', $currentYear);
                         @endphp
                         @for ($year = $currentYear - 1; $year <= $currentYear + 5; $year++)
-                            <option value="{{ $year }}/{{ $year + 1 }}" {{ $selectedYear == $year . '/' . ($year + 1) ? 'selected' : '' }}>
-                                {{ $year }}/{{ $year + 1 }}
+                            <option value="{{ $year }}" {{ $defaultTahunMulai == $year ? 'selected' : '' }}>
+                                {{ $year }}
                             </option>
                         @endfor
                     </select>
-                    @error('tahun_ajaran')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @error('tahun_mulai')
+                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                     @enderror
                 </div>
 
-               
-                <div class="mt-6">
-                    <label class="block text-gray-700 font-medium mb-1">Semester</label>
-                    <select name="semester" required class="border {{ $errors->has('semester') ? 'border-red-500' : 'border-gray-300' }} rounded-lg p-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-400">
-                        <option value="Ganjil" {{ old('semester') == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
-                        <option value="Genap" {{ old('semester', 'Genap') == 'Genap' ? 'selected' : '' }}>Genap</option>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Tahun Selesai <span class="text-red-500">*</span></label>
+                    <select name="tahun_selesai" required class="border {{ $errors->has('tahun_selesai') ? 'border-red-500' : 'border-gray-300' }} rounded-lg p-3 w-full focus:ring focus:ring-blue-200 focus:border-blue-400 text-base">
+                        <option value="">Pilih Tahun Selesai</option>
+                        @php
+                            $defaultTahunSelesai = old('tahun_selesai', $currentYear + 1);
+                        @endphp
+                        @for ($year = $currentYear; $year <= $currentYear + 6; $year++)
+                            <option value="{{ $year }}" {{ $defaultTahunSelesai == $year ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endfor
                     </select>
-                    @error('semester')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @error('tahun_selesai')
+                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
-            <div class="mt-6">
-                <label class="block text-gray-700 font-medium mb-1">Status</label>
-                <select name="status" required class="border {{ $errors->has('status') ? 'border-red-500' : 'border-gray-300' }} rounded-lg p-2 w-full md:w-1/2 focus:ring focus:ring-blue-200 focus:border-blue-400">
-                    <option value="Aktif" {{ old('status', 'Aktif') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                    <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
-                </select>
-                @error('status')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
+            {{-- Preview Tahun Ajaran --}}
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <p class="text-sm text-gray-600 mb-2">Preview Tahun Ajaran:</p>
+                <p class="text-2xl font-bold text-blue-700" id="preview-tahun-ajaran">-</p>
+            </div>
+
+            {{-- Warning Duplikasi --}}
+            <div id="warning-duplikasi" class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg hidden">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-yellow-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-semibold text-yellow-800">⚠️ Tahun Ajaran Sudah Terdaftar</p>
+                        <p class="text-sm text-yellow-700 mt-1">Tahun ajaran <strong id="duplicate-year"></strong> sudah ada dalam sistem. Silakan pilih tahun yang berbeda.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         
         <div class="mt-10 text-right">
-            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-xl shadow transition">
-                <div class="flex items-center gap-0.2">
-                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6  ">
-                    <i class="fa-solid fa-upload mr-2"></i> Simpan Tahun Ajaran
+            <button type="submit" id="submit-button" class="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-xl shadow transition">
+                <div class="flex items-center gap-2">
+                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
+                    <span>Buat Tahun Ajaran (2 Semester)</span>
                 </div>
-
             </button>
         </div>
         </form>
     </div>
 </div>
+
+<script>
+    // Data tahun ajaran yang sudah ada (dari controller)
+    const existingYears = @json($existingYears ?? []);
+
+    // Preview tahun ajaran saat user memilih tahun
+    document.addEventListener('DOMContentLoaded', function() {
+        const tahunMulai = document.querySelector('select[name="tahun_mulai"]');
+        const tahunSelesai = document.querySelector('select[name="tahun_selesai"]');
+        const preview = document.getElementById('preview-tahun-ajaran');
+        const warningBox = document.getElementById('warning-duplikasi');
+        const duplicateYear = document.getElementById('duplicate-year');
+        const submitButton = document.getElementById('submit-button');
+        
+        function updatePreview() {
+            const mulai = tahunMulai.value;
+            const selesai = tahunSelesai.value;
+            
+            if (mulai && selesai) {
+                const tahunAjaran = mulai + '/' + selesai;
+                
+                // Validasi tahun selesai harus lebih besar
+                if (parseInt(selesai) <= parseInt(mulai)) {
+                    preview.textContent = '⚠️ Tahun selesai harus lebih besar dari tahun mulai';
+                    preview.className = 'text-2xl font-bold text-red-600';
+                    warningBox.classList.add('hidden');
+                    submitButton.disabled = true;
+                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitButton.classList.remove('hover:bg-green-600');
+                    return;
+                }
+                
+                // Cek duplikasi
+                if (existingYears.includes(tahunAjaran)) {
+                    preview.textContent = tahunAjaran;
+                    preview.className = 'text-2xl font-bold text-yellow-600';
+                    duplicateYear.textContent = tahunAjaran;
+                    warningBox.classList.remove('hidden');
+                    submitButton.disabled = true;
+                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitButton.classList.remove('hover:bg-green-600');
+                } else {
+                    preview.textContent = tahunAjaran + ' ✓';
+                    preview.className = 'text-2xl font-bold text-green-600';
+                    warningBox.classList.add('hidden');
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    submitButton.classList.add('hover:bg-green-600');
+                }
+            } else {
+                preview.textContent = '-';
+                preview.className = 'text-2xl font-bold text-gray-400';
+                warningBox.classList.add('hidden');
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                submitButton.classList.remove('hover:bg-green-600');
+            }
+        }
+        
+        tahunMulai.addEventListener('change', updatePreview);
+        tahunSelesai.addEventListener('change', updatePreview);
+        
+        // Auto-update tahun selesai saat tahun mulai dipilih
+        tahunMulai.addEventListener('change', function() {
+            if (this.value) {
+                const nextYear = parseInt(this.value) + 1;
+                tahunSelesai.value = nextYear;
+                updatePreview();
+            }
+        });
+        
+        // Initial preview
+        updatePreview();
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 @endsection

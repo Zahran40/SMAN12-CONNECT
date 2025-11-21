@@ -12,7 +12,7 @@ return new class extends Migration
     {
         // View 1: Jadwal Mengajar Guru
         DB::statement("
-            CREATE VIEW view_jadwal_mengajar AS
+            CREATE OR REPLACE VIEW view_jadwal_mengajar AS
             SELECT 
                 jp.id_jadwal,
                 jp.guru_id,
@@ -36,7 +36,7 @@ return new class extends Migration
 
         // View 2: Jadwal Pelajaran Siswa
         DB::statement("
-            CREATE VIEW view_jadwal_siswa AS
+            CREATE OR REPLACE VIEW view_jadwal_siswa AS
             SELECT 
                 jp.id_jadwal,
                 jp.kelas_id,
@@ -59,7 +59,7 @@ return new class extends Migration
 
         // View 3: Presensi Aktif (untuk siswa)
         DB::statement("
-            CREATE VIEW view_presensi_aktif AS
+            CREATE OR REPLACE VIEW view_presensi_aktif AS
             SELECT 
                 p.id_pertemuan,
                 p.jadwal_id,
@@ -97,7 +97,7 @@ return new class extends Migration
 
         // View 4: Status Absensi Siswa
         DB::statement("
-            CREATE VIEW view_status_absensi_siswa AS
+            CREATE OR REPLACE VIEW view_status_absensi_siswa AS
             SELECT 
                 da.id_detail_absensi,
                 da.pertemuan_id,

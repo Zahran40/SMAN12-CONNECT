@@ -3,23 +3,56 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\TahunAjaran;
+use App\Models\Kelas;
+use App\Models\JadwalPelajaran;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
+        $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        $this->command->info("🌱 MULAI SEEDING DATABASE SMAN12-CONNECT");
+        $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
         // ============================================
-        // BUAT 3 USER UNTUK TESTING: ADMIN, GURU, SISWA
+        // 1️⃣ TAHUN AJARAN & KELAS (via Observer)
         // ============================================
+        $this->command->info("\n1️⃣ Seeding Tahun Ajaran & Kelas...");
+        $this->call(TahunAjaranSeeder::class);
+
+        // Ambil tahun ajaran aktif untuk digunakan di seeder selanjutnya
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        
+        if (!$tahunAjaranAktif) {
+            $this->command->error("❌ Tidak ada tahun ajaran aktif!");
+            return;
+        }
+        
+        $this->command->info("✅ Tahun ajaran aktif: {$tahunAjaranAktif->tahun_mulai}/{$tahunAjaranAktif->tahun_selesai} {$tahunAjaranAktif->semester}");
+
+        // Ambil kelas X-1 IPA untuk siswa testing
+        $kelasX1 = Kelas::where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
+            ->where('nama_kelas', 'X-1')
+            ->where('tingkat', '10')
+            ->where('jurusan', 'IPA')
+            ->first();
+
+        if (!$kelasX1) {
+            $this->command->error("❌ Kelas X-1 IPA tidak ditemukan!");
+            return;
+        }
+
+        // ============================================
+        // 2️⃣ USERS: ADMIN, GURU, SISWA
+        // ============================================
+        $this->command->info("\n2️⃣ Seeding Users...");
 
         // 1. ADMIN (admin2)
         $admin = User::firstOrCreate(
@@ -37,6 +70,7 @@ class DatabaseSeeder extends Seeder
             $admin->createDatabaseUser();
             $admin->applyRoleGrants();
         }
+        $this->command->info("✅ Admin: {$admin->email}");
 
         // 2. GURU (guru1)
         // Buat data di tabel guru dulu
@@ -78,44 +112,9 @@ class DatabaseSeeder extends Seeder
             $guru->createDatabaseUser();
             $guru->applyRoleGrants();
         }
+        $this->command->info("✅ Guru: {$guru->email} (NIP: 11111)");
 
         // 3. SISWA (siswa1)
-        // Pastikan kelas ada
-        $kelas = DB::table('kelas')->first();
-        $tahunAjaranId = null; // Initialize variable
-        $kelasId = null; // Initialize variable
-        
-        if (!$kelas) {
-            // Buat tahun ajaran dulu
-            $tahunAjaran = DB::table('tahun_ajaran')
-                ->where('tahun_mulai', '2024')
-                ->where('tahun_selesai', '2025')
-                ->where('semester', 'Ganjil')
-                ->first();
-            
-            if (!$tahunAjaran) {
-                $tahunAjaranId = DB::table('tahun_ajaran')->insertGetId([
-                    'tahun_mulai' => '2024',
-                    'tahun_selesai' => '2025',
-                    'semester' => 'Ganjil',
-                    'status' => 'Aktif',
-                ]);
-            } else {
-                $tahunAjaranId = $tahunAjaran->id_tahun_ajaran;
-            }
-
-            // Buat kelas
-            $kelasId = DB::table('kelas')->insertGetId([
-                'nama_kelas' => 'X-2',
-                'tingkat' => '10',
-                'jurusan' => 'IPA',
-                'tahun_ajaran_id' => $tahunAjaranId,
-            ]);
-        } else {
-            $kelasId = $kelas->id_kelas;
-            $tahunAjaranId = $kelas->tahun_ajaran_id;
-        }
-
         // Buat data di tabel siswa
         $siswaData = DB::table('siswa')->where('nisn', '12345')->first();
         if (!$siswaData) {
@@ -131,7 +130,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'budi.santoso@sman12.com',
                 'agama' => 'Islam',
                 'golongan_darah' => 'O',
-                'kelas_id' => $kelasId,
+                'kelas_id' => $kelasX1->id_kelas, // Menggunakan kelas X-1 IPA
             ]);
         } else {
             $siswaId = $siswaData->id_siswa;
@@ -152,15 +151,35 @@ class DatabaseSeeder extends Seeder
         // ✅ UPDATE user_id di tabel siswa
         DB::table('siswa')->where('id_siswa', $siswaId)->update(['user_id' => $siswa->id]);
         
+        // ✅ INSERT ke siswa_kelas jika belum ada (untuk relasi many-to-many)
+        $siswaKelasExists = DB::table('siswa_kelas')
+            ->where('siswa_id', $siswaId)
+            ->where('kelas_id', $kelasX1->id_kelas)
+            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
+            ->exists();
+        
+        if (!$siswaKelasExists) {
+            DB::table('siswa_kelas')->insert([
+                'siswa_id' => $siswaId,
+                'kelas_id' => $kelasX1->id_kelas,
+                'tahun_ajaran_id' => $tahunAjaranAktif->id_tahun_ajaran,
+                'status' => 'Aktif',
+                'tanggal_masuk' => now(),
+                // TIDAK ADA created_at & updated_at (tabel siswa_kelas tidak punya timestamps)
+            ]);
+        }
+        
         // ✅ FORCE CREATE GRANTS jika belum ada
         if (!$siswa->db_user) {
             $siswa->createDatabaseUser();
             $siswa->applyRoleGrants();
         }
+        $this->command->info("✅ Siswa: {$siswa->email} (NIS: 12345, Kelas: X-1 IPA)");
 
-        // ===================================
-        // SEEDING MATA PELAJARAN, JADWAL & PERTEMUAN
-        // ===================================
+        // ============================================
+        // 3️⃣ MATA PELAJARAN, JADWAL & PERTEMUAN
+        // ============================================
+        $this->command->info("\n3️⃣ Seeding Mata Pelajaran, Jadwal & Pertemuan...");
         
         // Buat Mata Pelajaran
         $mapelMatExists = DB::table('mata_pelajaran')->where('kode_mapel', 'MAT001')->first();
@@ -169,8 +188,10 @@ class DatabaseSeeder extends Seeder
                 'kode_mapel' => 'MAT001',
                 'nama_mapel' => 'Matematika',
             ]);
+            $this->command->info("✅ Mata Pelajaran: Matematika");
         } else {
             $mapelMat = $mapelMatExists->id_mapel;
+            $this->command->info("ℹ️ Mata Pelajaran: Matematika (sudah ada)");
         }
 
         $mapelFisExists = DB::table('mata_pelajaran')->where('kode_mapel', 'FIS001')->first();
@@ -179,78 +200,74 @@ class DatabaseSeeder extends Seeder
                 'kode_mapel' => 'FIS001',
                 'nama_mapel' => 'Fisika',
             ]);
+            $this->command->info("✅ Mata Pelajaran: Fisika");
         } else {
             $mapelFis = $mapelFisExists->id_mapel;
+            $this->command->info("ℹ️ Mata Pelajaran: Fisika (sudah ada)");
         }
 
-        // Buat Jadwal Pelajaran
-        $jadwalMatExists = DB::table('jadwal_pelajaran')
-            ->where('mapel_id', $mapelMat)
-            ->where('kelas_id', $kelasId)
+        // Buat Jadwal Pelajaran untuk Kelas X-1 IPA (gunakan Eloquent agar observer trigger)
+        $jadwalMatExists = JadwalPelajaran::where('mapel_id', $mapelMat)
+            ->where('kelas_id', $kelasX1->id_kelas)
             ->first();
             
         if (!$jadwalMatExists) {
-            $jadwalMat = DB::table('jadwal_pelajaran')->insertGetId([
-                'tahun_ajaran_id' => $tahunAjaranId,
-                'kelas_id' => $kelasId,
+            $jadwalMat = JadwalPelajaran::create([
+                'tahun_ajaran_id' => $tahunAjaranAktif->id_tahun_ajaran,
+                'kelas_id' => $kelasX1->id_kelas,
                 'mapel_id' => $mapelMat,
                 'guru_id' => $guruId,
                 'hari' => 'Senin',
                 'jam_mulai' => '08:00',
                 'jam_selesai' => '09:30',
             ]);
+            $this->command->info("✅ Jadwal: Matematika - X-1 IPA → Observer create 16 pertemuan");
         } else {
-            $jadwalMat = $jadwalMatExists->id_jadwal;
+            $jadwalMat = $jadwalMatExists;
+            $this->command->info("ℹ️ Jadwal Matematika sudah ada");
         }
 
-        $jadwalFisExists = DB::table('jadwal_pelajaran')
-            ->where('mapel_id', $mapelFis)
-            ->where('kelas_id', $kelasId)
+        $jadwalFisExists = JadwalPelajaran::where('mapel_id', $mapelFis)
+            ->where('kelas_id', $kelasX1->id_kelas)
             ->first();
             
         if (!$jadwalFisExists) {
-            $jadwalFis = DB::table('jadwal_pelajaran')->insertGetId([
-                'tahun_ajaran_id' => $tahunAjaranId,
-                'kelas_id' => $kelasId,
+            $jadwalFis = JadwalPelajaran::create([
+                'tahun_ajaran_id' => $tahunAjaranAktif->id_tahun_ajaran,
+                'kelas_id' => $kelasX1->id_kelas,
                 'mapel_id' => $mapelFis,
                 'guru_id' => $guruId,
                 'hari' => 'Selasa',
                 'jam_mulai' => '08:00',
                 'jam_selesai' => '09:30',
             ]);
+            $this->command->info("✅ Jadwal: Fisika - X-1 IPA → Observer create 16 pertemuan");
         } else {
-            $jadwalFis = $jadwalFisExists->id_jadwal;
+            $jadwalFis = $jadwalFisExists;
+            $this->command->info("ℹ️ Jadwal Fisika sudah ada");
         }
 
-        // Buat Pertemuan (16 pertemuan untuk satu semester) - hanya jika belum ada
-        $pertemuanMatCount = DB::table('pertemuan')->where('jadwal_id', $jadwalMat)->count();
-        if ($pertemuanMatCount == 0) {
-            for ($i = 1; $i <= 16; $i++) {
-                DB::table('pertemuan')->insert([
-                    'jadwal_id' => $jadwalMat,
-                    'nomor_pertemuan' => $i,
-                    'tanggal_pertemuan' => now()->addDays($i * 7)->format('Y-m-d'),
-                    'waktu_mulai' => '08:00',
-                    'waktu_selesai' => '09:30',
-                    'topik_bahasan' => 'Topik Pertemuan ' . $i,
-                    'status_sesi' => 'Buka',
-                ]);
-            }
-        }
+        // ============================================
+        // ⚠️ PERTEMUAN TIDAK DI-SEED
+        // - Untuk MATERI: Tetap ada pertemuan 1-16 (akan dibuat otomatis dari JadwalPelajaranObserver)
+        // - Untuk ABSENSI: Guru yang buat sendiri via form "Buat Pertemuan Baru"
+        // ============================================
+        $this->command->info("ℹ️ Pertemuan untuk absensi TIDAK di-seed (guru yang buat sendiri)");
 
-        $pertemuanFisCount = DB::table('pertemuan')->where('jadwal_id', $jadwalFis)->count();
-        if ($pertemuanFisCount == 0) {
-            for ($i = 1; $i <= 16; $i++) {
-                DB::table('pertemuan')->insert([
-                    'jadwal_id' => $jadwalFis,
-                    'nomor_pertemuan' => $i,
-                    'tanggal_pertemuan' => now()->addDays($i * 7 + 1)->format('Y-m-d'),
-                    'waktu_mulai' => '08:00',
-                    'waktu_selesai' => '09:30',
-                    'topik_bahasan' => 'Topik Pertemuan ' . $i,
-                    'status_sesi' => 'Buka',
-                ]);
-            }
-        }
+        // ============================================
+        // 4️⃣ SUMMARY
+        // ============================================
+        $this->command->info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        $this->command->info("🎉 SEEDING SELESAI!");
+        $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        $this->command->info("📊 Total Users: " . User::count());
+        $this->command->info("📅 Total Tahun Ajaran: " . TahunAjaran::count());
+        $this->command->info("📚 Total Kelas: " . Kelas::count());
+        $this->command->info("👨‍🏫 Total Guru: " . DB::table('guru')->count());
+        $this->command->info("👨‍🎓 Total Siswa: " . DB::table('siswa')->count());
+        $this->command->info("📖 Total Mata Pelajaran: " . DB::table('mata_pelajaran')->count());
+        $this->command->info("📅 Total Jadwal: " . DB::table('jadwal_pelajaran')->count());
+        $this->command->info("📝 Total Pertemuan: " . DB::table('pertemuan')->count());
+        $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 }

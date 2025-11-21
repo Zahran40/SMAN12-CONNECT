@@ -51,23 +51,6 @@
                 </div>
 
                 <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-                    <label class="text-slate-800 font-medium w-1/3">Mata Pelajaran</label>
-                    <div class="w-full md:w-2/3">
-                        <select name="mapel_id" required class="w-full border {{ $errors->has('mapel_id') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 bg-white">
-                            <option value="">Pilih Mata Pelajaran</option>
-                            @foreach($mapelList as $mapel)
-                                <option value="{{ $mapel->id_mapel }}" {{ (old('mapel_id', isset($guru) ? $guru->mapel_id : '') == $mapel->id_mapel) ? 'selected' : '' }}>
-                                    {{ $mapel->nama_mapel }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('mapel_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                     <label class="text-slate-800 font-medium w-1/3">Tanggal Lahir</label>
                     <div class="w-full md:w-2/3">
                         <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir', $guru->tgl_lahir ?? '') }}" required max="{{ date('Y-m-d') }}" class="w-full border {{ $errors->has('tgl_lahir') ? 'border-red-500' : 'border-slate-300' }} rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
