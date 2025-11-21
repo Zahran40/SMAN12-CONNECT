@@ -113,7 +113,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <p class="text-xs text-slate-500 mt-1">Bank BCA</p>
+                        <p id="va-bank" class="text-xs text-slate-500 mt-1"></p>
                     </div>
                     
                     <div id="ewallet-info" class="hidden">
@@ -187,14 +187,7 @@
 
     <script>
         const tagihanId = {{ $tagihan->id_pembayaran }};
-        let currentOrderId = '{{ $tagihan->midtrans_order_id ?? '' }}';
-        
-        // Saved payment data from database
-        const savedPaymentData = {
-            va_number: '{{ $tagihan->nomor_va ?? '' }}',
-            payment_type: '{{ $tagihan->midtrans_payment_type ?? '' }}',
-            midtrans_response: @json($tagihan->midtrans_response ? json_decode($tagihan->midtrans_response) : null)
-        };
+        let currentOrderId = '{{ $tagihan->midtrans_order_id }}';
 
         function toggleBankSelect() {
             const metode = document.getElementById('metode_pembayaran').value;
@@ -335,6 +328,16 @@
                 const vaInfo = document.getElementById('va-info');
                 vaInfo.classList.remove('hidden');
                 document.getElementById('va-number').textContent = paymentData.va_number;
+                
+                // Display bank name
+                const bankNames = {
+                    'bca': 'Bank BCA',
+                    'bni': 'Bank BNI',
+                    'bri': 'Bank BRI',
+                    'permata': 'Bank Permata'
+                };
+                const bank = paymentData.bank || document.getElementById('bank').value;
+                document.getElementById('va-bank').textContent = bankNames[bank] || 'Bank ' + (bank || '').toUpperCase();
             } else if (paymentData.qr_code || paymentData.deeplink) {
                 // E-Wallet
                 const ewalletInfo = document.getElementById('ewallet-info');
@@ -397,51 +400,95 @@
 
         // Auto check status if payment already exists
         window.addEventListener('load', function() {
-            if (currentOrderId) {
-                // Payment already created - show saved data
+            @if($tagihan->midtrans_order_id && $tagihan->status === 'Belum Lunas')
+                // Payment sudah dibuat sebelumnya
+                currentOrderId = '{{ $tagihan->midtrans_order_id }}';
+                
+                // Set metode pembayaran yang sudah dipilih
+                const metode = '{{ $tagihan->midtrans_payment_type }}';
+                document.getElementById('metode_pembayaran').value = metode;
+                
+                // Show bank select and set bank if transfer
+                if (metode === 'bank_transfer') {
+                    // Extract bank from midtrans_response
+                    @php
+                        $midtransResponse = json_decode($tagihan->midtrans_response, true);
+                        $bank = '';
+                        if (isset($midtransResponse['va_numbers'][0]['bank'])) {
+                            $bank = strtolower($midtransResponse['va_numbers'][0]['bank']);
+                        }
+                    @endphp
+                    const bank = '{{ $bank }}';
+                    document.getElementById('bank-select').classList.remove('hidden');
+                    document.getElementById('bank').value = bank;
+                    
+                    // Show VA info
+                    const vaNumber = '{{ $tagihan->nomor_va }}';
+                    if (vaNumber) {
+                        const paymentInfo = document.getElementById('payment-info');
+                        paymentInfo.classList.remove('hidden');
+                        
+                        const vaInfo = document.getElementById('va-info');
+                        vaInfo.classList.remove('hidden');
+                        document.getElementById('va-number').textContent = vaNumber;
+                        
+                        const bankNames = {
+                            'bca': 'Bank BCA',
+                            'bni': 'Bank BNI',
+                            'bri': 'Bank BRI',
+                            'permata': 'Bank Permata'
+                        };
+                        document.getElementById('va-bank').textContent = bankNames[bank] || 'Bank ' + bank.toUpperCase();
+                    }
+                } else if (metode === 'gopay' || metode === 'shopeepay') {
+                    // Show ewallet info
+                    @php
+                        $qrCodeUrl = null;
+                        $deeplinkUrl = null;
+                        if ($tagihan->midtrans_response) {
+                            $response = json_decode($tagihan->midtrans_response, true);
+                            if (isset($response['actions'])) {
+                                foreach ($response['actions'] as $action) {
+                                    if ($action['name'] === 'generate-qr-code') {
+                                        $qrCodeUrl = $action['url'];
+                                    }
+                                    if ($action['name'] === 'deeplink-redirect') {
+                                        $deeplinkUrl = $action['url'];
+                                    }
+                                }
+                            }
+                        }
+                    @endphp
+                    
+                    @if($qrCodeUrl || $deeplinkUrl)
+                        const paymentInfo = document.getElementById('payment-info');
+                        paymentInfo.classList.remove('hidden');
+                        
+                        const ewalletInfo = document.getElementById('ewallet-info');
+                        ewalletInfo.classList.remove('hidden');
+                        
+                        @if($qrCodeUrl)
+                            const qrContainer = document.getElementById('qr-code-container');
+                            qrContainer.innerHTML = '<img src="{{ $qrCodeUrl }}" alt="QR Code" class="w-48 h-48">';
+                        @endif
+                        
+                        @if($deeplinkUrl)
+                            const deeplinkBtn = document.getElementById('deeplink-button');
+                            deeplinkBtn.href = '{{ $deeplinkUrl }}';
+                            deeplinkBtn.classList.remove('hidden');
+                        @endif
+                    @endif
+                }
+                
+                // Hide bayar button, show cek status button
                 document.getElementById('btn-bayar').classList.add('hidden');
                 document.getElementById('btn-cek-status').classList.remove('hidden');
                 
-                // Disable dropdowns if payment already exists
+                // Disable dropdowns
                 document.getElementById('metode_pembayaran').disabled = true;
                 document.getElementById('bank').disabled = true;
-                
-                // Load and display saved payment info
-                loadSavedPaymentInfo();
-            }
+            @endif
         });
-        
-        function loadSavedPaymentInfo() {
-            const paymentInfo = document.getElementById('payment-info');
-            paymentInfo.classList.remove('hidden');
-            
-            if (savedPaymentData.va_number) {
-                // Virtual Account - display saved VA
-                const vaInfo = document.getElementById('va-info');
-                vaInfo.classList.remove('hidden');
-                document.getElementById('va-number').textContent = savedPaymentData.va_number;
-            } else if (savedPaymentData.midtrans_response) {
-                // E-Wallet - extract QR/deeplink from saved response
-                const response = savedPaymentData.midtrans_response;
-                
-                if (response.actions) {
-                    const ewalletInfo = document.getElementById('ewallet-info');
-                    ewalletInfo.classList.remove('hidden');
-                    
-                    response.actions.forEach(action => {
-                        if (action.name === 'generate-qr-code' && action.method === 'GET') {
-                            const qrContainer = document.getElementById('qr-code-container');
-                            qrContainer.innerHTML = `<img src="${action.url}" alt="QR Code" class="w-48 h-48">`;
-                        }
-                        if (action.name === 'deeplink-redirect' && action.method === 'GET') {
-                            const deeplinkBtn = document.getElementById('deeplink-button');
-                            deeplinkBtn.href = action.url;
-                            deeplinkBtn.classList.remove('hidden');
-                        }
-                    });
-                }
-            }
-        }
 
         // Close modal when clicking outside
         document.getElementById('confirmation-modal').addEventListener('click', function(e) {
