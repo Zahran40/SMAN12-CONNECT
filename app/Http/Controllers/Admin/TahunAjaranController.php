@@ -38,12 +38,12 @@ class TahunAjaranController extends Controller
             $ganjil = $group->firstWhere('semester', 'Ganjil');
             $genap = $group->firstWhere('semester', 'Genap');
             
-            // Hitung statistik untuk tahun ajaran ini (gabungan semester)
+            // Hitung statistik untuk tahun ajaran ini
+            // Kelas hanya ada di semester Ganjil (digunakan untuk kedua semester)
+            $jumlahKelas = $ganjil ? Kelas::where('tahun_ajaran_id', $ganjil->id_tahun_ajaran)->count() : 0;
+            
+            // Hitung siswa unik dari kedua semester
             $allSemesterIds = $group->pluck('id_tahun_ajaran');
-            
-            $jumlahKelas = Kelas::whereIn('tahun_ajaran_id', $allSemesterIds)->count();
-            
-            // Hitung siswa unik (distinct siswa_id)
             $jumlahSiswa = \App\Models\SiswaKelas::whereIn('tahun_ajaran_id', $allSemesterIds)
                 ->where('status', 'Aktif')
                 ->distinct('siswa_id')
@@ -121,16 +121,16 @@ class TahunAjaranController extends Controller
             // Auto-deactivate semua tahun ajaran aktif
             TahunAjaran::where('status', 'Aktif')->update(['status' => 'Tidak Aktif']);
 
-            // Create Semester Ganjil (Aktif)
-            TahunAjaran::create([
+            // Create Semester Ganjil (Aktif) - Observer akan create 30 kelas
+            $semesterGanjil = TahunAjaran::create([
                 'tahun_mulai' => (int)$tahunMulai,
                 'tahun_selesai' => (int)$tahunSelesai,
                 'semester' => 'Ganjil',
                 'status' => 'Aktif',  // Semester Ganjil default aktif
             ]);
 
-            // Create Semester Genap (Tidak Aktif)
-            TahunAjaran::create([
+            // Create Semester Genap (Tidak Aktif) - TIDAK create kelas (pakai kelas semester Ganjil)
+            $semesterGenap = TahunAjaran::create([
                 'tahun_mulai' => (int)$tahunMulai,
                 'tahun_selesai' => (int)$tahunSelesai,
                 'semester' => 'Genap',
@@ -139,7 +139,7 @@ class TahunAjaranController extends Controller
 
             DB::commit();
             return redirect()->route('admin.tahun-ajaran.index')
-                ->with('success', "Tahun ajaran {$tahunMulai}/{$tahunSelesai} berhasil dibuat (2 semester: Ganjil & Genap)");
+                ->with('success', "Tahun ajaran {$tahunMulai}/{$tahunSelesai} berhasil dibuat dengan 30 kelas (digunakan untuk kedua semester)");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menambahkan tahun ajaran: ' . $e->getMessage())
