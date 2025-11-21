@@ -10,7 +10,8 @@ class TahunAjaranSeeder extends Seeder
 {
     /**
      * Seed tahun ajaran untuk testing
-     * Observer akan otomatis create 36 kelas untuk setiap tahun ajaran
+     * Observer akan otomatis create 30 kelas untuk setiap tahun ajaran
+     * (10 kelas per tingkat: 5 MIPA + 5 IPS)
      */
     public function run(): void
     {
@@ -28,7 +29,7 @@ class TahunAjaranSeeder extends Seeder
                 'semester' => 'Ganjil',
                 'status' => 'Aktif',
             ]);
-            $this->command->info("✅ Tahun Ajaran 2024/2025 Ganjil dibuat → Observer akan create 36 kelas");
+            $this->command->info("✅ Tahun Ajaran 2024/2025 Ganjil dibuat → Observer akan create 30 kelas");
         } else {
             $this->command->info("ℹ️ Tahun Ajaran 2024/2025 Ganjil sudah ada");
         }
@@ -46,7 +47,7 @@ class TahunAjaranSeeder extends Seeder
                 'semester' => 'Genap',
                 'status' => 'Tidak Aktif',
             ]);
-            $this->command->info("✅ Tahun Ajaran 2024/2025 Genap dibuat → Observer akan create 36 kelas");
+            $this->command->info("✅ Tahun Ajaran 2024/2025 Genap dibuat → Observer akan create 30 kelas");
         } else {
             $this->command->info("ℹ️ Tahun Ajaran 2024/2025 Genap sudah ada");
         }
@@ -64,7 +65,7 @@ class TahunAjaranSeeder extends Seeder
                 'semester' => 'Genap',
                 'status' => 'Tidak Aktif',
             ]);
-            $this->command->info("✅ Tahun Ajaran 2023/2024 Genap dibuat → Observer akan create 36 kelas");
+            $this->command->info("✅ Tahun Ajaran 2023/2024 Genap dibuat → Observer akan create 30 kelas");
         } else {
             $this->command->info("ℹ️ Tahun Ajaran 2023/2024 Genap sudah ada");
         }
