@@ -18,7 +18,12 @@ class AkademikController extends Controller
      */
     public function index()
     {
-        $mapelList = MataPelajaran::withCount(['guru', 'jadwal'])->orderBy('nama_mapel')->get();
+        // Query mapel dengan count guru dan jadwal via relasi
+        $mapelList = MataPelajaran::select('mata_pelajaran.*')
+            ->selectRaw('(SELECT COUNT(DISTINCT guru_id) FROM jadwal_pelajaran WHERE jadwal_pelajaran.mapel_id = mata_pelajaran.id_mapel) as guru_count')
+            ->selectRaw('(SELECT COUNT(*) FROM jadwal_pelajaran WHERE jadwal_pelajaran.mapel_id = mata_pelajaran.id_mapel) as jadwal_count')
+            ->orderBy('nama_mapel')
+            ->get();
         
         return view('Admin.akademik', compact('mapelList'));
     }
@@ -28,8 +33,7 @@ class AkademikController extends Controller
      */
     public function createMapel()
     {
-        $guruList = Guru::orderBy('nama_lengkap', 'asc')->get();
-        return view('Admin.buatMapel', compact('guruList'));
+        return view('Admin.buatMapel');
     }
 
     /**
@@ -41,29 +45,21 @@ class AkademikController extends Controller
             'nama_mapel' => 'required|string|max:255|unique:mata_pelajaran,nama_mapel',
             'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel',
             'kategori' => 'required|in:Umum,Kelas X,MIPA,IPS,Bahasa,Mulok',
-            'guru_id' => 'nullable|exists:guru,id_guru',
         ], [
             'nama_mapel.required' => 'Nama mata pelajaran wajib diisi',
             'nama_mapel.unique' => 'Mata pelajaran sudah terdaftar',
             'kode_mapel.required' => 'Kode mata pelajaran wajib diisi',
             'kode_mapel.unique' => 'Kode mata pelajaran sudah digunakan',
             'kategori.required' => 'Kategori wajib dipilih',
-            'guru_id.exists' => 'Guru yang dipilih tidak valid',
         ]);
 
         try {
-            // Simpan mata pelajaran
+            // Simpan mata pelajaran (master data - tidak ada tahun ajaran)
             $mapel = MataPelajaran::create([
                 'nama_mapel' => $validated['nama_mapel'],
                 'kode_mapel' => $validated['kode_mapel'],
                 'kategori' => $validated['kategori'],
             ]);
-
-            // Update guru jika dipilih
-            if (!empty($validated['guru_id'])) {
-                Guru::where('id_guru', $validated['guru_id'])
-                    ->update(['mapel_id' => $mapel->id_mapel]);
-            }
 
             return redirect()->route('admin.akademik.index')
                 ->with('success', 'Mata pelajaran berhasil ditambahkan');

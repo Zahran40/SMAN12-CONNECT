@@ -14,7 +14,6 @@ class MataPelajaran extends Model
         'kode_mapel',
         'nama_mapel',
         'kategori',
-        'deskripsi',
         'jam_mulai',
         'jam_selesai',
     ];
@@ -36,11 +35,19 @@ class MataPelajaran extends Model
     }
 
     /**
-     * Relasi ke Guru (one to many)
+     * Relasi ke Guru melalui jadwal_pelajaran
+     * Ini mengembalikan guru-guru yang mengajar mapel ini
      */
     public function guru()
     {
-        return $this->hasMany(Guru::class, 'mapel_id', 'id_mapel');
+        return $this->belongsToMany(
+            Guru::class,
+            'jadwal_pelajaran',
+            'mapel_id',
+            'guru_id',
+            'id_mapel',
+            'id_guru'
+        )->distinct();
     }
 
     /**

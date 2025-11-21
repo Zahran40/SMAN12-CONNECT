@@ -16,23 +16,59 @@ class TahunAjaranController extends Controller
     /**
      * Halaman utama Tahun Ajaran dengan statistik
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tahunAjaran = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $statusFilter = $request->get('status', 'all'); // all, Aktif, Tidak Aktif
         
-        // Hitung statistik untuk setiap tahun ajaran
-        foreach ($tahunAjaran as $ta) {
-            $ta->jumlah_kelas = Kelas::where('tahun_ajaran_id', $ta->id_tahun_ajaran)->count();
+        // Ambil semua tahun ajaran dan group by tahun_mulai + tahun_selesai
+        $tahunAjaranRaw = TahunAjaran::orderBy('tahun_mulai', 'desc')
+            ->orderBy('semester', 'asc')
+            ->get();
+        
+        // Group by tahun ajaran (2024/2025)
+        $tahunAjaranGrouped = $tahunAjaranRaw->groupBy(function($ta) {
+            return $ta->tahun_mulai . '/' . $ta->tahun_selesai;
+        });
+        
+        // Format data untuk view
+        $tahunAjaran = [];
+        foreach ($tahunAjaranGrouped as $key => $group) {
+            [$tahunMulai, $tahunSelesai] = explode('/', $key);
             
-            // Hitung siswa melalui kelas
-            $kelasIds = Kelas::where('tahun_ajaran_id', $ta->id_tahun_ajaran)->pluck('id_kelas');
-            $ta->jumlah_siswa = Siswa::whereIn('kelas_id', $kelasIds)->count();
+            $ganjil = $group->firstWhere('semester', 'Ganjil');
+            $genap = $group->firstWhere('semester', 'Genap');
             
-            $ta->jumlah_guru = Guru::count(); // Guru tidak terikat tahun ajaran
-            $ta->jumlah_mapel = MataPelajaran::count();
+            // Hitung statistik untuk tahun ajaran ini (gabungan semester)
+            $allSemesterIds = $group->pluck('id_tahun_ajaran');
+            
+            $jumlahKelas = Kelas::whereIn('tahun_ajaran_id', $allSemesterIds)->count();
+            
+            // Hitung siswa unik (distinct siswa_id)
+            $jumlahSiswa = \App\Models\SiswaKelas::whereIn('tahun_ajaran_id', $allSemesterIds)
+                ->where('status', 'Aktif')
+                ->distinct('siswa_id')
+                ->count('siswa_id');
+            
+            // Filter berdasarkan status jika diperlukan
+            if ($statusFilter !== 'all') {
+                if ($ganjil && $ganjil->status !== $statusFilter && $genap && $genap->status !== $statusFilter) {
+                    continue;
+                }
+            }
+            
+            $tahunAjaran[] = (object)[
+                'tahun_mulai' => $tahunMulai,
+                'tahun_selesai' => $tahunSelesai,
+                'ganjil' => $ganjil,
+                'genap' => $genap,
+                'jumlah_kelas' => $jumlahKelas,
+                'jumlah_siswa' => $jumlahSiswa,
+                'jumlah_guru' => Guru::count(),
+                'jumlah_mapel' => MataPelajaran::count(),
+            ];
         }
         
-        return view('Admin.tahunAjaran', compact('tahunAjaran'));
+        return view('Admin.tahunAjaran', compact('tahunAjaran', 'statusFilter'));
     }
 
     /**
@@ -40,57 +76,70 @@ class TahunAjaranController extends Controller
      */
     public function create()
     {
-        return view('Admin.buatTahunAjaran');
+        // Ambil tahun ajaran yang sudah ada (untuk cek duplikasi)
+        $existingYears = TahunAjaran::select('tahun_mulai', 'tahun_selesai')
+            ->distinct()
+            ->get()
+            ->map(function($ta) {
+                return $ta->tahun_mulai . '/' . $ta->tahun_selesai;
+            })
+            ->toArray();
+        
+        return view('Admin.buatTahunAjaran', compact('existingYears'));
     }
 
     /**
-     * Simpan tahun ajaran baru
+     * Simpan tahun ajaran baru (Auto-create 2 semester sekaligus)
      */
     public function store(Request $request)
     {
         $request->validate([
-            'tahun_ajaran' => 'required|string|regex:/^\d{4}\/\d{4}$/',
-            'semester' => 'required|in:Ganjil,Genap',
-            'status' => 'required|in:Aktif,Tidak Aktif',
+            'tahun_mulai' => 'required|integer|min:2020|max:2050',
+            'tahun_selesai' => 'required|integer|min:2020|max:2050|gt:tahun_mulai',
         ], [
-            'tahun_ajaran.required' => 'Tahun ajaran wajib dipilih',
-            'tahun_ajaran.regex' => 'Format tahun ajaran tidak valid',
-            'semester.required' => 'Semester wajib dipilih',
-            'status.required' => 'Status wajib dipilih',
+            'tahun_mulai.required' => 'Tahun mulai wajib diisi',
+            'tahun_selesai.required' => 'Tahun selesai wajib diisi',
+            'tahun_selesai.gt' => 'Tahun selesai harus lebih besar dari tahun mulai',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Parse tahun ajaran
-            list($tahunMulai, $tahunSelesai) = explode('/', $request->tahun_ajaran);
+            $tahunMulai = $request->tahun_mulai;
+            $tahunSelesai = $request->tahun_selesai;
 
-            // Cek duplikasi
+            // Cek duplikasi tahun ajaran
             $exists = TahunAjaran::where('tahun_mulai', $tahunMulai)
                 ->where('tahun_selesai', $tahunSelesai)
-                ->where('semester', $request->semester)
                 ->exists();
 
             if ($exists) {
-                return back()->with('error', 'Tahun ajaran dan semester ini sudah ada')
+                return back()->with('error', "Tahun ajaran {$tahunMulai}/{$tahunSelesai} sudah ada")
                     ->withInput();
             }
 
-            // Jika status Aktif, nonaktifkan tahun ajaran lain
-            if ($request->status === 'Aktif') {
-                TahunAjaran::where('status', 'Aktif')->update(['status' => 'Tidak Aktif']);
-            }
+            // Auto-deactivate semua tahun ajaran aktif
+            TahunAjaran::where('status', 'Aktif')->update(['status' => 'Tidak Aktif']);
 
+            // Create Semester Ganjil (Aktif)
             TahunAjaran::create([
-                'tahun_mulai' => $tahunMulai,
-                'tahun_selesai' => $tahunSelesai,
-                'semester' => $request->semester,
-                'status' => $request->status,
+                'tahun_mulai' => (int)$tahunMulai,
+                'tahun_selesai' => (int)$tahunSelesai,
+                'semester' => 'Ganjil',
+                'status' => 'Aktif',  // Semester Ganjil default aktif
+            ]);
+
+            // Create Semester Genap (Tidak Aktif)
+            TahunAjaran::create([
+                'tahun_mulai' => (int)$tahunMulai,
+                'tahun_selesai' => (int)$tahunSelesai,
+                'semester' => 'Genap',
+                'status' => 'Tidak Aktif',  // Semester Genap belum aktif
             ]);
 
             DB::commit();
             return redirect()->route('admin.tahun-ajaran.index')
-                ->with('success', 'Tahun ajaran berhasil ditambahkan');
+                ->with('success', "Tahun ajaran {$tahunMulai}/{$tahunSelesai} berhasil dibuat (2 semester: Ganjil & Genap)");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menambahkan tahun ajaran: ' . $e->getMessage())
@@ -122,6 +171,7 @@ class TahunAjaranController extends Controller
 
     /**
      * Update status tahun ajaran
+     * PENTING: Hanya 1 semester yang boleh aktif dalam 1 tahun ajaran
      */
     public function updateStatus(Request $request, $id)
     {
@@ -133,18 +183,38 @@ class TahunAjaranController extends Controller
             DB::beginTransaction();
 
             $tahunAjaran = TahunAjaran::findOrFail($id);
+            $newStatus = $request->status;
 
-            // Jika diaktifkan, nonaktifkan yang lain
-            if ($request->status === 'Aktif') {
-                TahunAjaran::where('id_tahun_ajaran', '!=', $id)
-                    ->where('status', 'Aktif')
+            if ($newStatus === 'Aktif') {
+                // RULE: Hanya 1 semester boleh aktif dalam tahun ajaran yang sama
+                // Contoh: Jika mengaktifkan 2024/2025 Genap, maka 2024/2025 Ganjil otomatis nonaktif
+                TahunAjaran::where('tahun_mulai', $tahunAjaran->tahun_mulai)
+                    ->where('tahun_selesai', $tahunAjaran->tahun_selesai)
+                    ->where('id_tahun_ajaran', '!=', $id)
                     ->update(['status' => 'Tidak Aktif']);
+                
+                // RULE: Hanya 1 tahun ajaran boleh aktif di seluruh sistem
+                // Nonaktifkan semua tahun ajaran lain (tahun berbeda)
+                TahunAjaran::where(function($q) use ($tahunAjaran) {
+                    $q->where('tahun_mulai', '!=', $tahunAjaran->tahun_mulai)
+                      ->orWhere('tahun_selesai', '!=', $tahunAjaran->tahun_selesai);
+                })
+                ->where('status', 'Aktif')
+                ->update(['status' => 'Tidak Aktif']);
             }
 
-            $tahunAjaran->update(['status' => $request->status]);
+            $tahunAjaran->update(['status' => $newStatus]);
 
             DB::commit();
-            return back()->with('success', 'Status tahun ajaran berhasil diperbarui');
+            
+            $semester = $tahunAjaran->semester;
+            $tahun = $tahunAjaran->tahun_mulai . '/' . $tahunAjaran->tahun_selesai;
+            
+            if ($newStatus === 'Aktif') {
+                return back()->with('success', "Semester {$semester} tahun ajaran {$tahun} berhasil diaktifkan. Semester lain otomatis dinonaktifkan.");
+            } else {
+                return back()->with('success', "Semester {$semester} tahun ajaran {$tahun} berhasil dinonaktifkan.");
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memperbarui status: ' . $e->getMessage());
@@ -176,6 +246,55 @@ class TahunAjaranController extends Controller
             $tahunAjaran->delete();
             return back()->with('success', 'Tahun ajaran berhasil dihapus');
         } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus tahun ajaran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Hapus semua tahun ajaran tidak aktif (bulk delete)
+     */
+    public function destroyInactive()
+    {
+        try {
+            DB::beginTransaction();
+
+            $tahunAjaranTidakAktif = TahunAjaran::where('status', 'Tidak Aktif')->get();
+            
+            if ($tahunAjaranTidakAktif->isEmpty()) {
+                return back()->with('info', 'Tidak ada tahun ajaran tidak aktif untuk dihapus');
+            }
+
+            $deleted = 0;
+            $skipped = 0;
+            $errors = [];
+
+            foreach ($tahunAjaranTidakAktif as $ta) {
+                // Cek apakah ada kelas
+                $jumlahKelas = Kelas::where('tahun_ajaran_id', $ta->id_tahun_ajaran)->count();
+                
+                if ($jumlahKelas > 0) {
+                    // Hapus relasi di siswa_kelas dulu
+                    $kelasIds = Kelas::where('tahun_ajaran_id', $ta->id_tahun_ajaran)->pluck('id_kelas');
+                    \App\Models\SiswaKelas::whereIn('kelas_id', $kelasIds)->delete();
+                    
+                    // Hapus jadwal pelajaran
+                    \App\Models\JadwalPelajaran::where('tahun_ajaran_id', $ta->id_tahun_ajaran)->delete();
+                    
+                    // Hapus kelas
+                    Kelas::where('tahun_ajaran_id', $ta->id_tahun_ajaran)->delete();
+                }
+                
+                // Hapus tahun ajaran
+                $ta->delete();
+                $deleted++;
+            }
+
+            DB::commit();
+            
+            return back()->with('success', "Berhasil menghapus {$deleted} tahun ajaran tidak aktif beserta semua data terkait (kelas, siswa_kelas, jadwal)");
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', 'Gagal menghapus tahun ajaran: ' . $e->getMessage());
         }
     }

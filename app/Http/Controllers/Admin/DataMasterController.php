@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\SiswaKelas;
 use App\Models\Guru;
 use App\Models\MataPelajaran;
 use App\Models\TahunAjaran;
@@ -12,19 +13,34 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class DataMasterController extends Controller
 {
     /**
-     * Halaman utama Data Master
+     * Halaman utama Data Master - REDIRECT ke halaman yang benar
+     * Menghindari penggunaan tab dan semester di URL
      */
     public function index(Request $request)
     {
         $tab = $request->get('tab', 'kelas');
+        
+        // Redirect ke route yang benar berdasarkan tab
+        return match($tab) {
+            'siswa' => redirect()->route('admin.data-master.list-siswa'),
+            'guru' => redirect()->route('admin.data-master.list-guru'),
+            'mapel' => redirect()->route('admin.data-master.list-mapel'),
+            default => $this->indexKelas($request),
+        };
+    }
+
+    /**
+     * Halaman Kelas (default halaman data master)
+     */
+    private function indexKelas(Request $request)
+    {
         $tahunAjaranId = $request->get('tahun_ajaran');
-        $semester = $request->get('semester', 'Genap');
-        $kelasId = $request->get('kelas');
 
         // Ambil tahun ajaran
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
@@ -35,35 +51,16 @@ class DataMasterController extends Controller
         }
 
         $data = [
-            'tab' => $tab,
+            'tab' => 'kelas',
             'tahunAjaranList' => $tahunAjaranList,
             'tahunAjaranId' => $tahunAjaranId,
-            'semester' => $semester,
-            'kelasId' => $kelasId,
         ];
 
-        if ($tab === 'kelas' && $tahunAjaranId) {
-            $data['kelasList'] = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
-                ->withCount('siswa')
-                ->orderBy('tingkat')
-                ->orderBy('nama_kelas')
-                ->get();
-        } elseif ($tab === 'siswa' && $tahunAjaranId) {
-            // Ambil siswa berdasarkan kelas yang ada di tahun ajaran ini
-            $kelasIds = Kelas::where('tahun_ajaran_id', $tahunAjaranId)->pluck('id_kelas');
-            $query = Siswa::whereIn('kelas_id', $kelasIds)->with('kelas');
-            
-            if ($kelasId) {
-                $query->where('kelas_id', $kelasId);
-            }
-            
-            $data['siswaList'] = $query->orderBy('nama_lengkap', 'asc')->get();
-            $data['kelasList'] = Kelas::where('tahun_ajaran_id', $tahunAjaranId)->get();
-        } elseif ($tab === 'guru') {
-            $data['guruList'] = Guru::with('mataPelajaran')->orderBy('nama_lengkap', 'asc')->get();
-        } elseif ($tab === 'mapel') {
-            $data['mapelList'] = MataPelajaran::withCount('guru')->orderBy('nama_mapel', 'asc')->get();
-        }
+        $data['kelasList'] = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
+            ->withCount('siswa')
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
+            ->get();
 
         return view('Admin.dataMaster', $data);
     }
@@ -74,7 +71,16 @@ class DataMasterController extends Controller
     public function createSiswa()
     {
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+        
+        // Ambil kelas yang tersedia (tahun ajaran aktif prioritas)
+        $kelasList = Kelas::with('tahunAjaran')
+            ->whereHas('tahunAjaran', function($query) {
+                $query->orderBy('status', 'desc') // Aktif dulu
+                      ->orderBy('tahun_mulai', 'desc');
+            })
+            ->orderBy('tahun_ajaran_id', 'desc')
+            ->orderBy('nama_kelas')
+            ->get();
         
         return view('Admin.pendataanSiswa', compact('tahunAjaranList', 'kelasList'));
     }
@@ -86,7 +92,12 @@ class DataMasterController extends Controller
     {
         $siswa = Siswa::with('kelas', 'user')->findOrFail($id);
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+        
+        // Ambil kelas yang tersedia
+        $kelasList = Kelas::with('tahunAjaran')
+            ->orderBy('tahun_ajaran_id', 'desc')
+            ->orderBy('nama_kelas')
+            ->get();
         
         return view('Admin.pendataanSiswa', compact('siswa', 'tahunAjaranList', 'kelasList'));
     }
@@ -108,7 +119,7 @@ class DataMasterController extends Controller
             'email' => 'required|email|unique:users,email' . ($id ? "," . Siswa::find($id)?->user_id . ",id" : ''),
             'agama' => 'required|string',
             'golongan_darah' => 'nullable|string|max:5',
-            'kelas_id' => 'required|exists:kelas,id_kelas',
+            'kelas_id' => 'nullable|exists:kelas,id_kelas',
             'password' => 'required|string|min:8',
         ];
 
@@ -150,8 +161,28 @@ class DataMasterController extends Controller
                     'email' => $validated['email'],
                     'agama' => $validated['agama'],
                     'golongan_darah' => $request->golongan_darah,
-                    'kelas_id' => $validated['kelas_id'],
+                    'kelas_id' => $validated['kelas_id'] ?? null,
                 ]);
+
+                // Update siswa_kelas jika kelas berubah
+                if ($validated['kelas_id']) {
+                    $kelas = Kelas::findOrFail($validated['kelas_id']);
+                    
+                    // Hapus kelas sebelumnya untuk tahun ajaran yang sama
+                    SiswaKelas::where('siswa_id', $siswa->id_siswa)
+                        ->where('tahun_ajaran_id', $kelas->tahun_ajaran_id)
+                        ->where('status', 'Aktif')
+                        ->delete();
+                    
+                    // Insert record baru
+                    SiswaKelas::create([
+                        'siswa_id' => $siswa->id_siswa,
+                        'kelas_id' => $validated['kelas_id'],
+                        'tahun_ajaran_id' => $kelas->tahun_ajaran_id,
+                        'status' => 'Aktif',
+                        'tanggal_masuk' => now(),
+                    ]);
+                }
 
                 $message = 'Data siswa berhasil diperbarui';
             } else {
@@ -163,7 +194,7 @@ class DataMasterController extends Controller
                     'role' => 'siswa',
                 ]);
 
-                Siswa::create([
+                $siswa = Siswa::create([
                     'user_id' => $user->id,
                     'nama_lengkap' => $validated['nama_lengkap'],
                     'tgl_lahir' => $validated['tgl_lahir'],
@@ -176,8 +207,21 @@ class DataMasterController extends Controller
                     'email' => $validated['email'],
                     'agama' => $validated['agama'],
                     'golongan_darah' => $request->golongan_darah,
-                    'kelas_id' => $validated['kelas_id'],
+                    'kelas_id' => $validated['kelas_id'] ?? null,
                 ]);
+
+                // Insert ke siswa_kelas jika ada kelas dipilih
+                if ($validated['kelas_id']) {
+                    $kelas = Kelas::findOrFail($validated['kelas_id']);
+                    
+                    SiswaKelas::create([
+                        'siswa_id' => $siswa->id_siswa,
+                        'kelas_id' => $validated['kelas_id'],
+                        'tahun_ajaran_id' => $kelas->tahun_ajaran_id,
+                        'status' => 'Aktif',
+                        'tanggal_masuk' => now(),
+                    ]);
+                }
 
                 $message = 'Data siswa berhasil ditambahkan';
             }
@@ -197,9 +241,7 @@ class DataMasterController extends Controller
      */
     public function createGuru()
     {
-        $mapelList = MataPelajaran::orderBy('nama_mapel')->get();
-        
-        return view('Admin.pendataanGuru', compact('mapelList'));
+        return view('Admin.pendataanGuru');
     }
 
     /**
@@ -207,10 +249,9 @@ class DataMasterController extends Controller
      */
     public function editGuru($id)
     {
-        $guru = Guru::with('mataPelajaran', 'user')->findOrFail($id);
-        $mapelList = MataPelajaran::orderBy('nama_mapel')->get();
+        $guru = Guru::with('user')->findOrFail($id);
         
-        return view('Admin.pendataanGuru', compact('guru', 'mapelList'));
+        return view('Admin.pendataanGuru', compact('guru'));
     }
 
     /**
@@ -229,7 +270,6 @@ class DataMasterController extends Controller
             'email' => 'required|email|unique:users,email' . ($id ? "," . Guru::find($id)?->user_id . ",id" : ''),
             'agama' => 'required|string',
             'golongan_darah' => 'nullable|string|max:5',
-            'mapel_id' => 'required|exists:mata_pelajaran,id_mapel',
             'password' => 'required|string|min:8',
         ];
 
@@ -269,7 +309,6 @@ class DataMasterController extends Controller
                     'email' => $validated['email'],
                     'agama' => $validated['agama'],
                     'golongan_darah' => $request->golongan_darah,
-                    'mapel_id' => $validated['mapel_id'],
                 ]);
 
                 $message = 'Data guru berhasil diperbarui';
@@ -294,7 +333,6 @@ class DataMasterController extends Controller
                     'email' => $validated['email'],
                     'agama' => $validated['agama'],
                     'golongan_darah' => $request->golongan_darah,
-                    'mapel_id' => $validated['mapel_id'],
                 ]);
 
                 $message = 'Data guru berhasil ditambahkan';
@@ -407,18 +445,19 @@ class DataMasterController extends Controller
 
     /**
      * Tampilan list siswa (semua kelas) dengan filter
+     * Menggunakan view_siswa_kelas untuk data konsisten
      */
     public function listSiswa(Request $request)
     {
         $tahunAjaranId = $request->get('tahun_ajaran');
-        $semester = $request->get('semester', 'Ganjil');
         $kelasId = $request->get('kelas');
 
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
 
-        // Jika tidak ada tahun ajaran dipilih, gunakan yang aktif
-        if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
-            $tahunAjaranId = $tahunAjaranList->first()->id_tahun_ajaran;
+        // Default ke tahun ajaran aktif
+        if (!$tahunAjaranId) {
+            $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran ?? $tahunAjaranList->first()?->id_tahun_ajaran;
         }
 
         // Ambil daftar kelas berdasarkan tahun ajaran
@@ -427,37 +466,39 @@ class DataMasterController extends Controller
             ->orderBy('nama_kelas')
             ->get();
         
-        $query = Siswa::with(['kelas.tahunAjaran', 'user']);
+        // Query menggunakan database view untuk data konsisten
+        $query = DB::table('view_siswa_kelas');
         
+        // Filter by tahun ajaran
         if ($tahunAjaranId) {
-            $query->whereHas('kelas', function($q) use ($tahunAjaranId) {
-                $q->where('tahun_ajaran_id', $tahunAjaranId);
-            });
+            $query->where('tahun_ajaran_id', $tahunAjaranId);
         }
 
+        // Filter by kelas
         if ($kelasId) {
             $query->where('kelas_id', $kelasId);
         }
         
         $siswaList = $query->orderBy('nama_lengkap')->get();
         
-        return view('Admin.dataMaster_Siswa', compact('siswaList', 'tahunAjaranList', 'tahunAjaranId', 'semester', 'kelasId', 'kelasList'));
+        return view('Admin.dataMaster_Siswa', compact('siswaList', 'tahunAjaranList', 'tahunAjaranId', 'kelasId', 'kelasList'));
     }
 
     /**
      * Tampilan list guru (semua) dengan filter
+     * Menggunakan view_guru_mengajar untuk data konsisten
      */
     public function listGuru(Request $request)
     {
         $tahunAjaranId = $request->get('tahun_ajaran');
-        $semester = $request->get('semester', 'Ganjil');
         $kelasId = $request->get('kelas');
 
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
 
-        // Jika tidak ada tahun ajaran dipilih, gunakan yang aktif
-        if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
-            $tahunAjaranId = $tahunAjaranList->first()->id_tahun_ajaran;
+        // Default ke tahun ajaran aktif
+        if (!$tahunAjaranId) {
+            $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran ?? $tahunAjaranList->first()?->id_tahun_ajaran;
         }
 
         // Ambil daftar kelas berdasarkan tahun ajaran
@@ -466,18 +507,58 @@ class DataMasterController extends Controller
             ->orderBy('nama_kelas')
             ->get();
 
-        $guruList = Guru::with('mataPelajaran')->orderBy('nama_lengkap', 'asc')->get();
+        // Tampilkan semua guru tanpa filter mata pelajaran
+        // Karena 1 guru bisa mengajar banyak mapel, tidak perlu view untuk menghindari duplikasi
+        $guruList = Guru::orderBy('nama_lengkap', 'asc')->get();
 
-        return view('Admin.dataMaster_Guru', compact('guruList', 'tahunAjaranList', 'tahunAjaranId', 'semester', 'kelasId', 'kelasList'));
+        return view('Admin.dataMaster_Guru', compact('guruList', 'tahunAjaranList', 'tahunAjaranId', 'kelasId', 'kelasList'));
     }
 
     /**
      * Tampilan list mapel
+     * Menggunakan view_mapel_diajarkan untuk data konsisten
      */
     public function listMapel()
     {
-        $mapelList = MataPelajaran::withCount('guru')->orderBy('nama_mapel', 'asc')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        $tahunAjaranId = request('tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran ?? $tahunAjaranList->first()->id_tahun_ajaran ?? null);
+        $kelasId = request('kelas', '');
 
-        return view('Admin.dataMaster_Mapel', compact('mapelList'));
+        // Query kelas berdasarkan tahun ajaran
+        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)->orderBy('nama_kelas')->get();
+
+        // Query menggunakan database view untuk data konsisten
+        if ($kelasId || $tahunAjaranId) {
+            // Filter: Mapel yang diajarkan di kelas/tahun ajaran tertentu
+            $query = DB::table('view_mapel_diajarkan')
+                ->select(
+                    'id_mapel', 
+                    'kode_mapel', 
+                    'nama_mapel', 
+                    'kategori',
+                    DB::raw('COUNT(DISTINCT guru_id) as guru_count')
+                )
+                ->groupBy('id_mapel', 'kode_mapel', 'nama_mapel', 'kategori');
+            
+            if ($tahunAjaranId) {
+                $query->where('tahun_ajaran_id', $tahunAjaranId);
+            }
+            
+            if ($kelasId) {
+                $query->where('kelas_id', $kelasId);
+            }
+            
+            $mapelList = $query->orderBy('nama_mapel')->get();
+        } else {
+            // Tanpa filter: tampilkan semua mata pelajaran
+            $mapelList = MataPelajaran::select('mata_pelajaran.*')
+                ->selectRaw('(SELECT COUNT(DISTINCT guru_id) FROM jadwal_pelajaran 
+                    WHERE jadwal_pelajaran.mapel_id = mata_pelajaran.id_mapel) as guru_count')
+                ->orderBy('nama_mapel', 'asc')
+                ->get();
+        }
+
+        return view('Admin.dataMaster_Mapel', compact('mapelList', 'tahunAjaranList', 'tahunAjaranId', 'kelasId', 'kelasList'));
     }
 }
