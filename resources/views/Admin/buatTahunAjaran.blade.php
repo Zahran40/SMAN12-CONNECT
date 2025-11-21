@@ -194,14 +194,20 @@
             }
         }
         
-        tahunMulai.addEventListener('change', updatePreview);
-        tahunSelesai.addEventListener('change', updatePreview);
-        
-        // Auto-update tahun selesai saat tahun mulai dipilih
+        // Auto-update tahun selesai saat tahun mulai dipilih (SELALU tahun berikutnya)
         tahunMulai.addEventListener('change', function() {
             if (this.value) {
                 const nextYear = parseInt(this.value) + 1;
                 tahunSelesai.value = nextYear;
+                updatePreview();
+            }
+        });
+        
+        // Auto-update tahun mulai saat tahun selesai dipilih (SELALU tahun sebelumnya)
+        tahunSelesai.addEventListener('change', function() {
+            if (this.value) {
+                const prevYear = parseInt(this.value) - 1;
+                tahunMulai.value = prevYear;
                 updatePreview();
             }
         });

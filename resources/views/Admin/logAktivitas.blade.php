@@ -249,7 +249,7 @@
 </div>
 
 {{-- Modal Cleanup --}}
-<div id="cleanup-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+<div id="cleanup-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
         <h3 class="text-xl font-bold text-gray-800 mb-4">Cleanup Log Aktivitas</h3>
         <p class="text-gray-600 mb-6">Hapus semua log yang lebih lama dari berapa hari?</p>
@@ -277,13 +277,18 @@
 <script>
     function openCleanupModal() {
         document.getElementById('cleanup-modal').classList.remove('hidden');
-        document.getElementById('cleanup-modal').classList.add('flex');
     }
 
     function closeCleanupModal() {
         document.getElementById('cleanup-modal').classList.add('hidden');
-        document.getElementById('cleanup-modal').classList.remove('flex');
     }
+    
+    // Close modal when clicking outside
+    document.getElementById('cleanup-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCleanupModal();
+        }
+    });
 </script>
 
 @endsection

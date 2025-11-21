@@ -37,15 +37,15 @@ class DatabaseSeeder extends Seeder
         
         $this->command->info("✅ Tahun ajaran aktif: {$tahunAjaranAktif->tahun_mulai}/{$tahunAjaranAktif->tahun_selesai} {$tahunAjaranAktif->semester}");
 
-        // Ambil kelas X-1 IPA untuk siswa testing
+        // Ambil kelas X-MIPA-1 untuk siswa testing
         $kelasX1 = Kelas::where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
-            ->where('nama_kelas', 'X-1')
+            ->where('nama_kelas', 'X-MIPA-1')
             ->where('tingkat', '10')
-            ->where('jurusan', 'IPA')
+            ->where('jurusan', 'MIPA')
             ->first();
 
         if (!$kelasX1) {
-            $this->command->error("❌ Kelas X-1 IPA tidak ditemukan!");
+            $this->command->error("❌ Kelas X-MIPA-1 tidak ditemukan!");
             return;
         }
 
