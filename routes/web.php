@@ -43,6 +43,9 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/presensi/{jadwal_id}/list', [App\Http\Controllers\Siswa\PresensiController::class, 'listPertemuan'])->name('list_presensi');
     Route::get('/presensi/detail/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'detail'])->name('detail_presensi');
     Route::post('/presensi/absen/{pertemuan_id}', [App\Http\Controllers\Siswa\PresensiController::class, 'absen'])->name('absen');
+    // AJAX routes for modal
+    Route::get('/pertemuan/{pertemuan_id}/detail', [App\Http\Controllers\Siswa\PresensiController::class, 'getPertemuanDetail']);
+    Route::post('/presensi/{pertemuan_id}/absen', [App\Http\Controllers\Siswa\PresensiController::class, 'absenAjax']);
 
     // MATERI ROUTES - Using Controller
     Route::get('/materi', [App\Http\Controllers\Siswa\MateriController::class, 'index'])->name('materi');
@@ -143,6 +146,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/tahun-ajaran/{id}', [TahunAjaranController::class, 'show'])->name('tahun-ajaran.show');
     Route::put('/tahun-ajaran/{id}/status', [TahunAjaranController::class, 'updateStatus'])->name('tahun-ajaran.update-status');
     Route::delete('/tahun-ajaran/{id}', [TahunAjaranController::class, 'destroy'])->name('tahun-ajaran.destroy');
+    Route::delete('/tahun-ajaran-inactive/destroy-all', [TahunAjaranController::class, 'destroyInactive'])->name('tahun-ajaran.destroy-inactive');
 
     // KELAS ROUTES
     Route::get('/kelas', [App\Http\Controllers\Admin\KelasController::class, 'all'])->name('kelas.all');
