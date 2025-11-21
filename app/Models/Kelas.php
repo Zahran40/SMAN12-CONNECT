@@ -35,11 +35,51 @@ class Kelas extends Model
     }
 
     /**
-     * Relasi ke Siswa (one to many)
+     * Relasi ke Siswa (deprecated - gunakan siswaAktif() untuk data aktual)
+     * Ini tetap ada untuk backward compatibility
      */
     public function siswa()
     {
         return $this->hasMany(Siswa::class, 'kelas_id', 'id_kelas');
+    }
+
+    /**
+     * Relasi Many-to-Many ke Siswa melalui siswa_kelas
+     */
+    public function siswaHistory()
+    {
+        return $this->belongsToMany(
+            Siswa::class,
+            'siswa_kelas',
+            'kelas_id',
+            'siswa_id',
+            'id_kelas',
+            'id_siswa'
+        )->withPivot('tahun_ajaran_id', 'status', 'tanggal_masuk', 'tanggal_keluar');
+    }
+
+    /**
+     * Siswa aktif di kelas ini
+     */
+    public function siswaAktif()
+    {
+        return $this->belongsToMany(
+            Siswa::class,
+            'siswa_kelas',
+            'kelas_id',
+            'siswa_id',
+            'id_kelas',
+            'id_siswa'
+        )->wherePivot('status', 'Aktif')
+         ->withPivot('tahun_ajaran_id', 'status', 'tanggal_masuk');
+    }
+
+    /**
+     * Relasi ke SiswaKelas
+     */
+    public function siswaKelas()
+    {
+        return $this->hasMany(SiswaKelas::class, 'kelas_id', 'id_kelas');
     }
 
     /**

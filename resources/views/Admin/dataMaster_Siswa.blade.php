@@ -22,14 +22,14 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">Tahun Ajaran</label>
                 <div class="relative">
-                    <select name="tahun_ajaran" onchange="window.location.href='{{ route('admin.data-master.list-siswa') }}?tahun_ajaran=' + this.value + '&semester={{ $semester }}&kelas={{ $kelasId }}'" class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2 text-slate-700 pr-8 focus:outline-none focus:border-blue-500 bg-white">
+                    <select name="tahun_ajaran" onchange="window.location.href='{{ route('admin.data-master.list-siswa') }}?tahun_ajaran=' + this.value + '&kelas={{ $kelasId }}'" class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2 text-slate-700 pr-8 focus:outline-none focus:border-blue-500 bg-white">
                         @foreach($tahunAjaranList as $ta)
                             <option value="{{ $ta->id_tahun_ajaran }}" {{ $tahunAjaranId == $ta->id_tahun_ajaran ? 'selected' : '' }}>
-                                {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }}
+                                {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} - {{ $ta->semester }}
                             </option>
                         @endforeach
                     </select>
@@ -41,23 +41,9 @@
                 </div>
             </div>
              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Semester</label>
-                <div class="relative">
-                    <select name="semester" onchange="window.location.href='{{ route('admin.data-master.list-siswa') }}?tahun_ajaran={{ $tahunAjaranId }}&semester=' + this.value + '&kelas={{ $kelasId }}'" class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2 text-slate-700 pr-8 focus:outline-none focus:border-blue-500 bg-white">
-                        <option value="Genap" {{ $semester == 'Genap' ? 'selected' : '' }}>Genap</option>
-                        <option value="Ganjil" {{ $semester == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">Kelas</label>
                 <div class="relative">
-                    <select name="kelas" onchange="window.location.href='{{ route('admin.data-master.list-siswa') }}?tahun_ajaran={{ $tahunAjaranId }}&semester={{ $semester }}&kelas=' + this.value" class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2 text-slate-700 pr-8 focus:outline-none focus:border-blue-500 bg-white">
+                    <select name="kelas" onchange="window.location.href='{{ route('admin.data-master.list-siswa') }}?tahun_ajaran={{ $tahunAjaranId }}&kelas=' + this.value" class="w-full appearance-none border-2 border-blue-200 rounded-lg px-4 py-2 text-slate-700 pr-8 focus:outline-none focus:border-blue-500 bg-white">
                         <option value="">Semua Kelas</option>
                         @foreach($kelasList as $kelas)
                             <option value="{{ $kelas->id_kelas }}" {{ $kelasId == $kelas->id_kelas ? 'selected' : '' }}>
@@ -93,7 +79,7 @@
                     <div class="col-span-3 text-slate-600 font-medium text-xs md:text-sm">{{ $siswa->nis }}</div>
                     <div class="col-span-3 flex items-center space-x-2">
                         <img src="{{ asset('images/noto_school.png') }}" alt="Icon Tahun Ajaran" class="w-7 h-7">
-                        <span class="text-blue-600 font-bold text-sm md:text-base">{{ $siswa->kelas->nama_kelas ?? '-' }}</span>
+                        <span class="text-blue-600 font-bold text-sm md:text-base">{{ $siswa->nama_kelas ?? '-' }}</span>
                     </div>
                     <div class="col-span-2 flex flex-col items-end space-y-2">
                         <a href="{{ route('admin.data-master.siswa.show', $siswa->id_siswa) }}" class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-1 rounded-full flex items-center space-x-1 transition-colors text-xs w-20 justify-center">

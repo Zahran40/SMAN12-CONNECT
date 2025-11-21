@@ -39,7 +39,7 @@
                 <h2 class="text-3xl font-bold text-blue-800 mb-2">{{ $kelas->nama_kelas }}</h2>
                 <div class="flex items-center space-x-4 text-sm">
                     <span class="bg-blue-500 text-white px-3 py-1 rounded-lg font-semibold">
-                        {{ $kelas->siswa->count() }} Siswa
+                        {{ $kelas->siswaAktif->count() }} Siswa
                     </span>
                     <span class="text-blue-700 font-medium">
                         Tingkat {{ $kelas->tingkat }} - {{ $kelas->jurusan ?? 'Umum' }}
@@ -90,7 +90,7 @@
         {{-- Tab Content Siswa --}}
         <div id="content-siswa" class="p-6">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-blue-600">Daftar Siswa ({{ $kelas->siswa->count() }})</h3>
+                <h3 class="text-xl font-bold text-blue-600">Daftar Siswa ({{ $kelas->siswaAktif->count() }})</h3>
                 <button onclick="document.getElementById('modalTambahSiswa').classList.remove('hidden')" class="bg-green-400 hover:bg-green-500 text-white px-4 py-2 rounded-full font-bold flex items-center space-x-2 shadow-sm transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -111,7 +111,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($kelas->siswa as $index => $siswa)
+                        @forelse($kelas->siswaAktif as $index => $siswa)
                         <tr class="border-b border-slate-100 hover:bg-blue-50">
                             <td class="py-3 px-4">{{ $index + 1 }}</td>
                             <td class="py-3 px-4">{{ $siswa->nis }}</td>
@@ -161,8 +161,9 @@
 
         {{-- Tab Content Mata Pelajaran --}}
         <div id="content-mapel" class="p-6 hidden">
-            <div class="flex justify-between items-center mb-4">
+            <div class="mb-4">
                 <h3 class="text-xl font-bold text-blue-600">Mata Pelajaran Kelas ({{ $jadwalMapel->count() }})</h3>
+                <p class="text-sm text-slate-500 mt-1">Jadwal mata pelajaran dikelola di <a href="{{ route('admin.akademik.jadwal.index') }}" class="text-blue-600 font-semibold hover:underline">Manajemen Akademik</a></p>
             </div>
 
             @if($jadwalMapel->count() > 0)
@@ -174,9 +175,20 @@
                                 <h4 class="font-bold text-blue-800 text-lg">{{ $jadwal->nama_mapel }}</h4>
                                 <p class="text-sm text-blue-600">{{ $jadwal->kode_mapel }}</p>
                             </div>
-                            <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                                {{ $jadwal->hari }}
-                            </span>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                                    {{ $jadwal->hari }}
+                                </span>
+                                <form action="{{ route('admin.kelas.remove-mapel', [$tahunAjaran->id_tahun_ajaran, $kelas->id_kelas, $jadwal->id_jadwal]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus mata pelajaran dari kelas ini?')" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                         <div class="mt-3 space-y-1 text-sm">
                             <div class="flex items-center text-slate-700">
@@ -207,6 +219,9 @@
         </div>
     </div>
 </div>
+
+{{-- Semua modal dan fitur tambah mata pelajaran dihapus --}}
+{{-- Jadwal mata pelajaran dikelola di Manajemen Akademik --}}
 
 {{-- Modal Tambah Siswa --}}
 <div id="modalTambahSiswa" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

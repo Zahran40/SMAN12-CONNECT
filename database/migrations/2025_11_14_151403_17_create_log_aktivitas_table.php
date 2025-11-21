@@ -13,13 +13,20 @@ return new class extends Migration
     {
         Schema::create('log_aktivitas', function (Blueprint $table) {
             $table->bigInteger('id_log', true);
-            $table->string('nama_tabel', 100)->nullable()->index('idx_tabel');
-            $table->string('aksi', 20)->nullable();
-            $table->bigInteger('id_referensi')->nullable();
-            $table->text('keterangan')->nullable();
-            $table->string('user_aksi', 100)->nullable();
+            $table->string('jenis_aktivitas', 100)->nullable()->index('idx_jenis'); // 'raport', 'pembayaran_spp', 'absensi', dll
+            $table->text('deskripsi')->nullable(); // Deskripsi detail aktivitas
+            $table->unsignedBigInteger('user_id')->nullable(); // ID user yang melakukan aksi
+            $table->string('role', 20)->nullable(); // 'guru', 'siswa', 'admin'
+            $table->string('nama_tabel', 100)->nullable()->index('idx_tabel'); // Nama tabel yang dimodifikasi
+            $table->bigInteger('id_referensi')->nullable(); // ID record yang dimodifikasi
+            $table->string('aksi', 20)->nullable(); // 'insert', 'update', 'delete'
             $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
             $table->timestamp('waktu')->nullable()->useCurrent()->index('idx_waktu');
+            
+            // Index untuk performa
+            $table->index('user_id');
+            $table->index('role');
         });
     }
 
