@@ -213,6 +213,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/pembayaran/{id}/status', [App\Http\Controllers\Admin\PembayaranController::class, 'updateStatus'])->name('pembayaran.update_status');
     Route::delete('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
 
+    // LOG AKTIVITAS ROUTES
+    Route::get('/log-aktivitas', [App\Http\Controllers\Admin\LogAktivitasController::class, 'index'])->name('log-aktivitas.index');
+    Route::post('/log-aktivitas/cleanup', [App\Http\Controllers\Admin\LogAktivitasController::class, 'cleanup'])->name('log-aktivitas.cleanup');
+    Route::get('/log-aktivitas/export', [App\Http\Controllers\Admin\LogAktivitasController::class, 'export'])->name('log-aktivitas.export');
+
     // Legacy routes untuk compatibility (redirect ke yang baru)
     Route::get('/tahun-ajaran-old', function() {
         return redirect()->route('admin.tahun-ajaran.index');

@@ -20,7 +20,7 @@
                 <h2 class="text-2xl font-bold text-slate-800">{{ $guru->nama_lengkap }}</h2>
                 <p class="text-slate-500 text-sm mb-2">NIP {{ $guru->nip }}</p>
                 <span class="border border-yellow-400 text-yellow-600 text-xs font-semibold px-6 py-1 rounded-full">
-                    {{ $guru->mataPelajaran->nama_mapel ?? 'Guru' }}
+                    Guru
                 </span>
             </div>
         </div>
@@ -81,13 +81,9 @@
                     <span class="font-bold text-slate-800">Email</span>
                     <a href="mailto:{{ $guru->user->email ?? $guru->email }}" class="col-span-2 text-slate-600 font-medium underline decoration-slate-400">{{ $guru->user->email ?? $guru->email ?? '-' }}</a>
                 </div>
-                <div class="grid grid-cols-3 border-b border-slate-100 pb-3">
+                <div class="grid grid-cols-3 pb-3">
                     <span class="font-bold text-slate-800">Agama</span>
                     <span class="col-span-2 text-slate-600 font-medium">{{ $guru->agama }}</span>
-                </div>
-                <div class="grid grid-cols-3 pb-3">
-                    <span class="font-bold text-slate-800">Mata Pelajaran</span>
-                    <span class="col-span-2 text-slate-600 font-medium">{{ $guru->mataPelajaran->nama_mapel ?? '-' }}</span>
                 </div>
             </div>
         </div>

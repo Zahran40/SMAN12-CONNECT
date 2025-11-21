@@ -18,6 +18,33 @@ class SiswaController extends Controller
         $user = Auth::user();
         $siswa = Siswa::where('user_id', $user->id)->first();
         
+        // Get kelas siswa dari relasi siswa_kelas untuk tahun ajaran aktif
+        $siswaKelas = DB::table('siswa_kelas as sk')
+            ->join('kelas as k', 'sk.kelas_id', '=', 'k.id_kelas')
+            ->join('tahun_ajaran as ta', 'k.tahun_ajaran_id', '=', 'ta.id_tahun_ajaran')
+            ->where('sk.siswa_id', $siswa->id_siswa)
+            ->where('ta.status', 'Aktif')
+            ->where('sk.status', 'Aktif')
+            ->select('sk.kelas_id', 'k.nama_kelas')
+            ->first();
+        
+        if (!$siswaKelas) {
+            // Siswa belum punya kelas - inisialisasi jadwal kosong untuk semua hari
+            $allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            $jadwalPerHari = [];
+            foreach ($allDays as $hari) {
+                $jadwalPerHari[$hari] = collect(); // Empty collection
+            }
+            
+            return view('siswa.beranda', [
+                'siswa' => $siswa,
+                'presensiAktif' => collect(),
+                'hariIni' => Carbon::now()->locale('id')->dayName,
+                'allDays' => $allDays,
+                'jadwalPerHari' => $jadwalPerHari
+            ]);
+        }
+        
         // Get current day in Indonesian
         $hariIni = Carbon::now()->locale('id')->dayName;
         $today = Carbon::now()->toDateString();
@@ -29,15 +56,15 @@ class SiswaController extends Controller
         $jadwalPerHari = [];
         foreach ($allDays as $hari) {
             $jadwalPerHari[$hari] = DB::table('view_jadwal_siswa')
-                ->where('kelas_id', $siswa->kelas_id)
+                ->where('kelas_id', $siswaKelas->kelas_id)
                 ->where('hari', $hari)
                 ->get();
         }
         
         // Get presensi yang sedang berlangsung hari ini - USING VIEW
+        // View sudah filter berdasarkan tanggal hari ini (CURDATE), tidak perlu filter hari lagi
         $presensiAktif = DB::table('view_presensi_aktif')
-            ->where('kelas_id', $siswa->kelas_id)
-            ->where('hari', $hariIni)
+            ->where('kelas_id', $siswaKelas->kelas_id)
             ->where('is_open', 1)
             ->get()
             ->map(function($pertemuan) use ($siswa) {
