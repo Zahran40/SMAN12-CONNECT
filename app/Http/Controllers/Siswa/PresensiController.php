@@ -181,4 +181,86 @@ class PresensiController extends Controller
 
         return redirect()->back()->with('success', 'Absensi berhasil! Status: Hadir');
     }
+
+    /**
+     * Get pertemuan detail via AJAX untuk modal
+     */
+    public function getPertemuanDetail($pertemuanId)
+    {
+        $user = Auth::user();
+        $siswa = Siswa::where('user_id', $user->id)->firstOrFail();
+        
+        $pertemuan = Pertemuan::with(['jadwal.mataPelajaran', 'jadwal.guru', 'jadwal.kelas'])
+            ->findOrFail($pertemuanId);
+
+        // Cek akses
+        if ($pertemuan->jadwal->kelas_id !== $siswa->kelas_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'mapel' => $pertemuan->jadwal->mataPelajaran->nama_mapel,
+            'kelas' => $pertemuan->jadwal->kelas->nama_kelas,
+            'guru' => $pertemuan->jadwal->guru->nama_lengkap,
+            'nomor_pertemuan' => $pertemuan->nomor_pertemuan,
+            'topik' => $pertemuan->topik_bahasan,
+            'tanggal' => $pertemuan->tanggal_pertemuan 
+                ? Carbon::parse($pertemuan->tanggal_pertemuan)->isoFormat('DD MMMM Y') 
+                : '-',
+            'jam_presensi' => $pertemuan->jam_absen_buka && $pertemuan->jam_absen_tutup
+                ? substr($pertemuan->jam_absen_buka, 0, 5) . ' - ' . substr($pertemuan->jam_absen_tutup, 0, 5)
+                : '-',
+        ]);
+    }
+
+    /**
+     * Submit absensi via AJAX dari modal
+     */
+    public function absenAjax(Request $request, $pertemuanId)
+    {
+        $user = Auth::user();
+        $siswa = Siswa::where('user_id', $user->id)->firstOrFail();
+        
+        $pertemuan = Pertemuan::with('jadwal')->findOrFail($pertemuanId);
+
+        // Cek akses
+        if ($pertemuan->jadwal->kelas_id !== $siswa->kelas_id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // Cek waktu absensi
+        if (!$pertemuan->isAbsensiOpen()) {
+            return response()->json(['success' => false, 'message' => 'Waktu absensi tidak aktif']);
+        }
+
+        // Cek sudah absen
+        $existingAbsensi = DetailAbsensi::where('pertemuan_id', $pertemuanId)
+            ->where('siswa_id', $siswa->id_siswa)
+            ->first();
+
+        if ($existingAbsensi) {
+            return response()->json(['success' => false, 'message' => 'Anda sudah melakukan absensi']);
+        }
+
+        // Validasi
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'alamat_lengkap' => 'nullable|string',
+        ]);
+
+        // Create absensi
+        DetailAbsensi::create([
+            'pertemuan_id' => $pertemuanId,
+            'siswa_id' => $siswa->id_siswa,
+            'status_kehadiran' => 'Hadir',
+            'keterangan' => null,
+            'dicatat_pada' => now(),
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'alamat_lengkap' => $request->alamat_lengkap,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Absensi berhasil dicatat']);
+    }
 }
