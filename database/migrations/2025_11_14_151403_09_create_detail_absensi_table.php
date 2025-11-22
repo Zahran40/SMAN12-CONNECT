@@ -17,6 +17,9 @@ return new class extends Migration
             $table->bigInteger('siswa_id')->index('fk_absensi_siswa');
             $table->enum('status_kehadiran', ['Hadir', 'Izin', 'Sakit', 'Alfa'])->default('Alfa');
             $table->string('keterangan', 200)->nullable();
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
+            $table->text('alamat_lengkap')->nullable();
             $table->timestamp('dicatat_pada')->nullable()->useCurrent();
 
             $table->unique(['pertemuan_id', 'siswa_id'], 'uk_absensi_unik');

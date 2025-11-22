@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tugas', function (Blueprint $table) {
             $table->bigInteger('id_tugas', true);
             $table->bigInteger('jadwal_id')->index('fk_tugas_jadwal');
+            $table->enum('semester', ['Ganjil', 'Genap'])->default('Ganjil');
             $table->bigInteger('pertemuan_id')->nullable()->index('idx_materi_pertemuan');
             $table->string('judul_tugas', 250);
             $table->text('deskripsi')->nullable();
