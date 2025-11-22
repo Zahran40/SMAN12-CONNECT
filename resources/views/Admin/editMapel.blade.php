@@ -74,12 +74,12 @@
                 @enderror
             </div>
 
-            <div class="flex justify-end space-x-3">
-                <a href="{{ route('admin.akademik.mapel.show', $mapel->id_mapel) }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-8 py-3 rounded-full font-bold transition-colors">
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <a href="{{ route('admin.akademik.mapel.show', $mapel->id_mapel) }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold transition-colors text-center w-full sm:w-auto">
                     Batal
                 </a>
-                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
-                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
+                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold flex items-center justify-center space-x-2 shadow-lg transition-all hover:shadow-xl w-full sm:w-auto">
+                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-5 h-5 sm:w-6 sm:h-6">
                     <span>Simpan Perubahan</span>
                 </button>
             </div>

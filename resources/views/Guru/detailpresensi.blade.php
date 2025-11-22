@@ -95,7 +95,7 @@
                 @else
                     <form action="{{ route('guru.submit_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin submit? Data akan terkunci.')">
                         @csrf
-                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors font-medium">
+                        <button type="submit" class="bg-blue-500 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-blue-600 transition-colors font-medium w-full sm:w-auto">
                             Submit & Lock Presensi
                         </button>
                     </form>
