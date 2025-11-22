@@ -7,19 +7,21 @@
             <p class="text-slate-500 text-sm">(Manajemen untuk data-data kelas, siswa, guru dan mata pelajaran)</p>
         </div>
 
-        <div class="flex space-x-4">
-            <a href="{{ route('admin.data-master.index') }}" class="px-8 py-2 bg-blue-400 text-white font-semibold rounded-full shadow-sm hover:bg-blue-500 transition-colors">
-                Kelas
-            </a>
-            <a href="{{ route('admin.data-master.list-siswa') }}" class="px-8 py-2 bg-white text-slate-700 border-2 border-blue-200 font-semibold rounded-full hover:bg-blue-50 transition-colors">
-                Siswa
-            </a>
-            <a href="{{ route('admin.data-master.list-guru') }}" class="px-8 py-2 bg-white text-slate-700 border-2 border-blue-200 font-semibold rounded-full hover:bg-blue-50 transition-colors">
-                Guru
-            </a>
-            <a href="{{ route('admin.data-master.list-mapel') }}" class="px-8 py-2 bg-white text-slate-700 border-2 border-blue-200 font-semibold rounded-full hover:bg-blue-50 transition-colors">
-                Mata Pelajaran
-            </a>
+        <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div class="flex space-x-3 min-w-max">
+                <a href="{{ route('admin.data-master.index') }}" class="px-6 sm:px-8 py-2 bg-blue-400 text-white font-semibold rounded-full shadow-sm hover:bg-blue-500 transition-colors whitespace-nowrap">
+                    Kelas
+                </a>
+                <a href="{{ route('admin.data-master.list-siswa') }}" class="px-6 sm:px-8 py-2 bg-white text-slate-700 border-2 border-blue-200 font-semibold rounded-full hover:bg-blue-50 transition-colors whitespace-nowrap">
+                    Siswa
+                </a>
+                <a href="{{ route('admin.data-master.list-guru') }}" class="px-6 sm:px-8 py-2 bg-white text-slate-700 border-2 border-blue-200 font-semibold rounded-full hover:bg-blue-50 transition-colors whitespace-nowrap">
+                    Guru
+                </a>
+                <a href="{{ route('admin.data-master.list-mapel') }}" class="px-6 sm:px-8 py-2 bg-white text-slate-700 border-2 border-blue-200 font-semibold rounded-full hover:bg-blue-50 transition-colors whitespace-nowrap">
+                    Mata Pelajaran
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-1 gap-4 max-w-md">
