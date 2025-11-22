@@ -294,6 +294,9 @@ function detectLocation() {
         function(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy; // dalam meter
+            
+            console.log('GPS Position:', { lat, lng, accuracy: accuracy + 'm' });
             
             locationData.latitude = lat;
             locationData.longitude = lng;
@@ -303,13 +306,20 @@ function detectLocation() {
             
             // Reverse geocoding menggunakan Google Maps Geocoding API
             const googleApiKey = '{{ env("GOOGLE_MAPS_API_KEY") }}';
-            fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}&language=id`)
+            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}&language=id`;
+            
+            console.log('Geocoding URL:', geocodeUrl);
+            
+            fetch(geocodeUrl)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Google Maps Response:', data);
+                    
                     if (data.status === 'OK' && data.results && data.results.length > 0) {
                         locationData.alamat_lengkap = data.results[0].formatted_address;
                         if (locationAddress) locationAddress.textContent = data.results[0].formatted_address;
                     } else {
+                        console.warn('Geocoding failed. Status:', data.status, 'Error:', data.error_message);
                         locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                         if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
                     }
@@ -322,10 +332,11 @@ function detectLocation() {
                     if (btnText) btnText.textContent = 'Hadir';
                 })
                 .catch(error => {
-                    console.warn('Geocoding error:', error);
+                    console.error('Geocoding fetch error:', error);
                     locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                    if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
+                    if (locationAddress) locationAddress.textContent = 'Error koneksi ke Google Maps';
                     
+                    // Enable button meski geocoding gagal
                     if (btnSubmit) {
                         btnSubmit.disabled = false;
                         btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
