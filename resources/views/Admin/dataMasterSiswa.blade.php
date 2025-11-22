@@ -37,16 +37,18 @@
         </button>
     </div>
 
-    <div class="flex space-x-4">
-        <a href="{{ route('admin.data-master.kelas.siswa', $kelas->id_kelas) }}" class="px-8 py-2 bg-blue-400 text-white font-semibold rounded-full shadow-sm hover:bg-blue-500 transition-colors">
-            Siswa
-        </a>
-        <a href="{{ route('admin.data-master.kelas.guru', $kelas->id_kelas) }}" class="px-8 py-2 bg-white text-slate-700 font-semibold rounded-full border-2 border-blue-200 hover:bg-blue-50 transition-colors">
-            Guru
-        </a>
-        <a href="{{ route('admin.data-master.kelas.mapel', $kelas->id_kelas) }}" class="px-8 py-2 bg-white text-slate-700 font-semibold rounded-full border-2 border-blue-200 hover:bg-blue-50 transition-colors">
-            Mata Pelajaran
-        </a>
+    <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div class="flex space-x-3 min-w-max">
+            <a href="{{ route('admin.data-master.kelas.siswa', $kelas->id_kelas) }}" class="px-6 sm:px-8 py-2 bg-blue-400 text-white font-semibold rounded-full shadow-sm hover:bg-blue-500 transition-colors whitespace-nowrap">
+                Siswa
+            </a>
+            <a href="{{ route('admin.data-master.kelas.guru', $kelas->id_kelas) }}" class="px-6 sm:px-8 py-2 bg-white text-slate-700 font-semibold rounded-full border-2 border-blue-200 hover:bg-blue-50 transition-colors whitespace-nowrap">
+                Guru
+            </a>
+            <a href="{{ route('admin.data-master.kelas.mapel', $kelas->id_kelas) }}" class="px-6 sm:px-8 py-2 bg-white text-slate-700 font-semibold rounded-full border-2 border-blue-200 hover:bg-blue-50 transition-colors whitespace-nowrap">
+                Mata Pelajaran
+            </a>
+        </div>
     </div>
 
     <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm grow">
