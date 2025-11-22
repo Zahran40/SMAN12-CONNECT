@@ -5,7 +5,10 @@
     <h2 class="text-3xl font-bold text-slate-800 mb-6">Profil</h2>
 
     <!-- Profile Section -->
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
+   <div class="bg-white rounded-xl  p-6 mb-8 flex items-center justify-between space-x-4">
+
+    <!-- KIRI: Foto & Info Guru -->
+    <div class="flex items-center space-x-4">
         <div class="rounded-full overflow-hidden w-24 h-24 ring-4 ring-blue-100">
             @if($guru && $guru->foto_profil)
                 <img src="{{ asset('storage/' . $guru->foto_profil) }}" alt="Foto Guru" class="w-full h-full object-cover" />
@@ -13,12 +16,34 @@
                 <img src="{{ asset('images/openmoji_woman-teacher-light-skin-tone.png') }}" alt="Foto Guru" class="w-full h-full object-cover" />
             @endif
         </div>
+
         <div>
             <h3 class="text-xl font-bold text-slate-900">{{ $guru->nama_lengkap ?? 'Nama Guru' }}</h3>
             <p class="text-sm text-slate-500">NIP: {{ $guru->nip ?? '-' }}</p>
-            <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">Guru</span>
+            <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">
+                Guru
+            </span>
         </div>
     </div>
+
+    <!-- KANAN: Tombol Logout -->
+    <div>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit"
+                class="flex items-center px-5 py-3 font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+                Logout
+            </button>
+        </form>
+    </div>
+
+</div>
+
 
     <!-- Data Diri Guru Section -->
     <h3 class="text-xl font-semibold text-slate-800 mb-4">Data Diri Guru</h3>

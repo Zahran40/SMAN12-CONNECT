@@ -2,18 +2,6 @@
 
 @section('content')
 
-    @if(session('success'))
-        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
-            {{ session('error') }}
-        </div>
-    @endif
-
     <div class="flex justify-between items-center mb-8">
         <div class="flex items-center space-x-3">
             <a href="{{ route('guru.materi') }}" class="text-blue-600 hover:text-blue-800" title="Kembali">
@@ -56,7 +44,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
                     </svg>
-                    <span>Semua Materi Saya ({{ $allMateriGuru->count() }})</span>
+                    <span>Semua Materi Saya ({{ count($allMateriGuru) }})</span>
                 </span>
             </button>
         </nav>
@@ -65,7 +53,7 @@
     <!-- Tab Content: Per Pertemuan -->
     <div class="tab-content space-y-6" id="tab-pertemuan">
         @forelse($pertemuans as $pertemuan)
-        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+        <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
             <div class="flex justify-between items-center mb-6 cursor-pointer" data-pertemuan-toggle>
                 <div class="flex items-center space-x-4">
                     <span class="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 font-bold rounded-lg text-base">{{ $pertemuan->pertemuan_ke }}</span>

@@ -2,10 +2,10 @@
 
 @section('content')
 
-  <h2 class="text-3xl font-bold text-slate-800 mb-6">Nilai Raport Siswa</h2>
+  <h2 class="text-3xl font-bold text-blue-500 mb-6">Nilai Raport Siswa</h2>
 
     <div class="bg-white rounded-xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-slate-900 mb-2">Nilai Raport Mata Pelajaran Anda</h2>
+        <h2 class="text-3xl font-bold text-blue-400 mb-2">Nilai Raport Mata Pelajaran Anda</h2>
         <p class="text-sm text-slate-500 mb-8">Pilih Mata Pelajaran anda untuk mengisi nilai pada raport siswa</p>
         
         @if($jadwalList && $jadwalList->count() > 0)
