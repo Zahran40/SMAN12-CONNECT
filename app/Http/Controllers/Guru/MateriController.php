@@ -55,11 +55,12 @@ class MateriController extends Controller
             ->get();
 
         // Ambil semua materi guru dari view untuk tab "Semua Materi Saya"
-        $allMateriGuru = DB::table('view_materi_guru')
-            ->where('id_guru', $guru->id_guru)
-            ->where('id_jadwal', $jadwal_id)
-            ->orderBy('tgl_upload', 'desc')
-            ->get();
+        // Gunakan DB::select untuk memastikan tidak ada caching
+        $allMateriGuru = DB::select("
+            SELECT * FROM view_materi_guru 
+            WHERE id_guru = ? AND id_jadwal = ? 
+            ORDER BY tgl_upload DESC
+        ", [$guru->id_guru, $jadwal_id]);
 
         return view('Guru.detailMateri', compact('jadwal', 'pertemuans', 'allMateriGuru'));
     }
@@ -281,9 +282,8 @@ class MateriController extends Controller
             ->get();
 
         $item = Materi::findOrFail($id);
-        $type = 'materi';
 
-        return view('Guru.editMateri', compact('jadwal', 'pertemuans', 'item', 'type'));
+        return view('Guru.editMateri', compact('jadwal', 'pertemuans', 'item'));
     }
 
     /**
@@ -593,21 +593,13 @@ class MateriController extends Controller
                 Log::info("New file uploaded to: {$tugas->file_path}");
             }
 
-            // Buat waktu_dibuka dan waktu_ditutup (dateTime format)
-            $tanggalDibuka = $validated['tanggal_dibuka'];
-            $tanggalDitutup = $validated['tanggal_ditutup'];
-            $waktuDibuka = $tanggalDibuka . ' ' . $validated['jam_buka'] . ':00';
-            $waktuDitutup = $tanggalDitutup . ' ' . $validated['jam_tutup'] . ':59';
-            
             // Update semua field
             $tugas->pertemuan_id = $validated['id_pertemuan'];
             $tugas->judul_tugas = $validated['judul'];
             $tugas->deskripsi_tugas = $validated['deskripsi'];
-            $tugas->tanggal_dibuka = $tanggalDibuka;
-            $tugas->tanggal_ditutup = $tanggalDitutup;
-            $tugas->tanggal_deadline = $tanggalDitutup; // deadline sama dengan tanggal ditutup
-            $tugas->waktu_dibuka = $waktuDibuka;
-            $tugas->waktu_ditutup = $waktuDitutup;
+            $tugas->tanggal_dibuka = $validated['tanggal_dibuka'];
+            $tugas->tanggal_ditutup = $validated['tanggal_ditutup'];
+            $tugas->deadline = $validated['tanggal_ditutup']; // deadline sama dengan tanggal ditutup
             $tugas->jam_buka = $validated['jam_buka'];
             $tugas->jam_tutup = $validated['jam_tutup'];
             
