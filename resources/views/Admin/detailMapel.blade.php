@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="flex flex-col space-y-6">
+<div class="flex flex-col space-y-4 sm:space-y-6">
     <div class="flex items-center space-x-4">
         <a href="{{ url()->previous() }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
@@ -25,8 +25,8 @@
     </div>
     @endif
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center">
-        <div class="flex items-center space-x-6">
+    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm flex justify-between items-center">
+        <div class="flex items-center space-x-4 sm:space-x-6">
             <div class="w-24 h-24 bg-blue-100 rounded-2xl flex items-center justify-center">
                 <img src="{{ asset('images/Book.png') }}" alt="Icon Mapel" class="w-16 h-16">
             </div>
@@ -58,13 +58,13 @@
             </a>
         </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-sm">
+        <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
             <div class="space-y-6 max-w-4xl">
-                <div class="grid grid-cols-3 border-b border-slate-100 pb-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 border-b border-slate-100 pb-3">
                     <span class="font-bold text-slate-800">Nama Mata Pelajaran</span>
                     <span class="col-span-2 text-slate-600 font-medium">{{ $mapel->nama_mapel }}</span>
                 </div>
-                <div class="grid grid-cols-3 pb-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 pb-3">
                     <span class="font-bold text-slate-800">Deskripsi</span>
                     <span class="col-span-2 text-slate-600 font-medium">{{ $mapel->deskripsi ?? '-' }}</span>
                 </div>
@@ -73,8 +73,8 @@
     </div>
 
     {{-- Jadwal Per Kelas --}}
-    <div class="bg-white p-8 rounded-2xl shadow-sm">
-        <div class="flex justify-between items-center mb-6">
+    <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
+        <div class="flex justify-between items-center mb-4 sm:mb-6">
             <h3 class="text-xl font-bold text-blue-600">Jadwal Per Kelas</h3>
             <button onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden')" class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-full font-bold flex items-center space-x-2 shadow-sm transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -124,7 +124,7 @@
 
 {{-- Modal Tambah Jadwal --}}
 <div id="modalTambahJadwal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md mx-4">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-blue-600">Tambah Jadwal</h3>
             <button onclick="document.getElementById('modalTambahJadwal').classList.add('hidden')" class="text-slate-500 hover:text-slate-700">
@@ -214,3 +214,4 @@
     </div>
 </div>
 @endsection
+

@@ -11,7 +11,7 @@
     currentKeterangan: ''
 }">
 
-    <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('guru.presensi') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -32,7 +32,7 @@
     </div>
 
     {{-- Status Card --}}
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Total Siswa</p>
@@ -105,8 +105,8 @@
     </div>
 
     {{-- Daftar Siswa --}}
-    <div class="bg-white rounded-xl shadow-lg p-8">
-        <h3 class="text-xl font-bold text-slate-800 mb-6">Daftar Kehadiran Siswa</h3>
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
+        <h3 class="text-xl font-bold text-slate-800 mb-4 sm:mb-6">Daftar Kehadiran Siswa</h3>
         
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -213,8 +213,8 @@
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
         @click.self="showModal = false"
     >
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md" @click.stop>
-            <h3 class="text-2xl font-bold text-slate-800 mb-6">Update Status Kehadiran</h3>
+        <div class="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-md" @click.stop>
+            <h3 class="text-2xl font-bold text-slate-800 mb-4 sm:mb-6">Update Status Kehadiran</h3>
             
             <form :action="`{{ route('guru.update_status_presensi', $pertemuan->id_pertemuan) }}`" method="POST">
                 @csrf
@@ -279,3 +279,5 @@
 </style>
 
 @endsection
+
+

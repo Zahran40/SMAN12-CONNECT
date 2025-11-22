@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="flex flex-col space-y-6">
+<div class="flex flex-col space-y-4 sm:space-y-6">
     <div class="flex items-center space-x-4">
         <a href="{{ route('admin.tahun-ajaran.index') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" class="w-8 h-8">
@@ -24,8 +24,8 @@
         </div>
     @endif
 
-    <div class="bg-white p-8 rounded-2xl shadow-sm">
-        <div class="flex justify-between items-center mb-6">
+    <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
+        <div class="flex justify-between items-center mb-4 sm:mb-6">
             <h3 class="text-xl font-bold text-blue-600">Daftar Kelas</h3>
             <a href="{{ route('admin.kelas.create', $tahunAjaran->id_tahun_ajaran) }}" class="bg-blue-400 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-bold flex items-center space-x-2 shadow-sm transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -35,9 +35,9 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             @forelse($kelasList as $kelas)
-            <div class="border-2 border-blue-200 rounded-2xl p-6 bg-white hover:shadow-lg transition-shadow">
+            <div class="border-2 border-blue-200 rounded-2xl p-4 sm:p-6 bg-white hover:shadow-lg transition-shadow">
                 <div class="flex justify-center mb-4">
                     <img src="{{ asset('images/noto_school.png') }}" alt="Icon Kelas" class="w-16 h-16">
                 </div>
@@ -76,3 +76,5 @@
     </div>
 </div>
 @endsection
+
+

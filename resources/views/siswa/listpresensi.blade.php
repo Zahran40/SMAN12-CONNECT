@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="flex items-center space-x-4 mb-8">
+<div class="flex items-center space-x-4 mb-6 sm:mb-8">
     <a href="{{ route('siswa.presensi') }}" class="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -23,7 +23,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     
                     <div class="flex items-start space-x-4">
-                        <div class="flex-shrink-0 w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center font-bold text-xl">
+                        <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center font-bold text-xl">
                             {{ $pertemuan->nomor_pertemuan }}
                         </div>
                         
@@ -113,7 +113,7 @@
 @else
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
         <h3 class="text-xl font-bold text-slate-800 mb-2">Belum ada pertemuan</h3>
-        <p class="text-slate-500 mb-6">Daftar pertemuan akan muncul di sini.</p>
+        <p class="text-slate-500 mb-4 sm:mb-6">Daftar pertemuan akan muncul di sini.</p>
         <a href="{{ route('siswa.presensi') }}" class="inline-block px-6 py-2.5 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition-colors">
             Kembali
         </a>
@@ -412,3 +412,4 @@ document.getElementById('modal-absensi')?.addEventListener('click', function(e) 
 </script>
 
 @endsection
+

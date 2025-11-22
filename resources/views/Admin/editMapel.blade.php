@@ -11,11 +11,11 @@
         <h1 class="text-2xl font-bold text-blue-700">Edit Mata Pelajaran</h1>
     </div>
 
-    <div class="bg-white p-8 rounded-2xl shadow-sm">
-        <h3 class="text-xl font-bold text-blue-600 mb-6">Data Mata Pelajaran</h3>
+    <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
+        <h3 class="text-xl font-bold text-blue-600 mb-4 sm:mb-6">Data Mata Pelajaran</h3>
 
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
                 <div class="font-bold mb-2">Terjadi kesalahan:</div>
                 <ul class="list-disc list-inside space-y-1">
                     @foreach ($errors->all() as $error)
@@ -26,13 +26,13 @@
         @endif
 
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
                 {{ session('error') }}
             </div>
         @endif
@@ -87,3 +87,4 @@
     </div>
 </div>
 @endsection
+

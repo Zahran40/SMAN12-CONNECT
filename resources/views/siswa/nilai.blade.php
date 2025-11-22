@@ -4,11 +4,11 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-blue-500 mb-6">Nilai Raport</h2>
+    <h2 class="text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Nilai Raport</h2>
 
     @if($kelas)
-    <div class="bg-white rounded-xl shadow-lg p-6">
-        <div class="flex justify-between items-center mb-6">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+        <div class="flex justify-between items-center mb-4 sm:mb-6">
             <div class="flex items-center space-x-3">
                 <span class="w-8 h-3 bg-yellow-400 rounded"></span>
                 <h3 class="text-lg font-bold text-slate-800">{{ $kelas->nama_kelas }}</h3>
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             
             <div style="background-image: url('{{ asset('images/Frame 115 (2).png') }}')" 
                  class="bg-cover bg-center rounded-xl shadow-lg px-6 py-10 flex justify-between items-center">
@@ -50,7 +50,7 @@
         </div>
     </div>
     @else
-    <div class="bg-white rounded-xl shadow-lg p-6">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
         <div class="text-center py-12">
             <p class="text-slate-500">Data kelas belum tersedia. Silakan hubungi admin.</p>
         </div>
@@ -58,3 +58,4 @@
     @endif
 
 @endsection
+

@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('guru.input_nilai', $jadwal->id_jadwal) }}" class="text-blue-400 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -11,7 +11,7 @@
         <h2 class="text-3xl font-bold text-blue-500">Detail Raport - {{ $jadwal->mataPelajaran->nama_mapel }} (Semester 2)</h2>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 flex items-center space-x-4">
            <div class="rounded-full overflow-hidden w-16 h-16 ring-4 ring-blue-100">
              <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
         </div>
@@ -22,15 +22,15 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border-2 border-blue-100">
-        <h3 class="text-xl font-semibold text-blue-600 mb-8 text-center">Perkembangan Siswa - Semester 2</h3>
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-blue-100">
+        <h3 class="text-xl font-semibold text-blue-600 mb-6 sm:mb-8 text-center">Perkembangan Siswa - Semester 2</h3>
         
         {{-- Chart.js Canvas --}}
         <div class="px-6" style="max-width: 800px; margin: 0 auto;">
             <canvas id="nilaiChart" height="300"></canvas>
         </div>
 
-        <div class="flex justify-center space-x-8 mt-6">
+        <div class="flex justify-center space-x-8 mt-4 sm:mt-6">
             <div class="flex items-center space-x-2">
                 <div class="w-4 h-4 rounded-full bg-purple-600"></div>
                 <span class="text-sm text-slate-600 font-medium">Tahun Ajaran {{ $tahunAjaranLabel }}</span>
@@ -39,10 +39,10 @@
     </div>
 
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-        <h3 class="text-xl font-semibold text-slate-800 mb-6">Mengisi Nilai - {{ $tahunAjaranLabel }}</h3>
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+        <h3 class="text-xl font-semibold text-slate-800 mb-4 sm:mb-6">Mengisi Nilai - {{ $tahunAjaranLabel }}</h3>
         
-        <div class="flex space-x-4 mb-8">
+        <div class="flex space-x-4 mb-6 sm:mb-8">
             <a href="{{ route('guru.detail_raport_siswa', [$jadwal->id_jadwal, $siswa->id_siswa]) }}" class="px-8 py-2.5 rounded-full bg-white text-slate-600 border-2 border-slate-200 font-semibold text-sm hover:bg-slate-50 transition-colors">Semester 1 (Ganjil)</a>
             <button class="px-8 py-2.5 rounded-full bg-blue-500 text-white font-semibold text-sm shadow-md">Semester 2 (Genap)</button>
         </div>
@@ -196,3 +196,4 @@
     });
 </script>
 @endpush
+

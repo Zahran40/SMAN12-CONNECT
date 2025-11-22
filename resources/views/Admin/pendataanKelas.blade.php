@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="flex flex-col space-y-6">
+<div class="flex flex-col space-y-4 sm:space-y-6">
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-blue-700">Pendataan Kelas</h1>
     </div>
@@ -20,7 +20,7 @@
     @endif
 
     {{-- Info Section --}}
-    <div class="bg-white p-6 rounded-2xl shadow-sm">
+    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
         <div class="flex items-center space-x-4">
             <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -37,7 +37,7 @@
     {{-- Tahun Ajaran Cards --}}
     @if($tahunAjaranList->count() > 0)
         @foreach($tahunAjaranList as $tahunAjaran)
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center space-x-3">
                         <span class="text-lg font-bold text-blue-600">
@@ -61,7 +61,7 @@
                 </div>
 
                 @if($tahunAjaran->kelas->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($tahunAjaran->kelas as $kelas)
                         <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-blue-200">
                             <div class="flex items-start space-x-4 mb-3">
@@ -104,7 +104,7 @@
                         @endforeach
                     </div>
                 @else
-                    <div class="bg-slate-50 p-8 rounded-xl text-center border-2 border-dashed border-slate-200">
+                    <div class="bg-slate-50 p-4 sm:p-6 md:p-8 rounded-xl text-center border-2 border-dashed border-slate-200">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
@@ -132,3 +132,5 @@
     @endif
 </div>
 @endsection
+
+

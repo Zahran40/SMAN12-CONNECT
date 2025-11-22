@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-    <div class="flex flex-col space-y-6">
+    <div class="flex flex-col space-y-4 sm:space-y-6">
         
         <div>
             <h3 class="text-xl font-bold text-blue-400">Form Data Diri Guru</h3>
@@ -33,7 +33,7 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-8">
             <form action="{{ isset($guru) ? route('admin.data-master.guru.update', $guru->id_guru) : route('admin.data-master.guru.store') }}" method="POST" class="space-y-6" autocomplete="off">
                 @csrf
                 @if(isset($guru))

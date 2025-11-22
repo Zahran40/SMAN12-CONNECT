@@ -161,7 +161,7 @@
             @endif
         </div>
         
-        <div class="bg-slate-50 px-6 py-3 text-center border-t border-slate-100">
+        <div class="bg-slate-50 px-4 py-2 sm:px-6 sm:py-3 text-center border-t border-slate-100">
              <p class="text-xs text-slate-400">SMA NEGERI 12 MEDAN &copy; 2025</p>
         </div>
     </div>

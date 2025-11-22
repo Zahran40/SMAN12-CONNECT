@@ -19,7 +19,7 @@
 
     <div class="absolute top-8 left-8">
         <a href="{{ route('password.request') }}"
-            class="inline-flex items-center bg-white rounded-xl shadow-md px-4 py-2 text-[#2a5db0] font-medium text-[18px] hover:shadow-lg transition">
+            class="inline-flex items-center bg-white rounded-lg sm:xl shadow-md px-4 py-2 text-[#2a5db0] font-medium text-[18px] hover:shadow-lg transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="#2a5db0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 18 9 12 15 6" />
             </svg>
@@ -27,11 +27,11 @@
         </a>
     </div>
 
-    <div class="flex flex-col md:flex-row bg-white rounded-[32px] shadow-xl max-w-[980px] w-[90%] overflow-hidden">
+    <div class="flex flex-col md:flex-row bg-white rounded-[32px] shadow-lg sm:xl max-w-[980px] w-[90%] overflow-hidden">
 
         <div class="flex-1 p-10 md:p-12">
 
-            <div class="flex items-center gap-3 mb-6">
+            <div class="flex items-center gap-3 mb-4 sm:mb-6">
                 <img src="/images/logo_sman12.png" alt="Logo" class="h-[68px] w-[68px]">
                 <div class="bg-[#4eaaff] text-white font-semibold rounded-full px-5 py-1.5 text-[15px]">
                     SMA NEGERI 12 MEDAN
@@ -39,24 +39,24 @@
             </div>
 
             <h2 class="text-[#2a5db0] font-bold text-[32px] mb-2">Reset Password</h2>
-            <p class="text-gray-600 text-[15px] mb-6">Masukkan kode OTP dan password baru Anda</p>
+            <p class="text-gray-600 text-[15px] mb-4 sm:mb-6">Masukkan kode OTP dan password baru Anda</p>
 
             {{-- Flash Messages --}}
             @if (session('error'))
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 sm:mb-6 rounded-lg" role="alert">
                     <p class="font-medium">{{ session('error') }}</p>
                 </div>
             @endif
 
             @if (session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg" role="alert">
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 sm:mb-6 rounded-lg" role="alert">
                     <p class="font-medium">{{ session('success') }}</p>
                 </div>
             @endif
 
             {{-- Validation Errors --}}
             @if ($errors->any())
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg">
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 sm:mb-6 rounded-lg">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -79,7 +79,7 @@
                     <label for="otp" class="text-[15px] font-medium">Kode OTP</label>
                     <input id="otp" type="text" name="otp" required autofocus maxlength="6"
                         value="{{ old('otp') }}"
-                        class="w-full mt-1 border border-[#bcd6f6] rounded-lg px-4 py-3 text-[16px] text-center text-2xl font-bold tracking-widest focus:ring-2 focus:ring-[#4eaaff] outline-none @error('otp') border-red-500 @enderror"
+                        class="w-full mt-1 border border-[#bcd6f6] rounded-lg px-4 py-3 text-[16px] text-center text-xl sm:text-2lg sm:xl font-bold tracking-widest focus:ring-2 focus:ring-[#4eaaff] outline-none @error('otp') border-red-500 @enderror"
                         placeholder="000000">
                     @error('otp')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -178,3 +178,5 @@
 </body>
 
 </html>
+
+
