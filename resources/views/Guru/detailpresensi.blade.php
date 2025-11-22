@@ -18,14 +18,14 @@
             </svg>
         </a>
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">{{ $pertemuan->jadwal->mataPelajaran->nama_mapel }}</h2>
+            <h2 class="text-3xl font-bold text-blue-500">{{ $pertemuan->jadwal->mataPelajaran->nama_mapel }}</h2>
             <p class="text-sm text-slate-500 mt-1">
                 {{ $pertemuan->jadwal->kelas->nama_kelas }} • Pertemuan ke-{{ $pertemuan->nomor_pertemuan }} • 
                 {{ \Carbon\Carbon::parse($pertemuan->tanggal_pertemuan)->isoFormat('dddd, D MMMM Y') }}
             </p>
             @if($pertemuan->topik_bahasan)
                 <p class="text-sm text-blue-600 mt-1 font-medium">
-                    📚 {{ $pertemuan->topik_bahasan }}
+                     {{ $pertemuan->topik_bahasan }}
                 </p>
             @endif
         </div>
@@ -36,7 +36,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Total Siswa</p>
-                <p class="text-2xl font-bold text-blue-600">{{ $siswaList->count() }}</p>
+                <p class="text-2xl font-bold text-blue-400">{{ $siswaList->count() }}</p>
             </div>
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Hadir</p>
@@ -44,7 +44,7 @@
             </div>
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Sakit/Izin</p>
-                <p class="text-2xl font-bold text-yellow-600">{{ $siswaList->whereIn('status_kehadiran', ['Sakit', 'Izin'])->count() }}</p>
+                <p class="text-2xl font-bold text-yellow-500">{{ $siswaList->whereIn('status_kehadiran', ['Sakit', 'Izin'])->count() }}</p>
             </div>
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Alfa</p>
@@ -56,11 +56,11 @@
             <div class="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
                 <div class="text-sm text-slate-600">
                     <span class="font-medium">Waktu Absensi:</span>
-                    <span class="text-green-600">
+                    <span class="text-blue-500">
                         {{ \Carbon\Carbon::parse($pertemuan->tanggal_absen_dibuka)->translatedFormat('d M Y') }}, {{ substr($pertemuan->jam_absen_buka, 0, 5) }}
+                        - 
                     </span>
-                    - 
-                    <span class="text-red-600">
+                    <span class="text-blue-500">
                         {{ \Carbon\Carbon::parse($pertemuan->tanggal_absen_ditutup)->translatedFormat('d M Y') }}, {{ substr($pertemuan->jam_absen_tutup, 0, 5) }}
                     </span>
                     
@@ -87,7 +87,7 @@
                             <form action="{{ route('guru.unlock_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin membuka kembali absensi ini?')">
                                 @csrf
                                 <button type="submit" class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-200">
-                                    🔓 Buka Kembali
+                                     Buka Kembali
                                 </button>
                             </form>
                         @endif

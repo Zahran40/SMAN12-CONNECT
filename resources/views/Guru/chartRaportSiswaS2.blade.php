@@ -8,7 +8,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-slate-800">Detail Raport - {{ $jadwal->mataPelajaran->nama_mapel }} (Semester 2)</h2>
+        <h2 class="text-3xl font-bold text-blue-500">Detail Raport - {{ $jadwal->mataPelajaran->nama_mapel }} (Semester 2)</h2>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
@@ -32,7 +32,7 @@
 
         <div class="flex justify-center space-x-8 mt-6">
             <div class="flex items-center space-x-2">
-                <div class="w-4 h-4 rounded-full bg-blue-600"></div>
+                <div class="w-4 h-4 rounded-full bg-purple-600"></div>
                 <span class="text-sm text-slate-600 font-medium">Tahun Ajaran {{ $tahunAjaranLabel }}</span>
             </div>
         </div>
@@ -53,12 +53,12 @@
             
             <div class="space-y-6">
                 
-                <div class="flex justify-between items-center bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                <div class="flex justify-between items-center">
                     <div>
-                        <h4 class="text-base font-bold text-slate-800">Nilai Tugas</h4>
+                        <h4 class="text-base font-medium text-slate-800">Nilai Tugas</h4>
                         <p class="text-xs text-blue-600 mt-1">✓ Dihitung otomatis dari rata-rata semua tugas siswa</p>
                     </div>
-                    <div class="w-32 bg-white border-2 border-blue-300 rounded-lg px-4 py-2 text-center font-bold text-blue-600">
+                    <div class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold text-slate-400">
                         {{ $averageTugas ? number_format($averageTugas, 2) : '0.00' }}
                     </div>
                 </div>
@@ -94,8 +94,8 @@
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition-colors">
-                        💾 Simpan Nilai
+                    <button type="submit" class="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-colors">
+                        Simpan Nilai
                     </button>
                 </div>
 

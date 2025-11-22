@@ -34,7 +34,7 @@
     @endif
 
     <!-- Tabs Navigation -->
-    <div class="mb-6 bg-white rounded-t-xl border-2 border-b-0 border-blue-200">
+    <div class="bg-white rounded-t-xl border-2 border-b-0 border-blue-200">
         <nav class="flex px-6 pt-4" role="tablist">
             <button type="button" class="tab-button-siswa py-3 px-6 font-medium text-sm transition-colors rounded-t-lg active" data-tab="pertemuan" role="tab">
                 <span class="flex items-center space-x-2">
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Tab Content: Per Pertemuan -->
-    <div class="tab-content-siswa bg-white rounded-b-xl border-2 border-blue-200 shadow-lg" id="tab-siswa-pertemuan">
+    <div class="tab-content-siswa mb-6 bg-white rounded-b-xl border-2 border-t-0 border-blue-200 shadow-lg" id="tab-siswa-pertemuan">
         
         <div class="divide-y divide-slate-200">
 
@@ -465,7 +465,7 @@
     </script>
 
     <!-- Tab Content: Status Tugas -->
-    <div class="tab-content-siswa hidden bg-white rounded-b-xl border-2 border-blue-200 shadow-lg p-6" id="tab-siswa-tugas">
+    <div class="tab-content-siswa hidden bg-white rounded-b-xl border-2 border-t-0 border-blue-200 shadow-lg p-6" id="tab-siswa-tugas">
         <div class="space-y-4">
             @forelse($allTugasSiswa as $tugas)
             <div class="bg-white rounded-xl shadow-md p-5 border-l-4 {{ $tugas->status_pengumpulan == 'Belum Dikumpulkan' ? 'border-red-400' : ($tugas->status_pengumpulan == 'Tepat Waktu' ? 'border-green-400' : 'border-yellow-400') }}">

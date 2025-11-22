@@ -11,7 +11,7 @@
             </svg>
         </a>
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Daftar Semua Pertemuan (1-16)</h2>
+            <h2 class="text-3xl font-bold text-blue-500">Daftar Semua Pertemuan (1-16)</h2>
             <p class="text-sm text-slate-500 mt-1">
                 {{ $jadwal->mataPelajaran->nama_mapel }} - {{ $jadwal->kelas->nama_kelas }}
             </p>
@@ -72,11 +72,9 @@
                         <td class="px-6 py-4">
                             @if($pertemuan && $pertemuan->jam_absen_buka && $pertemuan->jam_absen_tutup)
                                 <div class="text-xs">
-                                    <div class="text-green-600 font-medium">
-                                        ⏰ {{ substr($pertemuan->jam_absen_buka, 0, 5) }}
-                                    </div>
-                                    <div class="text-red-600 font-medium">
-                                        🔒 {{ substr($pertemuan->jam_absen_tutup, 0, 5) }}
+                                    <div class="text-blue-400 font-medium">
+                                         {{ substr($pertemuan->jam_absen_buka, 0, 5) }} -
+                                         {{ substr($pertemuan->jam_absen_tutup, 0, 5) }}
                                     </div>
                                 </div>
                             @else
@@ -85,7 +83,7 @@
                         </td>
                         <td class="px-6 py-4">
                             @if($pertemuan && $pertemuan->topik_bahasan)
-                                <div class="text-sm text-blue-700">📚 {{ $pertemuan->topik_bahasan }}</div>
+                                <div class="text-sm text-blue-500"> {{ $pertemuan->topik_bahasan }}</div>
                             @else
                                 <span class="text-slate-400 text-sm">-</span>
                             @endif
@@ -94,16 +92,16 @@
                             @if($pertemuan && $pertemuan->tanggal_pertemuan)
                                 @if($pertemuan->is_submitted)
                                     <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                                        ✓ Di-submit
+                                           Telah Submit
                                     </span>
                                 @else
                                     <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
-                                        ⚠ Belum Submit
+                                         Belum Submit
                                     </span>
                                 @endif
                             @else
                                 <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-500">
-                                    ○ Kosong
+                                     Kosong
                                 </span>
                             @endif
                         </td>
@@ -126,7 +124,7 @@
     </div>
 
     <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
-        <h3 class="text-lg font-bold text-blue-900 mb-3">💡 Informasi</h3>
+        <h3 class="text-lg font-bold text-blue-900 mb-3"> Informasi</h3>
         <ul class="space-y-2 text-sm text-blue-800">
             <li>• <strong>16 Slot Pertemuan</strong>: Setiap mata pelajaran memiliki 16 slot pertemuan yang bisa Anda isi sesuai kebutuhan</li>
             <li>• <strong>Pilih Nomor</strong>: Saat membuat pertemuan baru, pilih nomor slot mana yang ingin diisi (1-16)</li>
