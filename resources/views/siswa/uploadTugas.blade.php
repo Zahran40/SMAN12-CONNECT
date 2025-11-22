@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
         <a href="{{ url()->previous() }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -11,7 +11,7 @@
         <h2 class="text-3xl font-bold text-slate-800">Upload Tugas</h2>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
 
         <div class="flex items-center space-x-3 mb-2">
             <img src="{{ asset('images/bxs_file.png') }}" viewBox="0 0 20 20" fill="currentColor" class="w-7 h-7 text-blue-600">
@@ -20,7 +20,7 @@
             <h3 class="text-2xl font-bold text-slate-900">Nama Tugas</h3>
         </div>
 
-        <div class="flex items-center space-x-2 text-sm text-slate-500 mb-6 ml-1">
+        <div class="flex items-center space-x-2 text-sm text-slate-500 mb-4 sm:mb-6 ml-1">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
               <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
             </svg>
@@ -44,3 +44,4 @@
     </div>
 
 @endsection
+

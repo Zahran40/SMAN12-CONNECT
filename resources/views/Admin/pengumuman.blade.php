@@ -31,7 +31,7 @@
 
         <div class="space-y-6">
             @forelse($pengumuman as $item)
-            <div class="bg-white rounded-2xl p-8 border-2 border-blue-300 shadow-sm relative">
+            <div class="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-blue-300 shadow-sm relative">
                 <div class="absolute top-4 right-4">
                     <form action="{{ route('admin.pengumuman.destroy', $item->id_pengumuman) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pengumuman ini?')">
                         @csrf
@@ -45,7 +45,7 @@
                     </form>
                 </div>
 
-                <div class="text-center mb-6">
+                <div class="text-center mb-4 sm:mb-6">
                     <h2 class="text-xl font-bold text-slate-800">{{ $item->judul }}</h2>
                     <div class="mt-2">
                         @if($item->target_role == 'Semua')
@@ -92,7 +92,7 @@
                 </div>
             </div>
             @empty
-            <div class="bg-white rounded-2xl p-8 border border-blue-200 shadow-sm text-center">
+            <div class="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border border-blue-200 shadow-sm text-center">
                 <p class="text-slate-500">Belum ada pengumuman</p>
             </div>
             @endforelse
@@ -113,3 +113,4 @@
         });
     </script>
 @endsection
+

@@ -1,9 +1,9 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="content-wrapper p-6">
+<div class="content-wrapper p-4 sm:p-6">
 
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-4 sm:mb-6">
         <div class="flex items-center space-x-4">
             <h1 class="text-2xl font-bold text-blue-700">📊 Manajemen Log Aktivitas</h1>
         </div>
@@ -23,8 +23,8 @@
     @endif
 
     {{-- Statistik --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div class="bg-white rounded-2xl shadow p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <div class="bg-white rounded-2xl shadow p-4 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 text-sm">Total Log</p>
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow p-6">
+        <div class="bg-white rounded-2xl shadow p-4 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 text-sm">Hari Ini</p>
@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow p-6">
+        <div class="bg-white rounded-2xl shadow p-4 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 text-sm">Minggu Ini</p>
@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow p-6">
+        <div class="bg-white rounded-2xl shadow p-4 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 text-sm">Bulan Ini</p>
@@ -82,7 +82,7 @@
     </div>
 
     {{-- Filter & Action Buttons --}}
-    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+    <div class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-4 sm:mb-6">
         <form method="GET" action="{{ route('admin.log-aktivitas.index') }}" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {{-- Filter Jenis Aktivitas --}}
@@ -250,9 +250,9 @@
 
 {{-- Modal Cleanup --}}
 <div id="cleanup-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+    <div class="bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full max-w-md">
         <h3 class="text-xl font-bold text-gray-800 mb-4">Cleanup Log Aktivitas</h3>
-        <p class="text-gray-600 mb-6">Hapus semua log yang lebih lama dari berapa hari?</p>
+        <p class="text-gray-600 mb-4 sm:mb-6">Hapus semua log yang lebih lama dari berapa hari?</p>
         
         <form method="POST" action="{{ route('admin.log-aktivitas.cleanup') }}">
             @csrf
@@ -292,3 +292,6 @@
 </script>
 
 @endsection
+
+
+

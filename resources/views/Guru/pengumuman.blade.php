@@ -2,13 +2,13 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-blue-500 mb-6">Pengumuman</h2>
+    <h2 class="text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Pengumuman</h2>
 
     <div class="space-y-8">
 
         @forelse($pengumuman as $item)
-        <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-blue-300">
-            <h3 class="text-2xl font-bold text-blue-400 text-center mb-6">{{ $item->judul }}</h3>
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border-2 border-blue-300">
+            <h3 class="text-2xl font-bold text-blue-400 text-center mb-4 sm:mb-6">{{ $item->judul }}</h3>
             
             <div class="mb-6 space-y-1">
                 <p class="text-sm text-slate-700">
@@ -42,7 +42,7 @@
             </div>
         </div>
         @empty
-        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 text-center">
             <p class="text-slate-500">Belum ada pengumuman</p>
         </div>
         @endforelse
@@ -50,3 +50,5 @@
     </div>
 
 @endsection
+
+

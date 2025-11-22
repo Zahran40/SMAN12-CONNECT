@@ -1,9 +1,9 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="flex flex-col space-y-6">
+<div class="flex flex-col space-y-4 sm:space-y-6">
 
-    <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('admin.pembayaran.index') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -25,7 +25,7 @@
     @endif
 
    
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100 relative space-y-6">
+    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-blue-100 relative space-y-4 sm:space-y-6">
 
         
         @if($pembayaran->status === 'Lunas')
@@ -43,7 +43,7 @@
             <div class="w-1 h-5 bg-yellow-400 rounded-full mt-1"></div>
             <div>
                 <h4 class="font-bold text-slate-800 mb-2">Detail Siswa</h4>
-                <div class="grid grid-cols-3 gap-x-12 gap-y-1 text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-1 text-sm">
                     <span class="text-slate-500">Nama</span>
                     <span class="text-slate-500">NIS</span>
                     <span class="text-slate-500">Kelas</span>
@@ -59,7 +59,7 @@
             <div class="w-1 h-5 bg-yellow-400 rounded-full mt-1"></div>
             <div>
                 <h4 class="font-bold text-slate-800 mb-2">Detail Tagihan</h4>
-                <div class="grid grid-cols-3 gap-x-12 gap-y-2 text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm">
                     <!-- Baris 1 -->
                     <span class="text-slate-500">Nama Tagihan</span>
                     <span class="text-slate-500">Waktu Tagihan dibuat</span>
@@ -143,3 +143,5 @@
 
 </div>
 @endsection
+
+

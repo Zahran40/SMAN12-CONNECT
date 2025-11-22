@@ -8,20 +8,20 @@
     </div>
 
     @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r mb-6 shadow-sm">
+        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r mb-4 sm:mb-6 shadow-sm">
             <p class="font-bold">Berhasil</p>
             <p>{{ session('success') }}</p>
         </div>
     @endif
     @if(session('error'))
-        <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r mb-6 shadow-sm">
+        <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r mb-4 sm:mb-6 shadow-sm">
             <p class="font-bold">Error</p>
             <p>{{ session('error') }}</p>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="bg-white p-4 sm:p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
             <div>
                 <p class="text-sm text-slate-500 font-medium mb-1">Total Tagihan</p>
                 <p class="text-3xl font-bold text-blue-600">{{ number_format($totalTagihan) }}</p>
@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
+        <div class="bg-white p-4 sm:p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
             <div>
                 <p class="text-sm text-slate-500 font-medium mb-1">Sudah Lunas</p>
                 <p class="text-3xl font-bold text-green-600">{{ number_format($totalLunas) }}</p>
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
+        <div class="bg-white p-4 sm:p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
             <div>
                 <p class="text-sm text-slate-500 font-medium mb-1">Belum Lunas</p>
                 <p class="text-3xl font-bold text-red-600">{{ number_format($totalBelumLunas) }}</p>
@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
+        <div class="bg-white p-4 sm:p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
             <div>
                 <p class="text-sm text-slate-500 font-medium mb-1">Total Terbayar</p>
                 <p class="text-2xl font-bold text-yellow-500">Rp {{ number_format($totalNominal, 0, ',', '.') }}</p>
@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-400 mb-8">
+    <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-blue-400 mb-6 sm:mb-8">
         <form method="GET" class="flex flex-col md:flex-row md:items-end gap-4">
             
             <div class="w-full md:w-1/4">
@@ -233,3 +233,4 @@
     </div>
 
 @endsection
+

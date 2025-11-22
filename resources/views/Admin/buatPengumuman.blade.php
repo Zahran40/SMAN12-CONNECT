@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex flex-col h-full">
-    <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('admin.pengumuman') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -14,19 +14,19 @@
     </div>
 
     @if(session('success'))
-        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('error') }}
         </div>
     @endif
 
     @if($errors->any())
-        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             <ul class="list-disc list-inside">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -35,7 +35,7 @@
         </div>
     @endif
 
-    <div class="bg-white p-8 rounded-2xl shadow-sm">
+    <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
         <h3 class="text-xl font-bold text-blue-600 mb-4">Form Pengumuman</h3>
 
         <form action="{{ route('admin.pengumuman.store') }}" method="POST" enctype="multipart/form-data">
@@ -97,7 +97,7 @@
 
             </div>
 
-            <div class="flex justify-end mt-6">
+            <div class="flex justify-end mt-4 sm:mt-6">
                 <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
                     <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
                     <span>Simpan</span>

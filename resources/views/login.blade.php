@@ -36,31 +36,31 @@
 
         <div class="flex-1 p-10 md:p-12">
 
-            <div class="flex items-center gap-3 mb-6">
+            <div class="flex items-center gap-3 mb-4 sm:mb-6">
                 <img src="/images/logo_sman12.png" alt="Logo" class="h-[68px] w-[68px]">
                 <div class="bg-[#4eaaff] text-white font-semibold rounded-full px-5 py-1.5 text-[15px]">
                     SMA NEGERI 12 MEDAN
                 </div>
             </div>
 
-            <h2 class="text-[#2a5db0] font-bold text-[32px] mb-6">Masuk</h2>
+            <h2 class="text-[#2a5db0] font-bold text-[32px] mb-4 sm:mb-6">Masuk</h2>
 
             {{-- Flash Messages --}}
             @if (session('error'))
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 sm:mb-6 rounded-lg" role="alert">
                     <p class="font-medium">{{ session('error') }}</p>
                 </div>
             @endif
 
             @if (session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg" role="alert">
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 sm:mb-6 rounded-lg" role="alert">
                     <p class="font-medium">{{ session('success') }}</p>
                 </div>
             @endif
 
             {{-- Validation Errors --}}
             @if ($errors->any())
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg">
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 sm:mb-6 rounded-lg">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>

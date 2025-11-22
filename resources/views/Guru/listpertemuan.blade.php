@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('guru.presensi') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -123,7 +123,7 @@
         </table>
     </div>
 
-    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6">
         <h3 class="text-lg font-bold text-blue-900 mb-3"> Informasi</h3>
         <ul class="space-y-2 text-sm text-blue-800">
             <li>• <strong>16 Slot Pertemuan</strong>: Setiap mata pelajaran memiliki 16 slot pertemuan yang bisa Anda isi sesuai kebutuhan</li>
@@ -134,3 +134,5 @@
     </div>
 
 @endsection
+
+

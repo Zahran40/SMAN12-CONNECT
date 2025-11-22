@@ -2,17 +2,17 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
         <a href="{{ route('guru.detail_materi', $jadwal->id_jadwal) }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-blue-500">Membuat Tugas - {{ $jadwal->mataPelajaran->nama_mapel }}</h2>
+        <h2 class="text-3lg sm:xl font-bold text-blue-500">Membuat Tugas - {{ $jadwal->mataPelajaran->nama_mapel }}</h2>
     </div>
 
     @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             <ul class="list-disc list-inside">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -23,14 +23,14 @@
 
     <form action="{{ route('guru.store_tugas', $jadwal->id_jadwal) }}" method="POST" enctype="multipart/form-data">
         @csrf
-    <div class="bg-white rounded-xl shadow-lg p-8">
+    <div class="bg-white rounded-lg sm:xl shadow-lg p-4 sm:p-6 md:p-8">
         
         <div class="space-y-6">
 
             <div>
                 <label for="pertemuan" class="block text-xl font-bold text-slate-900 mb-4">Pilih Pertemuan</label>
                 <div class="relative w-full max-w-xs">
-                    <select id="pertemuan" name="id_pertemuan" class="block w-full appearance-none bg-white border-2 border-blue-300 text-slate-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500" required>
+                    <select id="pertemuan" name="id_pertemuan" class="block w-full appearance-none bg-white border-2 border-blue-300 text-slate-700 py-3 px-4 pr-8 rounded-lg sm:xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500" required>
                         <option value="">-- Pilih Pertemuan --</option>
                         @foreach($pertemuans as $p)
                             <option value="{{ $p->id_pertemuan }}">Pertemuan {{ $p->pertemuan_ke }}</option>
@@ -48,7 +48,7 @@
                     <span class="text-sm font-normal text-slate-500">(Tugas akan dihitung di nilai raport semester yang dipilih)</span>
                 </label>
                 <div class="relative w-full max-w-xs">
-                    <select id="semester" name="semester" class="block w-full appearance-none bg-white border-2 border-blue-300 text-slate-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500" required>
+                    <select id="semester" name="semester" class="block w-full appearance-none bg-white border-2 border-blue-300 text-slate-700 py-3 px-4 pr-8 rounded-lg sm:xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500" required>
                         <option value="">-- Pilih Semester --</option>
                         <option value="Ganjil" {{ old('semester') == 'Ganjil' ? 'selected' : '' }}>Semester 1 (Ganjil)</option>
                         <option value="Genap" {{ old('semester') == 'Genap' ? 'selected' : '' }}>Semester 2 (Genap)</option>
@@ -59,11 +59,11 @@
                 </div>
             </div>
 
-            <h3 class="text-2xl font-bold text-blue-600">Upload Berkas Tugas</h3>
+            <h3 class="text-2lg sm:xl font-bold text-blue-600">Upload Berkas Tugas</h3>
 
             <div>
                 <label class="block text-lg font-bold text-slate-900 mb-4">Upload Berkas</label>
-                <div id="drop-zone" class="mt-1 w-full max-w-xl px-6 py-10 border-2 border-blue-300 border-dashed rounded-xl bg-white hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
+                <div id="drop-zone" class="mt-1 w-full max-w-lg sm:xl px-6 py-10 border-2 border-blue-300 border-dashed rounded-lg sm:xl bg-white hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
                     <div class="space-y-3 text-center">
                         <img src="{{ asset('images/Vector.png') }}" class="mx-auto h-10 w-10" alt="Icon Upload">
                         <label for="file-upload" class="block text-sm font-medium text-blue-500 hover:text-blue-600 cursor-pointer">
@@ -74,7 +74,7 @@
                 </div>
                 <!-- Preview File -->
                 <div id="file-preview" class="mt-4 hidden">
-                    <div class="flex items-center justify-between p-4 bg-blue-50 border-2 border-blue-200 rounded-xl max-w-xl">
+                    <div class="flex items-center justify-between p-4 bg-blue-50 border-2 border-blue-200 rounded-lg sm:xl max-w-lg sm:xl">
                         <div class="flex items-center space-x-3">
                             <svg class="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
@@ -100,10 +100,10 @@
 
             <div>
                 <label for="deskripsi" class="block text-lg font-bold text-slate-900 mb-2">Deskripsi Tugas</label>
-                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Deskripsi tugas (opsional)">{{ old('deskripsi') }}</textarea>
+                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-lg sm:xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Deskripsi tugas (opsional)">{{ old('deskripsi') }}</textarea>
             </div>
 
-            <div class="grid grid-cols-2 gap-6 max-w-xl">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-lg sm:xl">
                 <div>
                     <label class="block text-lg font-bold text-blue-400 mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 inline mr-1">
@@ -128,7 +128,7 @@
                 <label class="block text-lg font-bold text-slate-900 mb-4">
                     Waktu <span class="text-base font-normal text-slate-500">(jam buka dan tutup)</span> <span class="text-red-500">*</span>
                 </label>
-                <div class="grid grid-cols-2 gap-4 max-w-md">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
                     <div>
                         <label class="block mb-2 text-sm font-semibold text-blue-600">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 inline mr-1">
@@ -306,3 +306,6 @@
     </script>
 
 @endsection
+
+
+
