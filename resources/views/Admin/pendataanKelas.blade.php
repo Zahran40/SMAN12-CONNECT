@@ -96,7 +96,7 @@
 
                             <div class="flex space-x-2">
                                 <a href="{{ route('admin.kelas.show', [$kelas->tahun_ajaran_id, $kelas->id_kelas]) }}" 
-                                   class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium text-center transition-colors">
+                                   class="flex-1 bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium text-center transition-colors">
                                     Detail
                                 </a>
                             </div>
