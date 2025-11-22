@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-slate-800 mb-6">Beranda</h2>
+    <h2 class="text-3xl font-bold text-blue-500 mb-6">Beranda</h2>
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
         <div class="rounded-full overflow-hidden w-16 h-16 ring-4 ring-blue-100">
@@ -15,7 +15,7 @@
             @endif
         </div>
         <div>
-            <h3 class="text-xl font-bold text-slate-900">{{ $siswa->nama_lengkap ?? 'Nama Siswa' }}</h3>
+            <h3 class="text-xl font-bold text-blue-600">{{ $siswa->nama_lengkap ?? 'Nama Siswa' }}</h3>
             <p class="text-sm text-slate-500">NISN: {{ $siswa->nisn ?? '-' }}</p>
             @if($kelasNama)
                 <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">{{ $kelasNama }}</span>
@@ -26,7 +26,7 @@
     </div>
 
     <section class="mb-8">
-        <h3 class="text-xl font-semibold text-slate-800 mb-4">Jadwal Mata Pelajaran</h3>
+        <h3 class="text-xl font-semibold text-blue-600 mb-4">Jadwal Mata Pelajaran</h3>
         <div class="flex space-x-2 mb-4">
             @foreach($allDays as $day)
                 <button onclick="switchDay('{{ $day }}')" 
@@ -91,7 +91,7 @@
     </section>
 
     <section>
-        <h3 class="text-xl font-semibold text-slate-800 mb-4">Presensi Berlangsung</h3>
+        <h3 class="text-xl font-semibold text-blue-600 mb-4">Presensi Berlangsung</h3>
         <div class="bg-white rounded-xl shadow-lg p-6">
             @if($presensiAktif && $presensiAktif->count() > 0)
                 <div class="space-y-5">
