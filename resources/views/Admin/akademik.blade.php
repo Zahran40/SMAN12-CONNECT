@@ -20,9 +20,9 @@
                 </div>
             @endif
 
-            <div class="flex justify-between items-center mb-6 sm:mb-8">
-                <h3 class="text-xl font-bold text-blue-600">Daftar Mata Pelajaran</h3>
-                <a href="{{ route('admin.akademik.mapel.create')}}" class="bg-blue-400 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-bold flex items-center space-x-2 shadow-sm transition-colors">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6 sm:mb-8">
+                <h3 class="text-lg sm:text-xl font-bold text-blue-600">Daftar Mata Pelajaran</h3>
+                <a href="{{ route('admin.akademik.mapel.create')}}" class="bg-blue-400 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors w-full sm:w-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>

@@ -2,25 +2,25 @@
 
 @section('content')
 
-    <div class="flex justify-between items-center mb-6 sm:mb-8">
-        <div class="flex items-center space-x-3">
-            <a href="{{ route('guru.materi') }}" class="text-blue-600 hover:text-blue-800" title="Kembali">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <div class="flex items-center space-x-3 w-full sm:w-auto">
+            <a href="{{ route('guru.materi') }}" class="text-blue-600 hover:text-blue-800 shrink-0" title="Kembali">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                 </svg>
             </a>
-            <h2 class="text-3xl font-bold text-blue-600">{{ $jadwal->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }} - {{ $jadwal->kelas->nama_kelas ?? '' }}</h2>
+            <h2 class="text-lg sm:text-2xl md:text-3xl font-bold text-blue-600 line-clamp-2">{{ $jadwal->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }} - {{ $jadwal->kelas->nama_kelas ?? '' }}</h2>
         </div>
         
-        <div class="flex gap-3">
-            <a href="{{ route('guru.upload_materi', $jadwal->id_jadwal) }}" class="flex items-center space-x-2 bg-blue-400 text-white font-semibold px-5 py-3 rounded-xl hover:bg-blue-500 transition-colors shadow-md shadow-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+            <a href="{{ route('guru.upload_materi', $jadwal->id_jadwal) }}" class="flex items-center justify-center space-x-2 bg-blue-400 text-white font-semibold px-4 sm:px-5 py-2 sm:py-3 rounded-xl hover:bg-blue-500 transition-colors shadow-md shadow-blue-200 w-full sm:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 <span>Buat Materi</span>
             </a>
-            <a href="{{ route('guru.upload_tugas', $jadwal->id_jadwal) }}" class="flex items-center space-x-2 bg-green-500 text-white font-semibold px-5 py-3 rounded-xl hover:bg-green-600 transition-colors shadow-md shadow-green-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+            <a href="{{ route('guru.upload_tugas', $jadwal->id_jadwal) }}" class="flex items-center justify-center space-x-2 bg-green-500 text-white font-semibold px-4 sm:px-5 py-2 sm:py-3 rounded-xl hover:bg-green-600 transition-colors shadow-md shadow-green-200 w-full sm:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 <span>Buat Tugas</span>
