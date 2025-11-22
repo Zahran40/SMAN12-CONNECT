@@ -52,7 +52,7 @@
     <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm grow">
         <h3 class="text-xl font-bold text-blue-600 mb-4 sm:mb-6">Daftar Siswa</h3>
 
-        <div class="grid grid-cols-12 gap-4 text-blue-600 font-semibold mb-4 px-6">
+        <div class="hidden lg:grid grid-cols-12 gap-4 text-blue-600 font-semibold mb-4 px-6">
             <div class="col-span-1">No</div>
             <div class="col-span-4">Nama</div>
             <div class="col-span-4">NIS</div>
@@ -61,16 +61,34 @@
 
         <div class="space-y-4">
             @forelse($siswaList as $index => $siswa)
-                <div class="grid grid-cols-12 gap-4 items-center border-2 border-blue-100 rounded-xl px-6 py-4">
-                <div class="col-span-1 font-bold text-slate-700 flex items-center justify-center bg-blue-100 w-8 h-8 rounded-lg">{{ $index + 1 }}</div>
-                <div class="col-span-4 font-semibold text-slate-800">{{ $siswa->nama_lengkap }}</div>
-                <div class="col-span-4 text-slate-600 font-medium">{{ $siswa->nis }}</div>
-                <div class="col-span-3 text-right">
-                    <a href="{{ route('admin.data-master.siswa.show', $siswa->id_siswa) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg inline-flex items-center space-x-1 transition-colors text-sm">
-                        <span>Detail</span>
-                    </a>
+                <div class="border-2 border-blue-100 rounded-xl px-4 sm:px-6 py-4">
+                    <!-- Mobile Layout -->
+                    <div class="lg:hidden space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="font-bold text-slate-700 flex items-center justify-center bg-blue-100 w-8 h-8 rounded-lg shrink-0">{{ $index + 1 }}</div>
+                                <div>
+                                    <div class="font-semibold text-slate-800">{{ $siswa->nama_lengkap }}</div>
+                                    <div class="text-slate-600 text-sm">{{ $siswa->nis }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.data-master.siswa.show', $siswa->id_siswa) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-1 transition-colors text-sm w-full">
+                            <span>Detail</span>
+                        </a>
+                    </div>
+                    <!-- Desktop Layout -->
+                    <div class="hidden lg:grid grid-cols-12 gap-4 items-center">
+                        <div class="col-span-1 font-bold text-slate-700 flex items-center justify-center bg-blue-100 w-8 h-8 rounded-lg">{{ $index + 1 }}</div>
+                        <div class="col-span-4 font-semibold text-slate-800">{{ $siswa->nama_lengkap }}</div>
+                        <div class="col-span-4 text-slate-600 font-medium">{{ $siswa->nis }}</div>
+                        <div class="col-span-3 text-right">
+                            <a href="{{ route('admin.data-master.siswa.show', $siswa->id_siswa) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg inline-flex items-center space-x-1 transition-colors text-sm">
+                                <span>Detail</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-        </div>
             @empty
                 <div class="text-center py-8 text-slate-500">
                     Belum ada siswa di kelas ini
@@ -80,8 +98,8 @@
 
 </div>
 
-<div class="flex justify-end">
-    <a href="{{ route('admin.data-master.siswa.create') }}" class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
+<div class="flex flex-col sm:flex-row justify-end gap-3">
+    <a href="{{ route('admin.data-master.siswa.create') }}" class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold flex items-center justify-center space-x-2 shadow-lg transition-all hover:shadow-xl w-full sm:w-auto">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
         </svg>
