@@ -13,6 +13,23 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 } */
 
+/* Custom Responsive Utilities */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Smooth transitions for sidebar */
+@media (max-width: 1023px) {
+    body.sidebar-open {
+        overflow: hidden;
+    }
+}
+
 
 
 
