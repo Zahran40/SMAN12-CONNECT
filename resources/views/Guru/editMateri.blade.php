@@ -2,17 +2,17 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
         <a href="{{ route('guru.detail_materi', $jadwal->id_jadwal) }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-blue-500">Edit Materi - {{ $jadwal->mataPelajaran->nama_mapel }}</h2>
+        <h2 class="text-3lg sm:xl font-bold text-blue-500">Edit Materi - {{ $jadwal->mataPelajaran->nama_mapel }}</h2>
     </div>
 
     @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             <ul class="list-disc list-inside">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -25,17 +25,17 @@
         @csrf
         @method('PUT')
         <input type="hidden" name="id_pertemuan" value="{{ $item->pertemuan_id }}">
-    <div class="bg-white rounded-xl shadow-lg p-8">
+    <div class="bg-white rounded-lg sm:xl shadow-lg p-4 sm:p-6 md:p-8">
         <div class="space-y-8">
 
             <div class="flex justify-between items-start">
                 <div>
-                    <label class="block text-2xl font-bold text-slate-800 mb-4">Pertemuan</label>
-                    <div class="bg-blue-100 text-blue-700 px-4 py-3 rounded-xl font-semibold">
+                    <label class="block text-xl sm:text-2lg sm:xl font-bold text-slate-800 mb-4">Pertemuan</label>
+                    <div class="bg-blue-100 text-blue-700 px-4 py-3 rounded-lg sm:xl font-semibold">
                         Pertemuan {{ $item->pertemuan->pertemuan_ke }}
                     </div>
                 </div>
-                <button type="button" onclick="if(confirm('Apakah Anda yakin ingin menghapus materi ini?')) document.getElementById('delete-form').submit()" class="flex items-center space-x-2 bg-red-500 text-white font-bold text-lg px-6 py-3 rounded-full hover:bg-red-600 transition-colors shadow-md shadow-red-200" data-delete-confirm>
+                <button type="button" onclick="if(confirm('Apakah Anda yakin ingin menghapus materi ini?')) document.getElementById('delete-form').submit()" class="flex items-center space-x-2 bg-red-500 text-white font-bold text-lg px-4 py-2 sm:px-6 sm:py-3 rounded-full hover:bg-red-600 transition-colors shadow-md shadow-red-200" data-delete-confirm>
                     <img src="{{ asset('images/material-symbols_delete.png') }}" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.49 1.478l-.56-.095q-.53-.103-1.073-.178c-1.312-.178-2.654-.227-4.005-.227-1.35 0-2.693.05-4.005.227q-.542.075-1.073.178c-.186.036-.375.068-.56.095a.75.75 0 0 1-.49-1.478c1.287-.175 2.594-.346 3.878-.512v-.227c0-1.121.884-2.017 2.005-2.017h3.89c1.12 0 2.005.896 2.005 2.017ZM15.65 7.658a.75.75 0 0 0-.992.123l-1.418 1.419-1.418-1.419a.75.75 0 1 0-1.062 1.062l1.419 1.418-1.419 1.418a.75.75 0 1 0 1.062 1.062l1.418-1.419 1.418 1.419a.75.75 0 1 0 1.062-1.062l-1.419-1.418 1.419-1.418a.75.75 0 0 0-.123-.992Z" clip-rule="evenodd" />
                         <path d="M4.574 9.566c.032-.573.52-1.016 1.095-1.016h12.662c.575 0 1.063.443 1.095 1.016l.333 10.232c.056 1.73-1.324 3.202-3.055 3.202H7.296c-1.73 0-3.111-1.472-3.055-3.202l.333-10.232Z" />
@@ -44,7 +44,7 @@
                 </button>
             </div>
 
-            <h3 class="text-2xl font-bold text-blue-600">Edit Berkas Berisi Materi</h3>
+            <h3 class="text-xl sm:text-2lg sm:xl font-bold text-blue-600">Edit Berkas Berisi Materi</h3>
 
             <div>
                 <label class="block text-xl font-bold text-slate-800 mb-4">Tipe Berkas</label>
@@ -74,7 +74,7 @@
                 </div>
 
                 <label class="block text-lg font-medium text-slate-700 mb-2">Ganti File (Opsional)</label>
-                <div id="drop-zone" class="mt-1 flex justify-center px-6 py-12 border-2 border-blue-500 border-dashed rounded-xl bg-slate-50/50 max-w-lg cursor-pointer hover:border-blue-600 hover:bg-blue-50 transition-all">
+                <div id="drop-zone" class="mt-1 flex justify-center px-6 py-12 border-2 border-blue-500 border-dashed rounded-lg sm:xl bg-slate-50/50 max-w-lg cursor-pointer hover:border-blue-600 hover:bg-blue-50 transition-all">
                     <div class="space-y-2 text-center">
                       <img src="{{ asset('images/Vector.png') }}" class="mx-auto h-10 w-10 text-blue-400">
                         <div class="text-sm text-blue-600 font-medium">
@@ -87,7 +87,7 @@
                 </div>
                 <!-- Preview File -->
                 <div id="file-preview" class="mt-4 hidden">
-                    <div class="flex items-center justify-between p-4 bg-blue-50 border-2 border-blue-200 rounded-xl max-w-lg">
+                    <div class="flex items-center justify-between p-4 bg-blue-50 border-2 border-blue-200 rounded-lg sm:xl max-w-lg">
                         <div class="flex items-center space-x-3">
                             <svg class="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
@@ -113,7 +113,7 @@
 
             <div>
                 <label for="deskripsi" class="block text-xl font-bold text-slate-900 mb-2">Deskripsi</label>
-                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-xl py-3 px-4 text-slate-700 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 resize-none" required>{{ old('deskripsi', $item->deskripsi_materi) }}</textarea>
+                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-lg sm:xl py-3 px-4 text-slate-700 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 resize-none" required>{{ old('deskripsi', $item->deskripsi_materi) }}</textarea>
             </div>
 
         </div>
@@ -224,3 +224,5 @@
     <script src="{{ asset('js/materi-handler.js') }}"></script>
 
 @endsection
+
+

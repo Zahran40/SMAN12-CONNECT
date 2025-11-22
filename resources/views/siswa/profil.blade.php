@@ -8,7 +8,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800">Profil</h2>
+        <h2 class="text-xl sm:text-2xl md:text-2xl sm:text-3xl font-bold text-slate-800">Profil</h2>
     </div>
 
     <div class="bg-white rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 flex flex-col sm:flex-row items-center sm:justify-between border border-slate-200 gap-4">

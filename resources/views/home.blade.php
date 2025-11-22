@@ -17,7 +17,7 @@
   <section class="bg-cover bg-center min-h-screen flex flex-col justify-center items-center"
            style="background-image: url('{{ asset('images/bg_sman12.png') }}');">
             <div class="absolute inset-0 bg-black/40"></div>
-    <header class="absolute top-0 w-full bg-white/90 backdrop-blur-sm rounded-b-3xl shadow px-4 py-4 mx-auto max-w-8xl flex items-center justify-between">
+    <header class="absolute top-0 w-full bg-white/90 backdrop-blur-sm rounded-b-3lg sm:xl shadow px-4 py-4 mx-auto max-w-8lg sm:xl flex items-center justify-between">
       <div class="flex items-center gap-3">
         <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA 12" class="w-16 h-16 rounded-full border-2 border-white shadow" />
         <span class="font-semibold text-xl text-gray-800">SMA NEGERI 12 MEDAN</span>
@@ -35,17 +35,17 @@
       </div>
     </header>
 
-    <h1 class="text-white font-bold text-4xl md:text-5xl text-center drop-shadow-lg z-10">
+    <h1 class="text-white font-bold text-4lg sm:xl md:text-5lg sm:xl text-center drop-shadow-lg z-10">
       Bersama Membangun<br>Mimpi
     </h1>
   </section>
 
   <!-- Section 2 -->
   <section class="bg-white py-20">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 px-6">
+    <div class="max-w-6lg sm:xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 px-6">
       <img src="{{ asset('images/phone_mockup.png') }}" alt="App SMA 12" class="w-64 md:w-80 mx-auto md:mx-0">
       <div class="text-center md:text-left">
-        <h2 class="text-3xl font-bold text-blue-700 mb-3">SATU UNTUK SEMUA</h2>
+        <h2 class="text-3lg sm:xl font-bold text-blue-700 mb-3">SATU UNTUK SEMUA</h2>
         <p class="text-gray-600 leading-relaxed">
           Satu aplikasi untuk semua kebutuhan guru dan murid dapat diakses di mana saja dan kapan saja.
         </p>
@@ -55,9 +55,9 @@
 
   <!-- Section 3 -->
   <section class="bg-blue-500 text-white py-20">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 px-6">
+    <div class="max-w-6lg sm:xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 px-6">
       <div>
-        <h2 class="text-3xl font-bold mb-3">EDUKASI MENJADI MUDAH</h2>
+        <h2 class="text-3lg sm:xl font-bold mb-3">EDUKASI MENJADI MUDAH</h2>
         <p class="text-white/90 leading-relaxed">
           Kini guru dan murid dapat terhubung dalam satu platform yang praktis dan interaktif. 
           Semua kegiatan belajar dapat dilakukan dengan mudah — mulai dari berbagi materi, memberikan tugas, 
@@ -70,7 +70,7 @@
 
   <!-- Section 4 -->
  <section class="bg-linear-to-b from-white to-blue-200 py-20 text-center">
-  <h2 class="text-3xl md:text-4xl font-bold mb-16">
+  <h2 class="text-3lg sm:xl md:text-4lg sm:xl font-bold mb-16">
     Mulai Pembelajaran dengan <br> E-Learning Sekarang
   </h2>
   <a href="{{ route('login') }}" 
@@ -83,7 +83,7 @@
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-200 py-10 px-6">
-        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+        <div class="max-w-6lg sm:xl mx-auto grid md:grid-cols-2 gap-10">
             <div>
                 <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo" class="w-14 h-14 mb-3 object-contain">
                 <h3 class="font-bold text-lg">SMA NEGERI 12 MEDAN</h3>
@@ -106,3 +106,5 @@
     
 </body>
 </html>
+
+

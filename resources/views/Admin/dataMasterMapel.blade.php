@@ -3,7 +3,7 @@
 @section('title', 'Data Master Mata Pelajaran')
 
 @section('content')
-    <div class="flex flex-col h-full space-y-6">
+    <div class="flex flex-col h-full space-y-4 sm:space-y-6">
         <div class="flex items-center space-x-4">
         <a href="{{ route('admin.data-master.index') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
@@ -13,8 +13,8 @@
         <h1 class="text-2xl font-bold text-blue-700">Detail Kelas</h1>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center">
-            <div class="flex items-center space-x-6">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm flex justify-between items-center">
+            <div class="flex items-center space-x-4 sm:space-x-6">
                 <img src="{{ asset('images/noto_school.png') }}" alt="Icon Kelas" class="w-16 h-16">
                 <div>
                     <h2 class="text-xl font-bold text-slate-800">{{ $kelas->nama_kelas }}</h2>
@@ -49,8 +49,8 @@
         </a>
         </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-sm grow">
-            <h3 class="text-xl font-bold text-blue-600 mb-6">Daftar Mata Pelajaran</h3>
+        <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm grow">
+            <h3 class="text-xl font-bold text-blue-600 mb-4 sm:mb-6">Daftar Mata Pelajaran</h3>
 
             <div class="grid grid-cols-12 gap-4 text-blue-600 font-semibold mb-4 px-6">
                 <div class="col-span-1">No</div>
@@ -80,7 +80,7 @@
         </div>
 
         <div class="flex justify-end">
-            <a href="{{ route('admin.akademik.mapel.create') }}" class="bg-blue-400 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
+            <a href="{{ route('admin.akademik.mapel.create') }}" class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                 </svg>
@@ -90,3 +90,4 @@
 
     </div>
 @endsection
+
