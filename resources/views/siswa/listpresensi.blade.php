@@ -301,13 +301,14 @@ function detectLocation() {
             if (locationCoords) locationCoords.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             if (locationStatus) locationStatus.textContent = '';
             
-            // Reverse geocoding
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+            // Reverse geocoding menggunakan Google Maps Geocoding API
+            const googleApiKey = '{{ env("GOOGLE_MAPS_API_KEY") }}';
+            fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}&language=id`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.display_name) {
-                        locationData.alamat_lengkap = data.display_name;
-                        if (locationAddress) locationAddress.textContent = data.display_name;
+                    if (data.status === 'OK' && data.results && data.results.length > 0) {
+                        locationData.alamat_lengkap = data.results[0].formatted_address;
+                        if (locationAddress) locationAddress.textContent = data.results[0].formatted_address;
                     } else {
                         locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                         if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';

@@ -191,13 +191,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Function untuk reverse geocoding menggunakan Nominatim (Open Street Map - GRATIS)
+    // Function untuk reverse geocoding menggunakan Google Maps Geocoding API
     function reverseGeocode(lat, lng) {
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+        const googleApiKey = '{{ env("GOOGLE_MAPS_API_KEY") }}';
+        fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}&language=id`)
             .then(response => response.json())
             .then(data => {
-                if (data && data.display_name) {
-                    const address = data.display_name;
+                if (data.status === 'OK' && data.results && data.results.length > 0) {
+                    const address = data.results[0].formatted_address;
                     addressInput.value = address;
                     locationAddress.textContent = address;
                 } else {

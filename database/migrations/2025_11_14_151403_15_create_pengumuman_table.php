@@ -15,6 +15,9 @@ return new class extends Migration
             $table->bigInteger('id_pengumuman', true);
             $table->string('judul', 250);
             $table->text('isi_pengumuman');
+            $table->string('file_lampiran', 255)->nullable();
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
+            $table->timestamp('tanggal_dibuat')->nullable();
             $table->date('tgl_publikasi')->index('idx_tanggal');
             $table->string('hari', 20)->nullable();
             $table->enum('target_role', ['admin', 'guru', 'siswa', 'Semua'])->default('Semua');
