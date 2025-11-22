@@ -93,8 +93,8 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end">
-                    <button type="submit" class="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-colors">
+                <div class="flex flex-col sm:flex-row justify-end gap-3">
+                    <button type="submit" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-colors w-full sm:w-auto">
                         Simpan Nilai
                     </button>
                 </div>

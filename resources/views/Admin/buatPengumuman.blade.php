@@ -97,9 +97,9 @@
 
             </div>
 
-            <div class="flex justify-end mt-4 sm:mt-6">
-                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
-                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
+            <div class="flex flex-col sm:flex-row justify-end mt-4 sm:mt-6 gap-3">
+                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold flex items-center justify-center space-x-2 shadow-lg transition-all hover:shadow-xl w-full sm:w-auto">
+                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-5 h-5 sm:w-6 sm:h-6">
                     <span>Simpan</span>
                 </button>
             </div>

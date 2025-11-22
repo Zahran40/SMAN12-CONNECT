@@ -120,9 +120,9 @@
     </div>
 
     <div class="mt-8 pt-6 border-t border-slate-200">
-        <div class="flex justify-end">
-            <button type="submit" class="flex items-center space-x-2 bg-green-500 text-white font-medium px-6 py-2 rounded-full hover:bg-green-600 transition-colors">
-                <img src="{{ asset('images/save.png') }}" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+        <div class="flex flex-col sm:flex-row justify-end gap-3">
+            <button type="submit" class="flex items-center justify-center space-x-2 bg-green-500 text-white font-medium px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-green-600 transition-colors w-full sm:w-auto">
+                <img src="{{ asset('images/save.png') }}" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                 </img>
                 <span>Update</span>
