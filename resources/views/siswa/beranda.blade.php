@@ -4,19 +4,19 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-blue-500 mb-6">Beranda</h2>
+    <h2 class="text-2xl sm:text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Beranda</h2>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
-        <div class="rounded-full overflow-hidden w-16 h-16 ring-4 ring-blue-100">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 flex items-center space-x-3 sm:space-x-4">
+        <div class="rounded-full overflow-hidden w-12 h-12 sm:w-16 sm:h-16 ring-4 ring-blue-100 shrink-0">
             @if($siswa && $siswa->foto_profil)
                 <img src="{{ asset('storage/' . $siswa->foto_profil) }}" alt="Foto Siswa" class="w-full h-full object-cover" />
             @else
                 <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
             @endif
         </div>
-        <div>
-            <h3 class="text-xl font-bold text-blue-600">{{ $siswa->nama_lengkap ?? 'Nama Siswa' }}</h3>
-            <p class="text-sm text-slate-500">NISN: {{ $siswa->nisn ?? '-' }}</p>
+        <div class="flex-1 min-w-0">
+            <h3 class="text-base sm:text-xl font-bold text-blue-600 truncate">{{ $siswa->nama_lengkap ?? 'Nama Siswa' }}</h3>
+            <p class="text-xs sm:text-sm text-slate-500">NISN: {{ $siswa->nisn ?? '-' }}</p>
             @if($kelasNama)
                 <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">{{ $kelasNama }}</span>
             @else
@@ -25,12 +25,12 @@
         </div>
     </div>
 
-    <section class="mb-8">
-        <h3 class="text-xl font-semibold text-blue-600 mb-4">Jadwal Mata Pelajaran</h3>
-        <div class="flex space-x-2 mb-4">
+    <section class="mb-6 sm:mb-8">
+        <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">Jadwal Mata Pelajaran</h3>
+        <div class="flex overflow-x-auto space-x-2 mb-4 pb-2 scrollbar-hide">
             @foreach($allDays as $day)
                 <button onclick="switchDay('{{ $day }}')" 
-                        class="day-tab px-8 py-10 rounded-lg text-sm font-medium {{ $day == $hariIni ? 'bg-blue-400 text-white' : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50' }}"
+                        class="day-tab px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap {{ $day == $hariIni ? 'bg-blue-400 text-white' : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50' }}"
                         data-day="{{ $day }}">
                     {{ $day }}
                 </button>
@@ -38,16 +38,16 @@
         </div>
         
         @foreach($allDays as $day)
-            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-lg p-6 {{ $day != $hariIni ? 'hidden' : '' }}">
+            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-lg p-4 sm:p-6 {{ $day != $hariIni ? 'hidden' : '' }}">
                 @if($jadwalPerHari[$day]->count() > 0)
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                         @foreach($jadwalPerHari[$day] as $jadwal)
-                            <div class="flex items-center justify-between {{ !$loop->last ? 'pb-4 border-b border-slate-100' : '' }}">
-                                <div>
-                                    <h4 class="font-semibold text-slate-800">{{ $jadwal->nama_mapel }}</h4>
-                                    <p class="text-sm text-slate-500">{{ $jadwal->nama_guru }}</p>
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between {{ !$loop->last ? 'pb-3 sm:pb-4 border-b border-slate-100' : '' }}">
+                                <div class="mb-2 sm:mb-0">
+                                    <h4 class="font-semibold text-sm sm:text-base text-slate-800">{{ $jadwal->nama_mapel }}</h4>
+                                    <p class="text-xs sm:text-sm text-slate-500">{{ $jadwal->nama_guru }}</p>
                                 </div>
-                                <div class="flex items-center space-x-2 text-sm text-slate-500">
+                                <div class="flex items-center space-x-2 text-xs sm:text-sm text-slate-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
@@ -91,32 +91,32 @@
     </section>
 
     <section>
-        <h3 class="text-xl font-semibold text-blue-600 mb-4">Presensi Berlangsung</h3>
-        <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">Presensi Berlangsung</h3>
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
             @if($presensiAktif && $presensiAktif->count() > 0)
-                <div class="space-y-5">
+                <div class="space-y-4 sm:space-y-5">
                     @foreach($presensiAktif as $pertemuan)
-                        <div class="flex items-center justify-between {{ !$loop->last ? 'pb-5 border-b border-slate-100' : '' }}">
-                            <div>
-                                <h4 class="font-semibold text-slate-800">{{ $pertemuan->nama_mapel }}</h4>
-                                <p class="text-sm text-slate-500">{{ $pertemuan->nama_guru }}</p>
-                                <p class="text-xs text-slate-600 mt-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3 inline">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between {{ !$loop->last ? 'pb-4 sm:pb-5 border-b border-slate-100' : '' }} gap-3">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-sm sm:text-base text-slate-800">{{ $pertemuan->nama_mapel }}</h4>
+                                <p class="text-xs sm:text-sm text-slate-500">{{ $pertemuan->nama_guru }}</p>
+                                <p class="text-xs text-slate-600 mt-1 flex items-start gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3 shrink-0 mt-0.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0 Z" />
                                     </svg>
-                                    Waktu Absen: {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '-' }} - 
-                                    {{ $pertemuan->jam_absen_tutup ? substr($pertemuan->jam_absen_tutup, 0, 5) : '-' }}
+                                    <span>Waktu: {{ $pertemuan->jam_absen_buka ? substr($pertemuan->jam_absen_buka, 0, 5) : '-' }} - 
+                                    {{ $pertemuan->jam_absen_tutup ? substr($pertemuan->jam_absen_tutup, 0, 5) : '-' }}</span>
                                 </p>
                             </div>
-                            <div class="text-center">
+                            <div class="text-left sm:text-center shrink-0">
                                 @if($pertemuan->sudah_absen)
-                                    <span class="bg-green-100 text-green-700 text-sm font-medium px-5 py-2 rounded-full">
+                                    <span class="inline-block bg-green-100 text-green-700 text-xs sm:text-sm font-medium px-4 sm:px-5 py-2 rounded-full">
                                         ✓ Sudah Absen
                                     </span>
                                 @else
                                     <form action="{{ route('siswa.absen', $pertemuan->id_pertemuan) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="bg-blue-400 text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-blue-500 transition-colors">
+                                        <button type="submit" class="w-full sm:w-auto bg-blue-400 text-white text-xs sm:text-sm font-medium px-4 sm:px-5 py-2 rounded-full hover:bg-blue-500 transition-colors">
                                             Presensi Sekarang
                                         </button>
                                     </form>
