@@ -23,6 +23,15 @@ return new class extends Migration
             $table->enum('status', ['Lunas', 'Belum Lunas'])->default('Belum Lunas')->index('idx_status');
             $table->enum('metode_pembayaran', ['Tunai', 'Transfer', 'Kartu', 'E-Wallet'])->nullable()->default('Tunai');
             $table->string('nomor_va', 40)->nullable()->index('idx_nomor_va');
+            
+            // Midtrans Integration Columns
+            $table->string('midtrans_order_id', 100)->nullable();
+            $table->string('midtrans_transaction_id', 100)->nullable();
+            $table->string('midtrans_payment_type', 50)->nullable();
+            $table->enum('midtrans_transaction_status', ['pending', 'settlement', 'expire', 'cancel', 'deny'])->nullable();
+            $table->text('midtrans_response')->nullable();
+            $table->timestamp('midtrans_paid_at')->nullable();
+            
             $table->string('bukti_pembayaran')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
 
