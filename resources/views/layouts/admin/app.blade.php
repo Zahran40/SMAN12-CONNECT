@@ -16,17 +16,25 @@
 
     <div class="flex flex-col h-screen">
         
-        <header class="bg-blue-400 text-white p-2.5 flex justify-between items-center shadow-md z-10">
-            <div class="flex items-center gap-3">
-                <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA Negeri 12 Medan" class="h-16 md:h-16 lg:h-16 w-auto object-contain" />
-                <h1 class="text-xl font-semibold">SMA NEGERI 12 MEDAN</h1>
+        <header class="bg-blue-400 text-white p-2.5 sm:p-3 flex justify-between items-center shadow-md z-20 relative">
+            <!-- Hamburger Button for Mobile -->
+            <button id="hamburger-btn-admin" class="lg:hidden p-2 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Toggle Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+
+            <div class="flex items-center gap-2 sm:gap-3 flex-1 lg:flex-initial justify-center lg:justify-start">
+                <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA Negeri 12 Medan" class="h-12 sm:h-14 md:h-16 w-auto object-contain" />
+                <h1 class="text-sm sm:text-base md:text-xl font-semibold hidden sm:block">SMA NEGERI 12 MEDAN</h1>
             </div>
-            <div class="flex items-center gap-3 relative">
-                <div class="text-right">
-                    <p class="font-semibold">{{ Auth::user()->name }}</p>
-                    <p class="text-sm text-blue-100">{{ ucfirst(Auth::user()->role) }}</p>
+            
+            <div class="flex items-center gap-2 sm:gap-3 relative">elative">
+                <div class="text-right hidden md:block">
+                    <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
+                    <p class="text-xs text-blue-100">{{ ucfirst(Auth::user()->role) }}</p>
                 </div>
-                <button id="profileButton" class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50">
+                <button id="profileButton" class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50 shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                     </svg>
@@ -56,18 +64,70 @@
             </div>
         </header>
 
-        <div class="flex flex-1 overflow-hidden">
+        <div class="flex flex-1 overflow-hidden relative">
 
             @include('layouts.admin.sidebar')
 
-            <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+            <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
                 @yield('content')
             </main>
 
         </div>
     </div>
 
+    <!-- Overlay for Mobile Sidebar -->
+    <div id="sidebar-overlay-admin" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
     <script>
+        // Sidebar Toggle Script for Admin
+        const hamburgerBtnAdmin = document.getElementById('hamburger-btn-admin');
+        const sidebarAdmin = document.getElementById('sidebar-admin');
+        const sidebarOverlayAdmin = document.getElementById('sidebar-overlay-admin');
+        const closeSidebarBtnAdmin = document.getElementById('close-sidebar-btn-admin');
+
+        function openSidebarAdmin() {
+            sidebarAdmin.classList.remove('-translate-x-full');
+            sidebarAdmin.classList.add('translate-x-0');
+            sidebarOverlayAdmin.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebarAdmin() {
+            sidebarAdmin.classList.add('-translate-x-full');
+            sidebarAdmin.classList.remove('translate-x-0');
+            sidebarOverlayAdmin.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        if (hamburgerBtnAdmin) {
+            hamburgerBtnAdmin.addEventListener('click', openSidebarAdmin);
+        }
+
+        if (closeSidebarBtnAdmin) {
+            closeSidebarBtnAdmin.addEventListener('click', closeSidebarAdmin);
+        }
+
+        if (sidebarOverlayAdmin) {
+            sidebarOverlayAdmin.addEventListener('click', closeSidebarAdmin);
+        }
+
+        // Close sidebar when clicking menu item on mobile
+        const sidebarLinksAdmin = sidebarAdmin?.querySelectorAll('a');
+        sidebarLinksAdmin?.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) {
+                    closeSidebarAdmin();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                closeSidebarAdmin();
+            }
+        });
+
         // Toggle dropdown
         const profileButton = document.getElementById('profileButton');
         const profileDropdown = document.getElementById('profileDropdown');
