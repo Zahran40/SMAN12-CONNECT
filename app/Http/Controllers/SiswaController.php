@@ -38,6 +38,7 @@ class SiswaController extends Controller
             
             return view('siswa.beranda', [
                 'siswa' => $siswa,
+                'kelasNama' => null,
                 'presensiAktif' => collect(),
                 'hariIni' => Carbon::now()->locale('id')->dayName,
                 'allDays' => $allDays,
@@ -77,7 +78,10 @@ class SiswaController extends Controller
                 return $pertemuan;
             });
         
-        return view('siswa.beranda', compact('siswa', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari'));
+        // Get nama kelas
+        $kelasNama = $siswaKelas->nama_kelas;
+        
+        return view('siswa.beranda', compact('siswa', 'kelasNama', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari'));
     }
     
     public function profil()

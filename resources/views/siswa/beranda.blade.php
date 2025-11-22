@@ -17,7 +17,11 @@
         <div>
             <h3 class="text-xl font-bold text-slate-900">{{ $siswa->nama_lengkap ?? 'Nama Siswa' }}</h3>
             <p class="text-sm text-slate-500">NISN: {{ $siswa->nisn ?? '-' }}</p>
-            <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">Kelas 11</span>
+            @if($kelasNama)
+                <span class="inline-block bg-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">{{ $kelasNama }}</span>
+            @else
+                <span class="inline-block bg-gray-200 text-gray-600 text-xs font-semibold px-3 py-1 rounded-full mt-2">Belum Ada Kelas</span>
+            @endif
         </div>
     </div>
 
