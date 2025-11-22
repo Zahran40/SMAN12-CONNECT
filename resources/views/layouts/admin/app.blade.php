@@ -29,7 +29,7 @@
                 <h1 class="text-sm sm:text-base md:text-xl font-semibold hidden sm:block">SMA NEGERI 12 MEDAN</h1>
             </div>
             
-            <div class="flex items-center gap-2 sm:gap-3 relative">elative">
+            <div class="flex items-center gap-2 sm:gap-3 relative">
                 <div class="text-right hidden md:block">
                     <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
                     <p class="text-xs text-blue-100">{{ ucfirst(Auth::user()->role) }}</p>
