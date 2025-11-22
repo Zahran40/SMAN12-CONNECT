@@ -8,14 +8,10 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-slate-800">Detail Tugas</h2>
+        <h2 class="text-3xl font-bold text-blue-500">Detail Tugas</h2>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
+   
 
     <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
         

@@ -4,9 +4,9 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-slate-800 mb-6">Beranda</h2>
+    <h2 class="text-3xl font-bold text-blue-500 mb-6">Beranda</h2>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8 flex items-center space-x-4">
         <div class="rounded-full overflow-hidden w-16 h-16 bg-slate-100 flex items-center justify-center ring-4 ring-blue-100">
             @if($guru && $guru->foto_profil)
                 <img src="{{ asset('storage/' . $guru->foto_profil) }}" alt="Foto Guru" class="w-full h-full object-cover" />
@@ -35,7 +35,7 @@
         </div>
         
         @foreach($allDays as $day)
-            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-lg p-6 space-y-4 {{ $day != $hariIni ? 'hidden' : '' }}">
+            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-md p-6 space-y-4 {{ $day != $hariIni ? 'hidden' : '' }}">
                 @if($jadwalPerHari[$day]->count() > 0)
                     @foreach($jadwalPerHari[$day] as $jadwal)
                         <div class="border border-slate-100 rounded-xl p-4 hover:shadow-md transition-shadow">
@@ -85,7 +85,7 @@
 
     <section>
         <h3 class="text-xl font-bold text-blue-600 mb-4">Mata Pelajaran Saya Hari ini</h3>
-        <div class="bg-white rounded-xl shadow-lg p-6 space-y-4">
+        <div class="bg-white rounded-xl shadow-md p-6 space-y-4">
             @if($jadwalHariIni->count() > 0)
                 @foreach($jadwalHariIni as $jadwal)
                     <a href="{{ route('guru.materi', $jadwal->id_jadwal) }}" 
