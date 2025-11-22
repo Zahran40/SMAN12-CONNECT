@@ -13,28 +13,30 @@
         <h1 class="text-2xl font-bold text-blue-700">Detail Kelas</h1>
     </div>
 
-    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm flex justify-between items-center">
-        <div class="flex items-center space-x-4 sm:space-x-6">
-            <img src="{{ asset('images/noto_school.png') }}" alt="Icon Kelas" class="w-16 h-16">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800">{{ $kelas->nama_kelas }}</h2>
-                <div class="flex items-center text-slate-500 text-sm mt-1 mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                    </svg>
-                    <span>{{ $siswaList->count() }} Siswa</span>
+    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-center space-x-4 sm:space-x-6">
+                <img src="{{ asset('images/noto_school.png') }}" alt="Icon Kelas" class="w-16 h-16">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">{{ $kelas->nama_kelas }}</h2>
+                    <div class="flex items-center text-slate-500 text-sm mt-1 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                        </svg>
+                        <span>{{ $siswaList->count() }} Siswa</span>
+                    </div>
+                    <span class="border border-yellow-400 text-yellow-600 text-xs font-semibold px-3 py-1 rounded-full">
+                        {{ $kelas->tahunAjaran->tahun_mulai }}/{{ $kelas->tahunAjaran->tahun_selesai }}
+                    </span>
                 </div>
-                <span class="border border-yellow-400 text-yellow-600 text-xs font-semibold px-3 py-1 rounded-full">
-                    {{ $kelas->tahunAjaran->tahun_mulai }}/{{ $kelas->tahunAjaran->tahun_selesai }}
-                </span>
             </div>
+            <button class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <span>Hapus</span>
+            </button>
         </div>
-        <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-            <span>Hapus</span>
-        </button>
     </div>
 
     <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
