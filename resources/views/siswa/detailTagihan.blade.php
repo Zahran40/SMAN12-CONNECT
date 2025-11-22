@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
         <a href="{{ route('siswa.tagihan') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
            <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -23,7 +23,7 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-xl shadow-lg border-2 border-blue-300 p-6 md:p-8">
+    <div class="bg-white rounded-xl shadow-lg border-2 border-blue-300 p-4 sm:p-6 md:p-8">
         
         <div class="mb-8">
             <div class="flex justify-between items-start mb-4">
@@ -100,7 +100,7 @@
             </div>
 
             <!-- Payment Information Area (Hidden initially) -->
-            <div id="payment-info" class="hidden mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div id="payment-info" class="hidden mt-4 sm:mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div id="va-info" class="hidden">
                         <p class="text-xs text-slate-500">Nomor Virtual Account</p>
@@ -142,8 +142,8 @@
 
     <!-- Modal Konfirmasi Pembayaran -->
     <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
-            <div class="text-center mb-6">
+        <div class="bg-white rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-4 sm:mb-6">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
                     <svg class="h-10 w-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -153,7 +153,7 @@
                 <p class="text-sm text-slate-600">Pastikan informasi pembayaran Anda sudah benar</p>
             </div>
 
-            <div class="bg-blue-50 rounded-lg p-4 mb-6 space-y-3">
+            <div class="bg-blue-50 rounded-lg p-4 mb-4 sm:mb-6 space-y-3">
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-slate-600">Nominal:</span>
                     <span class="font-bold text-slate-900">Rp {{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</span>
@@ -168,7 +168,7 @@
                 </div>
             </div>
 
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 sm:mb-6">
                 <p class="text-xs text-yellow-800">
                     <strong>Perhatian:</strong> Setelah konfirmasi, Anda tidak dapat mengubah metode pembayaran. Pastikan pilihan Anda sudah benar.
                 </p>
@@ -499,3 +499,4 @@
     </script>
 
 @endsection
+

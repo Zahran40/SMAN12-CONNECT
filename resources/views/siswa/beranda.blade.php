@@ -7,7 +7,7 @@
     <h2 class="text-2xl sm:text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Beranda</h2>
 
     <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 flex items-center space-x-3 sm:space-x-4">
-        <div class="rounded-full overflow-hidden w-12 h-12 sm:w-16 sm:h-16 ring-4 ring-blue-100 shrink-0">
+        <div class="rounded-full overflow-hidden w-10 h-10 sm:w-12 sm:h-12 sm:w-16 sm:h-16 ring-4 ring-blue-100 shrink-0">
             @if($siswa && $siswa->foto_profil)
                 <img src="{{ asset('storage/' . $siswa->foto_profil) }}" alt="Foto Siswa" class="w-full h-full object-cover" />
             @else

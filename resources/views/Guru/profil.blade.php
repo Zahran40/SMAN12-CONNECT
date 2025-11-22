@@ -2,10 +2,10 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-slate-800 mb-6">Profil</h2>
+    <h2 class="text-3xl font-bold text-slate-800 mb-4 sm:mb-6">Profil</h2>
 
     <!-- Profile Section -->
-   <div class="bg-white rounded-xl  p-6 mb-8 flex items-center justify-between space-x-4">
+   <div class="bg-white rounded-xl  p-4 sm:p-6 mb-6 sm:mb-8 flex items-center justify-between space-x-4">
 
     <!-- KIRI: Foto & Info Guru -->
     <div class="flex items-center space-x-4">
@@ -47,7 +47,7 @@
 
     <!-- Data Diri Guru Section -->
     <h3 class="text-xl font-semibold text-slate-800 mb-4">Data Diri Guru</h3>
-    <section class="bg-white rounded-xl shadow-lg p-6 mb-8">
+    <section class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
         <div class="space-y-4">
             <div class="flex justify-between">
                 <span class="font-medium text-slate-700">Nama</span>
@@ -93,3 +93,5 @@
     </section>
 
 @endsection
+
+

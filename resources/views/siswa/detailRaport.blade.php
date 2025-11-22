@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
         <a href="{{ route('siswa.nilai') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
              <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -11,7 +11,7 @@
         <h2 class="text-3xl font-bold text-blue-500">Laporan Nilai Raport</h2>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg border-2 border-blue-200 p-6">
+    <div class="bg-white rounded-xl shadow-lg border-2 border-blue-200 p-4 sm:p-6">
         
         <div class="mb-6">
             <h3 class="text-lg font-bold text-slate-800 mb-4">Tahun Ajaran {{ $tahunAjaranLabel }} - Semester {{ $semester }}</h3>
@@ -60,7 +60,7 @@
         </div>
 
         <div class="mt-6 flex justify-end">
-            <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition-colors flex items-center space-x-2">
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-lg transition-colors flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
@@ -77,3 +77,5 @@
     </div>
 
 @endsection
+
+

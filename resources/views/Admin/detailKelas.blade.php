@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="flex flex-col space-y-6">
+<div class="flex flex-col space-y-4 sm:space-y-6">
     <div class="flex items-center space-x-4">
         <a href="{{ route('admin.kelas.index', $tahunAjaran->id_tahun_ajaran) }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,8 +27,8 @@
     @endif
 
     {{-- Info Kelas dengan Logo --}}
-    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl shadow-sm border border-blue-200">
-        <div class="flex items-center space-x-6">
+    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-2xl shadow-sm border border-blue-200">
+        <div class="flex items-center space-x-4 sm:space-x-6">
             {{-- Logo Kelas --}}
             <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <img src="{{ asset('images/school.png') }}" alt="Logo Kelas" class="w-16 h-16">
@@ -167,7 +167,7 @@
             </div>
 
             @if($jadwalMapel->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($jadwalMapel as $jadwal)
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
                         <div class="flex items-start justify-between mb-2">
@@ -225,7 +225,7 @@
 
 {{-- Modal Tambah Siswa --}}
 <div id="modalTambahSiswa" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md mx-4">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-blue-600">Tambah Siswa ke Kelas</h3>
             <button onclick="document.getElementById('modalTambahSiswa').classList.add('hidden')" class="text-slate-500 hover:text-slate-700">
@@ -286,3 +286,6 @@
 </script>
 
 @endsection
+
+
+

@@ -3,9 +3,9 @@
 @section('title', 'Tahun Ajaran')
 
 @section('content')
-<div class="content-wrapper p-6">
+<div class="content-wrapper p-4 sm:p-6">
 
-    <div class="bg-white rounded-xl shadow-md p-5 flex items-center gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-md p-5 flex items-center gap-4 mb-4 sm:mb-6">
         <img src="{{ asset('images/clarity_administrator-solid.png') }}" alt="Operator Icon" class="w-16 h-16">
         <div>
             <h2 class="text-lg font-semibold text-gray-800">Operator</h2>
@@ -51,13 +51,13 @@
     </div>
 
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('error') }}
         </div>
     @endif
@@ -73,7 +73,7 @@
         </div>
 
         {{-- Semester Cards --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 sm:mb-6">
             {{-- Semester Ganjil --}}
             @if($ta->ganjil)
             <div class="border-2 {{ $ta->ganjil->status == 'Aktif' ? 'border-green-400 bg-green-50' : 'border-gray-300 bg-gray-50' }} rounded-xl p-4">
@@ -184,7 +184,7 @@
         </div>
     </div>
     @empty
-    <div class="bg-white rounded-2xl shadow p-8 text-center">
+    <div class="bg-white rounded-2xl shadow p-4 sm:p-6 md:p-8 text-center">
         @if(request('status') && request('status') !== 'all')
             <p class="text-slate-500">Tidak ada tahun ajaran dengan status <span class="font-bold">{{ request('status') }}</span></p>
             <a href="{{ route('admin.tahun-ajaran.index') }}" class="text-blue-500 hover:underline mt-2 inline-block">Tampilkan semua</a>
@@ -195,3 +195,4 @@
     @endforelse
 </div>
 @endsection
+

@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-    <div class="flex flex-col space-y-6">
+    <div class="flex flex-col space-y-4 sm:space-y-6">
         <div>
             <h1 class="text-2xl font-bold text-blue-700">Manajemen Data Master</h1>
             <p class="text-slate-500 text-sm">(Manajemen untuk data-data kelas, siswa, guru dan mata pelajaran)</p>
@@ -42,10 +42,10 @@
             </div>
         </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-sm">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 @forelse($kelasList as $kelas)
-                <div class="border-2 border-blue-200 rounded-2xl p-6 flex flex-col items-center bg-white">
+                <div class="border-2 border-blue-200 rounded-2xl p-4 sm:p-6 flex flex-col items-center bg-white">
                     <img src="{{ asset('images/noto_school.png') }}" alt="class" class="w-20 h-20 mb-4">
                     <div class="w-full text-left mb-4">
                         <p class="text-xs text-slate-500 mb-1">{{ $kelas->tahunAjaran->tahun_mulai }}/{{ $kelas->tahunAjaran->tahun_selesai }} - {{ $kelas->tahunAjaran->semester }}</p>
@@ -70,3 +70,5 @@
         </div>
     </div>
 @endsection
+
+

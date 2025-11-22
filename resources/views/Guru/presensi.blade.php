@@ -4,9 +4,9 @@
 
 @section('content')
 
-  <h2 class="text-3xl font-bold text-blue-500 mb-6">Kelola Presensi Semua Kelas</h2>
+  <h2 class="text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Kelola Presensi Semua Kelas</h2>
 
-    <div class="bg-white rounded-xl p-8">
+    <div class="bg-white rounded-xl p-4 sm:p-6 md:p-8">
         
         <div class="mb-6">
             <label class="block text-sm font-medium text-slate-700 mb-2">Filter Hari (Opsional)</label>
@@ -29,28 +29,28 @@
         <h2 class="text-3xl font-bold text-blue-400 mb-2">
             Daftar Jadwal Mengajar {{ $hariFilter ? '- ' . $hariFilter : '(Semua Hari)' }}
         </h2>
-        <p class="text-sm text-slate-500 mb-8">Anda dapat membuat pertemuan & presensi kapan saja, tidak harus menunggu hari mengajar</p>
+        <p class="text-sm text-slate-500 mb-6 sm:mb-8">Anda dapat membuat pertemuan & presensi kapan saja, tidak harus menunggu hari mengajar</p>
         
         @if($jadwalList && $jadwalList->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                 @foreach($jadwalList as $jadwal)
                     @php
                         // Hitung jumlah siswa
                         $jumlahSiswa = DB::table('siswa')->where('kelas_id', $jadwal->kelas_id)->count();
                     @endphp
                     
-                                        <div class="bg-white rounded-2xl p-6 hover:shadow-xl transition-shadow border-2 border-slate-200">
+                                        <div class="bg-white rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-shadow border-2 border-slate-200">
                         <div class="flex justify-between items-start mb-4">
                             <span class="inline-block px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
                                 {{ $jadwal->hari }}
                             </span>
                         </div>
                         
-                        <div class="flex justify-center mb-6">
+                        <div class="flex justify-center mb-4 sm:mb-6">
                             <img src="{{ asset('images/Schedule.png') }}" alt="Ikon Presensi" class="w-32 h-32 object-contain">
                         </div>
                         
-                        <div class="text-left mb-6">
+                        <div class="text-left mb-4 sm:mb-6">
                             <p class="text-slate-600 mb-1">{{ $jadwal->kelas->nama_kelas }}</p>
                             <h3 class="text-xl font-bold text-blue-600 mb-2">{{ $jadwal->mataPelajaran->nama_mapel }}</h3>
                             <p class="text-sm text-slate-500 mb-2">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</p>
@@ -87,7 +87,7 @@
 
     
     <div id="buatPertemuanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold text-slate-900 mb-3">Buat Pertemuan Baru</h3>
             
             <form id="buatPertemuanForm" method="POST" action="">
@@ -95,7 +95,7 @@
                 
                 
                 <div class="mb-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-                    <div class="grid grid-cols-4 gap-2 text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
                         <div><span class="font-semibold text-slate-600">Mapel:</span> <span id="modalMapel" class="text-slate-800"></span></div>
                         <div><span class="font-semibold text-slate-600">Kelas:</span> <span id="modalKelas" class="text-slate-800"></span></div>
                         <div><span class="font-semibold text-slate-600">Hari:</span> <span id="modalHari" class="text-slate-800"></span></div>
@@ -188,11 +188,11 @@
 
                 <div class="flex gap-3 mt-4">
                     <button type="button" onclick="closeBuatPertemuanModal()"
-                            class="flex-1 px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold text-sm">
+                            class="flex-1 px-4 py-1.5 sm:px-5 sm:py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold text-sm">
                         Batal
                     </button>
                     <button type="submit"
-                            class="flex-1 px-5 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold text-sm">
+                            class="flex-1 px-4 py-1.5 sm:px-5 sm:py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold text-sm">
                         Buat Pertemuan
                     </button>
                 </div>
@@ -363,3 +363,6 @@
     </script>
 
 @endsection
+
+
+
