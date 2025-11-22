@@ -124,10 +124,10 @@
         </div>
 
         
-        <div class="mt-10 text-right">
-            <button type="submit" id="submit-button" class="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-lg sm:xl shadow transition">
-                <div class="flex items-center gap-2">
-                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
+        <div class="mt-10 flex flex-col sm:flex-row justify-end gap-3">
+            <button type="submit" id="submit-button" class="bg-green-500 hover:bg-green-600 text-white font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg shadow transition w-full sm:w-auto">
+                <div class="flex items-center justify-center gap-2">
+                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-5 h-5 sm:w-6 sm:h-6">
                     <span>Buat Tahun Ajaran (2 Semester)</span>
                 </div>
             </button>
