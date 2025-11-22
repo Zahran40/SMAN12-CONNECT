@@ -16,25 +16,29 @@
 
     <div class="flex flex-col h-screen">
         
-        <header class="bg-blue-400 text-white p-2.5 flex justify-between items-center shadow-md z-10">
-            <div class="flex items-center gap-3">
-                <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA Negeri 12 Medan" class="h-16 md:h-16 lg:h-16 w-auto object-contain" />
-                <h1 class="text-xl font-semibold">SMA NEGERI 12 MEDAN</h1>
+        <header class="bg-blue-400 text-white p-2.5 sm:p-3 flex justify-between items-center shadow-md z-20 relative">
+            <!-- Hamburger Button for Mobile -->
+            <button id="hamburger-btn" class="lg:hidden p-2 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Toggle Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+
+            <div class="flex items-center gap-2 sm:gap-3 flex-1 lg:flex-initial justify-center lg:justify-start">
+                <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA Negeri 12 Medan" class="h-12 sm:h-14 md:h-16 w-auto object-contain" />
+                <h1 class="text-sm sm:text-base md:text-xl font-semibold hidden sm:block">SMA NEGERI 12 MEDAN</h1>
             </div>
-            <a href="{{ route('siswa.profil') }}" class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Profil Siswa">
-    <img
-        src="{{ asset('images/Frame 50.png') }}"
-        alt="Profil Siswa"
-        class="w-32 h-18 rounded-full object-cover"
-    />
-</a>
+            
+            <a href="{{ route('siswa.profil') }}" class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 shrink-0" aria-label="Profil Siswa">
+                <img src="{{ asset('images/Frame 50.png') }}" alt="Profil Siswa" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover" />
+            </a>
         </header>
 
-        <div class="flex flex-1 overflow-hidden">
+        <div class="flex flex-1 overflow-hidden relative">
             
             @include('layouts.siswa.sidebar')
 
-            <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+            <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
                 {{-- Alert Messages --}}
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between" role="alert">
@@ -89,6 +93,60 @@
 
         </div>
     </div>
+
+    <!-- Overlay for Mobile Sidebar -->
+    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
+    <script>
+        // Sidebar Toggle Script
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+        function openSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            sidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            sidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', openSidebar);
+        }
+
+        if (closeSidebarBtn) {
+            closeSidebarBtn.addEventListener('click', closeSidebar);
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeSidebar);
+        }
+
+        // Close sidebar when clicking menu item on mobile
+        const sidebarLinks = sidebar?.querySelectorAll('a');
+        sidebarLinks?.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                closeSidebar();
+            }
+        });
+    </script>
 
 </body>
 </html>

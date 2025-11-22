@@ -1,5 +1,15 @@
-<nav class="w-64 bg-white shadow-lg min-h-screen">
-    <div class="p-4">
+<nav id="sidebar-guru" class="fixed lg:static inset-y-0 left-0 w-64 bg-white shadow-lg min-h-screen transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-40">
+    <!-- Close Button for Mobile -->
+    <div class="flex items-center justify-between p-4 border-b lg:hidden">
+        <h2 class="text-lg font-semibold text-slate-800">Menu</h2>
+        <button id="close-sidebar-btn-guru" class="p-2 rounded-lg hover:bg-slate-100 focus:outline-none" aria-label="Close Menu">
+            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="p-4 overflow-y-auto" style="max-height: calc(100vh - 73px);">
         <ul class="space-y-2">
 
                         <li>
