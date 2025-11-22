@@ -4,10 +4,10 @@
 
 @section('content')
 
-  <h2 class="text-3xl font-bold text-slate-800 mb-6">Kelola Presensi Semua Kelas</h2>
+  <h2 class="text-3xl font-bold text-blue-500 mb-6">Kelola Presensi Semua Kelas</h2>
 
-    <div class="bg-white rounded-xl shadow-lg p-8">
-        <!-- Filter Hari -->
+    <div class="bg-white rounded-xl p-8">
+        
         <div class="mb-6">
             <label class="block text-sm font-medium text-slate-700 mb-2">Filter Hari (Opsional)</label>
             <div class="flex flex-wrap gap-2">
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <h2 class="text-3xl font-bold text-slate-900 mb-2">
+        <h2 class="text-3xl font-bold text-blue-400 mb-2">
             Daftar Jadwal Mengajar {{ $hariFilter ? '- ' . $hariFilter : '(Semua Hari)' }}
         </h2>
         <p class="text-sm text-slate-500 mb-8">Anda dapat membuat pertemuan & presensi kapan saja, tidak harus menunggu hari mengajar</p>
@@ -39,7 +39,7 @@
                         $jumlahSiswa = DB::table('siswa')->where('kelas_id', $jadwal->kelas_id)->count();
                     @endphp
                     
-                                        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow border-2 border-slate-200">
+                                        <div class="bg-white rounded-2xl p-6 hover:shadow-xl transition-shadow border-2 border-slate-200">
                         <div class="flex justify-between items-start mb-4">
                             <span class="inline-block px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
                                 {{ $jadwal->hari }}
@@ -55,22 +55,20 @@
                             <h3 class="text-xl font-bold text-blue-600 mb-2">{{ $jadwal->mataPelajaran->nama_mapel }}</h3>
                             <p class="text-sm text-slate-500 mb-2">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</p>
                             <div class="flex items-center text-slate-500 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-2">
-                                    <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.182-.311a3.376 3.376 0 002.246-2.976 60.646 60.646 0 01-9.9-5.86a.75.75 0 010-1.337A60.653 60.653 0 0111.7 2.805z" />
-                                </svg>
+                                <img src="{{ asset('images/Frame 50.png') }}" alt="Ikon Presensi" class="w-6 h-6 object-contain mr-2">
                                 {{ $jumlahSiswa }} Siswa
                             </div>
                         </div>
                         
                         <div class="space-y-2">
                             <button onclick="openBuatPertemuanModal({{ $jadwal->id_jadwal }}, '{{ $jadwal->mataPelajaran->nama_mapel }}', '{{ $jadwal->kelas->nama_kelas }}', '{{ $jadwal->hari }}', '{{ $jadwal->jam_mulai }}', '{{ $jadwal->jam_selesai }}')"
-                                    class="w-full bg-green-500 text-white text-center font-bold text-lg py-3 rounded-full hover:bg-green-600 transition-colors">
-                                + Buat Pertemuan Baru
+                                    class="w-full bg-green-400 text-white text-center font-bold text-lg py-3 rounded-full hover:bg-green-600 transition-colors">
+                                 Buat Pertemuan Baru
                             </button>
                             
                             <a href="{{ route('guru.list_pertemuan', $jadwal->id_jadwal) }}" 
-                               class="block w-full bg-purple-500 text-white text-center font-bold text-lg py-3 rounded-full hover:bg-purple-600 transition-colors">
-                                📋 Lihat Semua Pertemuan (1-16)
+                               class="block w-full bg-blue-400 text-white text-center font-bold text-lg py-3 rounded-full hover:bg-blue-500 transition-colors">
+                                 Lihat Semua Pertemuan (1-16)
                             </a>
                         </div>
                     </div>
@@ -87,7 +85,7 @@
         @endif
     </div>
 
-    <!-- Modal Buat Pertemuan -->
+    
     <div id="buatPertemuanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold text-slate-900 mb-3">Buat Pertemuan Baru</h3>
@@ -95,21 +93,21 @@
             <form id="buatPertemuanForm" method="POST" action="">
                 @csrf
                 
-                <!-- Info Header - Compact 4-Column Grid -->
+                
                 <div class="mb-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
                     <div class="grid grid-cols-4 gap-2 text-xs">
-                        <div><span class="font-semibold text-slate-600">📘 Mapel:</span> <span id="modalMapel" class="text-slate-800"></span></div>
-                        <div><span class="font-semibold text-slate-600">🎓 Kelas:</span> <span id="modalKelas" class="text-slate-800"></span></div>
-                        <div><span class="font-semibold text-slate-600">📅 Hari:</span> <span id="modalHari" class="text-slate-800"></span></div>
-                        <div><span class="font-semibold text-slate-600">⏰ Jam:</span> <span id="modalJam" class="text-slate-800"></span></div>
+                        <div><span class="font-semibold text-slate-600">Mapel:</span> <span id="modalMapel" class="text-slate-800"></span></div>
+                        <div><span class="font-semibold text-slate-600">Kelas:</span> <span id="modalKelas" class="text-slate-800"></span></div>
+                        <div><span class="font-semibold text-slate-600">Hari:</span> <span id="modalHari" class="text-slate-800"></span></div>
+                        <div><span class="font-semibold text-slate-600">Jam:</span> <span id="modalJam" class="text-slate-800"></span></div>
                     </div>
                 </div>
 
-                <!-- Pertemuan & Tanggal - 2 Columns -->
+                
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div>
                         <label class="block text-xs font-medium text-slate-700 mb-1">
-                            🔢 Pilih Pertemuan ke- <span class="text-red-500">*</span>
+                             Pilih Pertemuan ke- <span class="text-red-500">*</span>
                         </label>
                         <select name="nomor_pertemuan" id="nomorPertemuanSelect" required
                                 class="w-full px-3 py-2 text-sm border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -118,33 +116,33 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-700 mb-1">
-                            📅 Tanggal <span class="text-red-500">*</span>
+                            Tanggal <span class="text-red-500">*</span>
                         </label>
                         <input type="date" name="tanggal_pertemuan" id="tanggalPertemuanInput" required
                                class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
 
-                <!-- Waktu Absensi - 2 Columns -->
+               
                 <div class="mb-3">
                     <label class="block text-xs font-medium text-slate-700 mb-2">
-                        ⏰ Waktu Absensi (Format 24 Jam) <span class="text-red-500">*</span>
+                        Waktu Absensi (Format 24 Jam) <span class="text-red-500">*</span>
                     </label>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block mb-1 text-xs font-semibold text-green-600">
+                            <label class="block mb-1 text-xs font-semibold text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 inline mr-1">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                 </svg>
                                 Jam Buka
                             </label>
                             <div class="flex gap-1">
-                                <select id="jam_buka_hour" class="w-1/2 border-2 border-green-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-green-500">
+                                <select id="jam_buka_hour" class="w-1/2 border-2 border-blue-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-blue-3">
                                     @for($h = 0; $h < 24; $h++)
                                         <option value="{{ sprintf('%02d', $h) }}">{{ sprintf('%02d', $h) }}</option>
                                     @endfor
                                 </select>
-                                <select id="jam_buka_minute" class="w-1/2 border-2 border-green-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-green-500">
+                                <select id="jam_buka_minute" class="w-1/2 border-2 border-blue-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-blue-400">
                                     <option value="00">00</option>
                                     <option value="15">15</option>
                                     <option value="30">30</option>
@@ -154,19 +152,19 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block mb-1 text-xs font-semibold text-red-600">
+                            <label class="block mb-1 text-xs font-semibold text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 inline mr-1">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                 </svg>
                                 Jam Tutup
                             </label>
                             <div class="flex gap-1">
-                                <select id="jam_tutup_hour" class="w-1/2 border-2 border-red-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-red-500">
+                                <select id="jam_tutup_hour" class="w-1/2 border-2 border-blue-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-blue-400">
                                     @for($h = 0; $h < 24; $h++)
                                         <option value="{{ sprintf('%02d', $h) }}">{{ sprintf('%02d', $h) }}</option>
                                     @endfor
                                 </select>
-                                <select id="jam_tutup_minute" class="w-1/2 border-2 border-red-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-red-500">
+                                <select id="jam_tutup_minute" class="w-1/2 border-2 border-blue-300 rounded-lg py-1.5 px-2 text-slate-700 text-sm font-semibold focus:outline-none focus:border-blue-400">
                                     <option value="00">00</option>
                                     <option value="15">15</option>
                                     <option value="30">30</option>
@@ -178,13 +176,13 @@
                     </div>
                 </div>
 
-                <!-- Materi - Full Width -->
+                
                 <div class="mb-4">
                     <label class="block text-xs font-medium text-slate-700 mb-1">
-                        📚 Materi / Topik Bahasan <span class="text-xs text-slate-500">(opsional)</span>
+                         Materi / Topik Bahasan <span class="text-xs text-slate-500">(opsional)</span>
                     </label>
                     <textarea name="topik_bahasan" id="topikBahasan" rows="2"
-                              placeholder="Contoh: Pengenalan Array dan Looping"
+                              placeholder="Contoh: Pengenalan Trigonometri"
                               class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
                 </div>
 
