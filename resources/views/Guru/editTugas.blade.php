@@ -8,7 +8,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-slate-800">Edit Tugas - {{ $tugas->jadwalPelajaran->mataPelajaran->nama_mapel }}</h2>
+        <h2 class="text-3xl font-bold text-blue-500">Edit Tugas - {{ $tugas->jadwalPelajaran->mataPelajaran->nama_mapel }}</h2>
     </div>
 
     @if($errors->any())
@@ -119,22 +119,22 @@
 
             <div class="grid grid-cols-2 gap-6 max-w-xl">
                 <div>
-                    <label class="block text-lg font-bold text-green-600 mb-2">
+                    <label class="block text-lg font-bold text-blue-400 mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 inline mr-1">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                         </svg>
                         Tanggal Dibuka <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" name="tanggal_dibuka" id="tanggal_dibuka" value="{{ old('tanggal_dibuka', $tanggalDibuka) }}" class="w-full border-2 border-green-300 rounded-lg py-3 px-4 text-slate-700 focus:outline-none focus:border-green-500" min="{{ date('Y-m-d') }}" required>
+                    <input type="date" name="tanggal_dibuka" id="tanggal_dibuka" value="{{ old('tanggal_dibuka', $tanggalDibuka) }}" class="w-full border-2 border-blue-300 rounded-lg py-3 px-4 text-slate-700 focus:outline-none focus:border-blue-500" min="{{ date('Y-m-d') }}" required>
                 </div>
                 <div>
-                    <label class="block text-lg font-bold text-red-600 mb-2">
+                    <label class="block text-lg font-bold text-blue-400 mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 inline mr-1">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                         </svg>
                         Tanggal Ditutup <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" name="tanggal_ditutup" id="tanggal_ditutup" value="{{ old('tanggal_ditutup', $tanggalDitutup) }}" class="w-full border-2 border-red-300 rounded-lg py-3 px-4 text-slate-700 focus:outline-none focus:border-red-500" min="{{ date('Y-m-d') }}" required>
+                    <input type="date" name="tanggal_ditutup" id="tanggal_ditutup" value="{{ old('tanggal_ditutup', $tanggalDitutup) }}" class="w-full border-2 border-blue-300 rounded-lg py-3 px-4 text-slate-700 focus:outline-none focus:border-blue-500" min="{{ date('Y-m-d') }}" required>
                 </div>
             </div>
             
@@ -166,19 +166,19 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-semibold text-red-600">
+                        <label class="block mb-2 text-sm font-semibold text-blue-600">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 inline mr-1">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                             </svg>
                             Jam Ditutup
                         </label>
                         <div class="flex gap-2">
-                            <select id="jam_tutup_hour" class="w-1/2 border-2 border-red-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200">
+                            <select id="jam_tutup_hour" class="w-1/2 border-2 border-blue-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-red-200">
                                 @for($h = 0; $h < 24; $h++)
                                     <option value="{{ sprintf('%02d', $h) }}" {{ $jamTutupHour == sprintf('%02d', $h) ? 'selected' : '' }}>{{ sprintf('%02d', $h) }}</option>
                                 @endfor
                             </select>
-                            <select id="jam_tutup_minute" class="w-1/2 border-2 border-red-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200">
+                            <select id="jam_tutup_minute" class="w-1/2 border-2 border-blue-300 rounded-lg py-2.5 px-3 text-slate-700 text-base font-semibold focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-red-200">
                                 <option value="00" {{ $jamTutupMinute == '00' ? 'selected' : '' }}>00</option>
                                 <option value="15" {{ $jamTutupMinute == '15' ? 'selected' : '' }}>15</option>
                                 <option value="30" {{ $jamTutupMinute == '30' ? 'selected' : '' }}>30</option>
