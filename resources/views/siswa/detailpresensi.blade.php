@@ -105,6 +105,9 @@
                             <span id="location-status" class="text-slate-400 italic">Mendeteksi lokasi...</span>
                             <p id="location-address" class="mt-1"></p>
                             <p id="location-coords" class="text-xs text-slate-400 mt-1 font-mono"></p>
+                            <button type="button" onclick="refreshLocation()" class="mt-2 text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                🔄 Refresh Lokasi
+                            </button>
                         @endif
                     </div>
                 </div>
@@ -161,7 +164,7 @@
             @endif
         </div>
         
-        <div class="bg-slate-50 px-6 py-3 text-center border-t border-slate-100">
+        <div class="bg-slate-50 px-4 py-2 sm:px-6 sm:py-3 text-center border-t border-slate-100">
              <p class="text-xs text-slate-400">SMA NEGERI 12 MEDAN &copy; 2025</p>
         </div>
     </div>
@@ -191,19 +194,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Function untuk reverse geocoding menggunakan Nominatim (Open Street Map - GRATIS)
+    // Function untuk reverse geocoding menggunakan Google Maps Geocoding API
     function reverseGeocode(lat, lng) {
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+        const googleApiKey = '{{ env("GOOGLE_MAPS_API_KEY") }}';
+        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}&language=id`;
+        
+        console.log('Geocoding URL:', geocodeUrl);
+        
+        fetch(geocodeUrl)
             .then(response => response.json())
             .then(data => {
-                if (data && data.display_name) {
-                    const address = data.display_name;
+                console.log('Google Maps Response:', data);
+                
+                if (data.status === 'OK' && data.results && data.results.length > 0) {
+                    const address = data.results[0].formatted_address;
                     addressInput.value = address;
                     locationAddress.textContent = address;
                 } else {
+                    console.warn('Geocoding failed. Status:', data.status, 'Error:', data.error_message);
                     // Fallback: koordinat saja
                     addressInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-                    locationAddress.textContent = 'Alamat tidak dapat dideteksi, tetapi koordinat tersimpan';
+                    locationAddress.textContent = 'Alamat tidak tersedia';
                 }
                 
                 // Enable tombol absen - STYLE BUTTON UPDATE DISINI
@@ -213,10 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 btnText.textContent = 'Hadir'; // Text simpel sesuai screenshot
             })
             .catch(error => {
-                console.warn('Geocoding error:', error);
+                console.error('Geocoding fetch error:', error);
                 // Tetap enable tombol meski geocoding gagal
                 addressInput.value = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                locationAddress.textContent = 'Alamat tidak tersedia (hanya koordinat)';
+                locationAddress.textContent = 'Error koneksi ke Google Maps';
                 
                 btnAbsen.disabled = false;
                 btnAbsen.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
@@ -229,6 +240,9 @@ document.addEventListener('DOMContentLoaded', function() {
         function(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy; // dalam meter
+            
+            console.log('GPS Position:', { lat, lng, accuracy: accuracy + 'm' });
             
             latInput.value = lat;
             lngInput.value = lng;
@@ -259,6 +273,40 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
+    
+    // Fungsi untuk refresh lokasi GPS
+    window.refreshLocation = function() {
+        const locationStatus = document.getElementById('location-status');
+        const locationCoords = document.getElementById('location-coords');
+        
+        locationStatus.textContent = '🔄 Memperbarui lokasi...';
+        locationStatus.className = 'text-slate-400 italic';
+        locationCoords.textContent = '';
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+                
+                console.log('GPS Refreshed:', { lat, lng, accuracy: accuracy + 'm' });
+                
+                latInput.value = lat;
+                lngInput.value = lng;
+                
+                locationCoords.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                locationStatus.textContent = '✅ Lokasi diperbarui';
+                locationStatus.className = 'text-sm text-green-600';
+                
+                reverseGeocode(lat, lng);
+            },
+            function(error) {
+                locationStatus.textContent = '❌ Gagal memperbarui lokasi';
+                locationStatus.className = 'text-sm text-red-600';
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    };
 });
 </script>
 

@@ -2,29 +2,29 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
-        <a href="{{ route('siswa.materi') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
-            <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+    <div class="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6 sm:mb-8">
+        <a href="{{ route('siswa.materi') }}" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors shrink-0" title="Kembali">
+            <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-blue-500">{{ $jadwal->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }}</h2>
+        <h2 class="text-xl sm:text-2xl md:text-2xl sm:text-3xl font-bold text-blue-500">{{ $jadwal->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }}</h2>
     </div>
 
     @if(session('success'))
-        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('error') }}
         </div>
     @endif
     
     @if($errors->any())
-        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             <ul class="list-disc list-inside">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -34,47 +34,49 @@
     @endif
 
     <!-- Tabs Navigation -->
-    <div class="mb-6 bg-white rounded-t-xl border-2 border-b-0 border-blue-200">
-        <nav class="flex px-6 pt-4" role="tablist">
-            <button type="button" class="tab-button-siswa py-3 px-6 font-medium text-sm transition-colors rounded-t-lg active" data-tab="pertemuan" role="tab">
-                <span class="flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+    <div class="bg-white rounded-t-xl border-2 border-b-0 border-blue-200">
+        <nav class="flex overflow-x-auto px-4 sm:px-6 pt-4 scrollbar-hide" role="tablist">
+            <button type="button" class="tab-button-siswa py-2 sm:py-3 px-4 sm:px-6 font-medium text-xs sm:text-sm transition-colors rounded-t-lg active whitespace-nowrap" data-tab="pertemuan" role="tab">
+                <span class="flex items-center space-x-1 sm:space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                     </svg>
-                    <span>Materi Per Pertemuan</span>
+                    <span class="hidden sm:inline">Materi Per Pertemuan</span>
+                    <span class="sm:hidden">Materi</span>
                 </span>
             </button>
-            <button type="button" class="tab-button-siswa py-3 px-6 font-medium text-sm transition-colors rounded-t-lg" data-tab="tugas" role="tab">
-                <span class="flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <button type="button" class="tab-button-siswa py-2 sm:py-3 px-4 sm:px-6 font-medium text-xs sm:text-sm transition-colors rounded-t-lg whitespace-nowrap" data-tab="tugas" role="tab">
+                <span class="flex items-center space-x-1 sm:space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                     </svg>
-                    <span>Status Tugas ({{ $allTugasSiswa->count() }})</span>
+                    <span class="hidden sm:inline">Status Tugas ({{ $allTugasSiswa->count() }})</span>
+                    <span class="sm:hidden">Tugas ({{ $allTugasSiswa->count() }})</span>
                 </span>
             </button>
         </nav>
     </div>
 
     <!-- Tab Content: Per Pertemuan -->
-    <div class="tab-content-siswa bg-white rounded-b-xl border-2 border-blue-200 shadow-lg" id="tab-siswa-pertemuan">
+    <div class="tab-content-siswa mb-4 sm:mb-6 bg-white rounded-b-xl border-2 border-t-0 border-blue-200 shadow-lg" id="tab-siswa-pertemuan">
         
         <div class="divide-y divide-slate-200">
 
             @forelse($pertemuans as $pertemuan)
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <div class="flex justify-between items-center cursor-pointer" data-pertemuan-toggle>
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-base">
+                    <div class="flex items-center space-x-3 sm:space-x-4">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center bg-blue-100 text-blue-700 rounded-lg font-bold text-sm sm:text-base">
                             {{ $pertemuan->pertemuan_ke }}
                         </div>
-                        <h3 class="font-bold text-lg text-slate-800">Pertemuan {{ $pertemuan->pertemuan_ke }}</h3>
+                        <h3 class="font-bold text-base sm:text-lg text-slate-800">Pertemuan {{ $pertemuan->pertemuan_ke }}</h3>
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-slate-500 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-slate-500 transition-transform shrink-0">
                       <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                     </svg>
                 </div>
                 
-                <div class="pl-14 pt-4 space-y-4 {{ $loop->first ? '' : 'hidden' }}">
+                <div class="pl-0 sm:pl-14 pt-4 space-y-3 sm:space-y-4 {{ $loop->first ? '' : 'hidden' }}">
                     
                     @forelse($pertemuan->materi as $m)
                     <div class="border-2 border-blue-200 rounded-xl p-4">
@@ -329,7 +331,7 @@
                                         <p class="text-xs text-gray-500 mt-1">Anda bisa menulis jawaban langsung atau upload file, atau keduanya</p>
                                     </div>
                                     
-                                    <div id="drop-zone-{{ $t->id_tugas }}" class="border-2 border-dashed border-blue-300 rounded-lg p-8 text-center hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
+                                    <div id="drop-zone-{{ $t->id_tugas }}" class="border-2 border-dashed border-blue-300 rounded-lg p-4 sm:p-6 md:p-8 text-center hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
                                         <div class="space-y-2">
                                             <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -465,7 +467,7 @@
     </script>
 
     <!-- Tab Content: Status Tugas -->
-    <div class="tab-content-siswa hidden bg-white rounded-b-xl border-2 border-blue-200 shadow-lg p-6" id="tab-siswa-tugas">
+    <div class="tab-content-siswa hidden bg-white rounded-b-xl border-2 border-t-0 border-blue-200 shadow-lg p-6" id="tab-siswa-tugas">
         <div class="space-y-4">
             @forelse($allTugasSiswa as $tugas)
             <div class="bg-white rounded-xl shadow-md p-5 border-l-4 {{ $tugas->status_pengumpulan == 'Belum Dikumpulkan' ? 'border-red-400' : ($tugas->status_pengumpulan == 'Tepat Waktu' ? 'border-green-400' : 'border-yellow-400') }}">
@@ -546,7 +548,7 @@
                 </div>
             </div>
             @empty
-            <div class="bg-white rounded-xl shadow-md p-8 text-center border border-slate-200">
+            <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 md:p-8 text-center border border-slate-200">
                 <div class="inline-block p-4 bg-slate-100 rounded-full mb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-slate-400">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
@@ -598,3 +600,4 @@
 
 @endsection
         
+

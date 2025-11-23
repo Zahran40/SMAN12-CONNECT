@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('guru', function (Blueprint $table) {
-            $table->string('foto_profil', 255)->nullable()->after('golongan_darah');
-        });
-        
+        // Hanya untuk siswa, guru sudah ada di create_guru_table
         Schema::table('siswa', function (Blueprint $table) {
-            $table->string('foto_profil', 255)->nullable()->after('golongan_darah');
+            if (!Schema::hasColumn('siswa', 'foto_profil')) {
+                $table->string('foto_profil', 255)->nullable()->after('golongan_darah');
+            }
         });
     }
 
@@ -25,10 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('guru', function (Blueprint $table) {
-            $table->dropColumn('foto_profil');
-        });
-        
         Schema::table('siswa', function (Blueprint $table) {
             $table->dropColumn('foto_profil');
         });

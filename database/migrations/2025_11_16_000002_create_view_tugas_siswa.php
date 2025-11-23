@@ -16,10 +16,10 @@ return new class extends Migration
             SELECT 
                 t.id_tugas,
                 t.judul_tugas,
-                t.deskripsi_tugas,
-                t.deadline AS tanggal_deadline,
-                t.jam_buka,
-                t.jam_tutup,
+                t.deskripsi,
+                t.waktu_dibuka,
+                t.waktu_ditutup,
+                t.deadline,
                 t.created_at AS tgl_upload,
                 p.id_pertemuan,
                 p.nomor_pertemuan,
@@ -43,8 +43,7 @@ return new class extends Migration
                 s.nisn,
                 CASE 
                     WHEN dt.tgl_kumpul IS NULL THEN 'Belum Dikumpulkan'
-                    WHEN t.jam_tutup IS NOT NULL AND dt.tgl_kumpul <= CONCAT(t.deadline, ' ', t.jam_tutup) THEN 'Tepat Waktu'
-                    WHEN t.jam_tutup IS NULL AND dt.tgl_kumpul <= t.deadline THEN 'Tepat Waktu'
+                    WHEN t.deadline IS NOT NULL AND dt.tgl_kumpul <= t.deadline THEN 'Tepat Waktu'
                     ELSE 'Terlambat'
                 END AS status_pengumpulan
             FROM tugas t

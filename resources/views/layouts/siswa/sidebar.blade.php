@@ -1,5 +1,15 @@
-<nav class="w-64 bg-white shadow-lg min-h-screen">
-    <div class="p-4">
+<nav id="sidebar" class="fixed lg:static inset-y-0 left-0 w-64 bg-white shadow-lg min-h-screen transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-40">
+    <!-- Close Button for Mobile -->
+    <div class="flex items-center justify-between p-4 border-b lg:hidden">
+        <h2 class="text-lg font-semibold text-slate-800">Menu</h2>
+        <button id="close-sidebar-btn" class="p-2 rounded-lg hover:bg-slate-100 focus:outline-none" aria-label="Close Menu">
+            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="p-4 overflow-y-auto" style="max-height: calc(100vh - 73px);">
         <ul class="space-y-2">
 
                         <li>
@@ -65,17 +75,6 @@
 
             </ul>
 
-            <!-- Logout Button -->
-            <div class="p-4 border-t border-slate-200 mt-auto">
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="flex items-center w-full px-4 py-3 font-medium rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-                        </svg>
-                        Logout
-                    </button>
-                </form>
-            </div>
+            
     </div>
 </nav>

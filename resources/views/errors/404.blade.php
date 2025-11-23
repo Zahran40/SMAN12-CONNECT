@@ -41,7 +41,7 @@
             </div>
 
             <!-- Friendly Message Card -->
-            <div class="bg-white rounded-3xl shadow-lg border-2 border-blue-100 p-8 mb-10 max-w-2xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-lg border-2 border-blue-100 p-4 sm:p-6 md:p-8 mb-10 max-w-2xl mx-auto">
                 <div class="mb-6">
                     <svg class="w-20 h-20 mx-auto text-blue-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -79,7 +79,7 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6 sm:mb-8">
                 <a href="javascript:history.back()" 
                    class="inline-flex items-center px-8 py-3 bg-white text-blue-500 border-2 border-blue-500 rounded-full font-semibold text-base hover:bg-blue-50 transition-all duration-200 shadow-md hover:shadow-lg min-w-[180px] justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,3 +140,5 @@
 
 </body>
 </html>
+
+

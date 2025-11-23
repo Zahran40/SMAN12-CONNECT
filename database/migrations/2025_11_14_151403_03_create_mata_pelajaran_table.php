@@ -15,6 +15,9 @@ return new class extends Migration
             $table->bigInteger('id_mapel', true);
             $table->string('kode_mapel', 20)->unique('uk_kode');
             $table->string('nama_mapel', 250);
+            $table->enum('kategori', ['Umum', 'Kelas X', 'MIPA', 'IPS', 'Bahasa', 'Mulok'])->nullable();
+            $table->time('jam_mulai')->nullable();
+            $table->time('jam_selesai')->nullable();
         });
     }
 

@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-    <div class="flex flex-col space-y-6">
+    <div class="flex flex-col space-y-4 sm:space-y-6">
         
         <div class="flex justify-between items-center">
             <h3 class="text-xl font-bold text-blue-400">Form Data Diri Siswa</h3>
@@ -33,7 +33,7 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-8">
             <form action="{{ isset($siswa) ? route('admin.data-master.siswa.update', $siswa->id_siswa) : route('admin.data-master.siswa.store') }}" method="POST" class="space-y-6"autocomplete="off">
                 @csrf
                 @if(isset($siswa))
@@ -188,7 +188,7 @@
                 </div>
 
                 {{-- Informasi Kelas (Opsional saat create, bisa diisi lewat Detail Kelas) --}}
-                <div class="border-t border-slate-200 pt-6 mt-6">
+                <div class="border-t border-slate-200 pt-6 mt-4 sm:mt-6">
                     <h3 class="text-lg font-bold text-blue-600 mb-4">Informasi Kelas (Opsional)</h3>
                     <p class="text-sm text-slate-500 mb-4">
                         Anda bisa melewati bagian ini dan menambahkan siswa ke kelas nanti melalui halaman <strong>Detail Kelas</strong>

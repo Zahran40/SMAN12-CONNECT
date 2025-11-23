@@ -18,14 +18,29 @@ return new class extends Migration
             $table->date('tanggal_pertemuan')->nullable();
             $table->time('waktu_mulai')->nullable();
             $table->time('waktu_selesai')->nullable();
-            $table->string('topik_bahasan', 250)->nullable();
+            $table->text('topik_bahasan')->nullable();
             $table->enum('status_sesi', ['Buka', 'Ditutup'])->default('Buka');
+            
+            // Kolom absensi
+            $table->date('tanggal_absen_dibuka')->nullable();
+            $table->date('tanggal_absen_ditutup')->nullable();
+            $table->time('jam_absen_buka')->nullable();
+            $table->time('jam_absen_tutup')->nullable();
+            $table->dateTime('waktu_absen_dibuka')->nullable();
+            $table->dateTime('waktu_absen_ditutup')->nullable();
+            
+            // Status submit oleh guru
+            $table->boolean('is_submitted')->default(false);
+            $table->dateTime('submitted_at')->nullable();
+            $table->bigInteger('submitted_by')->nullable();
+            
             $table->timestamp('created_at')->nullable()->useCurrent();
 
             $table->unique(['jadwal_id', 'nomor_pertemuan'], 'uk_pertemuan_unik');
             
-            // Foreign Key
+            // Foreign Keys
             $table->foreign(['jadwal_id'], 'fk_pertemuan_jadwal')->references(['id_jadwal'])->on('jadwal_pelajaran')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('submitted_by', 'fk_pertemuan_submitted_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

@@ -2,7 +2,7 @@
 
 ## Kelompok 3 MSBD KOM C '24
 - Abbil Rizki Abdillah - 241402033 (UI/UX, Backend)
-- Daniele Christian Hasiholland Siahaan - 241402060 (Backend)	
+- Daniele Christian Hasiholland Siahaan - 241402060 (Backend,QA Testing)	
 - Reagan Brian Siahaan -241402099 (Frontend)
 - Andre Al Farizi Sebayang - 241402105 (Project Manager, Frontend, Backend)	
 - Yeremia Nicolas Purba - 241402140 (Frontend)

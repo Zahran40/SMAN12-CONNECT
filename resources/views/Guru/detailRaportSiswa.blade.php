@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
          <a href="{{ route('guru.raport_siswa') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -13,12 +13,12 @@
 
     {{-- Success Message --}}
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('success') }}
         </div>
     @endif
 
-    <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-blue-400">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border-2 border-blue-400">
         <div class="mb-8">
             <h3 class="text-2xl font-bold text-slate-900 mb-1">Daftar Siswa Anda</h3>
             <p class="text-sm text-slate-500">Klik ikon buku untuk mengisi nilai raport siswa</p>
@@ -58,3 +58,4 @@
     </div>
 
 @endsection
+

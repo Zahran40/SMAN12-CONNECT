@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-<div class="flex flex-col space-y-6">
+<div class="flex flex-col space-y-4 sm:space-y-6">
     <div class="flex items-center space-x-4">
         <a href="{{ route('admin.kelas.index', $tahunAjaran->id_tahun_ajaran) }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,8 +27,8 @@
     @endif
 
     {{-- Info Kelas dengan Logo --}}
-    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl shadow-sm border border-blue-200">
-        <div class="flex items-center space-x-6">
+    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-2xl shadow-sm border border-blue-200">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
             {{-- Logo Kelas --}}
             <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <img src="{{ asset('images/school.png') }}" alt="Logo Kelas" class="w-16 h-16">
@@ -58,11 +58,11 @@
             </div>
 
             {{-- Tombol Hapus Kelas --}}
-            <div>
+            <div class="w-full sm:w-auto mt-3 sm:mt-0">
                 <form action="{{ route('admin.kelas.destroy', [$tahunAjaran->id_tahun_ajaran, $kelas->id_kelas]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kelas ini? Semua data terkait akan dihapus!')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors shadow-sm">
+                    <button type="submit" class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
@@ -75,23 +75,25 @@
 
     {{-- Tabs Navigation --}}
     <div class="bg-white rounded-2xl shadow-sm">
-        <div class="flex border-b border-slate-200">
-            <button onclick="showTab('siswa')" id="tab-siswa" class="flex-1 px-6 py-4 font-semibold text-blue-600 border-b-2 border-blue-600 transition-colors">
-                Siswa
-            </button>
-            <button onclick="showTab('guru')" id="tab-guru" class="flex-1 px-6 py-4 font-semibold text-slate-500 hover:text-blue-600 transition-colors">
-                Guru
-            </button>
-            <button onclick="showTab('mapel')" id="tab-mapel" class="flex-1 px-6 py-4 font-semibold text-slate-500 hover:text-blue-600 transition-colors">
-                Mata Pelajaran
-            </button>
+        <div class="overflow-x-auto scrollbar-hide">
+            <div class="flex border-b border-slate-200 min-w-max">
+                <button onclick="showTab('siswa')" id="tab-siswa" class="flex-1 px-6 py-4 font-semibold text-blue-600 border-b-2 border-blue-600 transition-colors whitespace-nowrap">
+                    Siswa
+                </button>
+                <button onclick="showTab('guru')" id="tab-guru" class="flex-1 px-6 py-4 font-semibold text-slate-500 hover:text-blue-600 transition-colors whitespace-nowrap">
+                    Guru
+                </button>
+                <button onclick="showTab('mapel')" id="tab-mapel" class="flex-1 px-6 py-4 font-semibold text-slate-500 hover:text-blue-600 transition-colors whitespace-nowrap">
+                    Mata Pelajaran
+                </button>
+            </div>
         </div>
 
         {{-- Tab Content Siswa --}}
         <div id="content-siswa" class="p-6">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 <h3 class="text-xl font-bold text-blue-600">Daftar Siswa ({{ $kelas->siswaAktif->count() }})</h3>
-                <button onclick="document.getElementById('modalTambahSiswa').classList.remove('hidden')" class="bg-green-400 hover:bg-green-500 text-white px-4 py-2 rounded-full font-bold flex items-center space-x-2 shadow-sm transition-colors">
+                <button onclick="document.getElementById('modalTambahSiswa').classList.remove('hidden')" class="bg-green-400 hover:bg-green-500 text-white px-4 py-2 rounded-full font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors w-full sm:w-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
@@ -139,7 +141,7 @@
         {{-- Tab Content Guru --}}
         <div id="content-guru" class="p-6 hidden">
             <h3 class="text-xl font-bold text-blue-600 mb-4">Update Wali Kelas</h3>
-            <form action="{{ route('admin.kelas.update-wali', [$tahunAjaran->id_tahun_ajaran, $kelas->id_kelas]) }}" method="POST" class="flex items-end gap-4">
+            <form action="{{ route('admin.kelas.update-wali', [$tahunAjaran->id_tahun_ajaran, $kelas->id_kelas]) }}" method="POST" class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 sm:gap-4">
                 @csrf
                 @method('PUT')
                 <div class="flex-1">
@@ -153,7 +155,7 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="bg-blue-400 hover:bg-blue-500 text-white px-6 py-2.5 rounded-lg font-bold transition-colors">
+                <button type="submit" class="w-full sm:w-auto bg-blue-400 hover:bg-blue-500 text-white px-4 sm:px-6 py-2.5 rounded-lg font-bold transition-colors">
                     Update
                 </button>
             </form>
@@ -167,7 +169,7 @@
             </div>
 
             @if($jadwalMapel->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($jadwalMapel as $jadwal)
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
                         <div class="flex items-start justify-between mb-2">
@@ -225,7 +227,7 @@
 
 {{-- Modal Tambah Siswa --}}
 <div id="modalTambahSiswa" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md mx-4">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-blue-600">Tambah Siswa ke Kelas</h3>
             <button onclick="document.getElementById('modalTambahSiswa').classList.add('hidden')" class="text-slate-500 hover:text-slate-700">
@@ -286,3 +288,6 @@
 </script>
 
 @endsection
+
+
+
