@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
         <a href="{{ url()->previous() }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -11,7 +11,7 @@
         <h2 class="text-3xl font-bold text-slate-800">Detail Absensi</h2>
     </div>
 
-    <div class="flex flex-col md:flex-row md:items-center md:space-x-32 mb-8 px-2">
+    <div class="flex flex-col md:flex-row md:items-center md:space-x-32 mb-6 sm:mb-8 px-2">
         <div class="mb-4 md:mb-0">
             <h3 class="text-lg font-bold text-slate-900 mb-2">Waktu Absensi</h3>
             <div class="flex items-center text-slate-800 font-medium">
@@ -29,9 +29,9 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-8">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
         
-        <div class="grid grid-cols-12 gap-4 mb-6 px-6 text-lg font-bold text-blue-600">
+        <div class="grid grid-cols-12 gap-4 mb-4 sm:mb-6 px-6 text-lg font-bold text-blue-600">
             <div class="col-span-1">No</div>
             <div class="col-span-4">Nama Siswa</div>
             <div class="col-span-3">NIS</div>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="col-span-4 font-medium text-slate-900">Nama Siswa</div>
                 <div class="col-span-3 font-medium text-slate-900">102990132801</div>
-                <div class="col-span-4 flex items-center space-x-6">
+                <div class="col-span-4 flex items-center space-x-4 sm:space-x-6">
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_1" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500" checked>
                         <span class="ml-2 text-slate-900 font-medium">Hadir</span>
@@ -72,7 +72,7 @@
                 </div>
                 <div class="col-span-4 font-medium text-slate-900">Nama Siswa</div>
                 <div class="col-span-3 font-medium text-slate-900">102990132801</div>
-                <div class="col-span-4 flex items-center space-x-6">
+                <div class="col-span-4 flex items-center space-x-4 sm:space-x-6">
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_2" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500" checked>
                         <span class="ml-2 text-slate-900 font-medium">Hadir</span>
@@ -98,7 +98,7 @@
                 </div>
                 <div class="col-span-4 font-medium text-slate-900">Nama Siswa</div>
                 <div class="col-span-3 font-medium text-slate-900">102990132801</div>
-                <div class="col-span-4 flex items-center space-x-6">
+                <div class="col-span-4 flex items-center space-x-4 sm:space-x-6">
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_3" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500" checked>
                         <span class="ml-2 text-slate-900 font-medium">Hadir</span>
@@ -124,7 +124,7 @@
                 </div>
                 <div class="col-span-4 font-medium text-slate-900">Nama Siswa</div>
                 <div class="col-span-3 font-medium text-slate-900">102990132801</div>
-                <div class="col-span-4 flex items-center space-x-6">
+                <div class="col-span-4 flex items-center space-x-4 sm:space-x-6">
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_4" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500" checked>
                         <span class="ml-2 text-slate-900 font-medium">Hadir</span>
@@ -150,7 +150,7 @@
                 </div>
                 <div class="col-span-4 font-medium text-slate-900">Nama Siswa</div>
                 <div class="col-span-3 font-medium text-slate-900">102990132801</div>
-                <div class="col-span-4 flex items-center space-x-6">
+                <div class="col-span-4 flex items-center space-x-4 sm:space-x-6">
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="status_5" class="w-5 h-5 text-blue-600 border-2 border-blue-600 focus:ring-blue-500" checked>
                         <span class="ml-2 text-slate-900 font-medium">Hadir</span>
@@ -171,3 +171,4 @@
             </div>
             
         </div> </div> @endsection
+

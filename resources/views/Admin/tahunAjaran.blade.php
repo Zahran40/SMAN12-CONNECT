@@ -3,9 +3,9 @@
 @section('title', 'Tahun Ajaran')
 
 @section('content')
-<div class="content-wrapper p-6">
+<div class="content-wrapper p-4 sm:p-6">
 
-    <div class="bg-white rounded-xl shadow-md p-5 flex items-center gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-md p-5 flex items-center gap-4 mb-4 sm:mb-6">
         <img src="{{ asset('images/clarity_administrator-solid.png') }}" alt="Operator Icon" class="w-16 h-16">
         <div>
             <h2 class="text-lg font-semibold text-gray-800">Operator</h2>
@@ -14,12 +14,12 @@
     </div>
 
 
-    <div class="flex justify-between items-center mb-5">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
         <h1 class="text-xl font-bold text-blue-700">Tahun Ajaran</h1>
-        <div class="flex items-center space-x-3">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
             {{-- Filter Status --}}
-            <form method="GET" action="{{ route('admin.tahun-ajaran.index') }}" class="flex items-center space-x-2">
-                <select name="status" onchange="this.form.submit()" class="border-2 border-blue-300 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500">
+            <form method="GET" action="{{ route('admin.tahun-ajaran.index') }}" class="w-full sm:w-auto">
+                <select name="status" onchange="this.form.submit()" class="w-full border-2 border-blue-300 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500">
                     <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>Semua Status</option>
                     <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="Tidak Aktif" {{ request('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
@@ -28,10 +28,10 @@
 
             {{-- Tombol Hapus Semua Tidak Aktif --}}
             @if(\App\Models\TahunAjaran::where('status', 'Tidak Aktif')->count() > 0)
-                <form action="{{ route('admin.tahun-ajaran.destroy-inactive') }}" method="POST" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA tahun ajaran tidak aktif beserta:\n- Semua kelas\n- Semua siswa di kelas tersebut\n- Semua jadwal pelajaran\n\nProses ini TIDAK DAPAT DIBATALKAN!\n\nLanjutkan?')" class="inline">
+                <form action="{{ route('admin.tahun-ajaran.destroy-inactive') }}" method="POST" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA tahun ajaran tidak aktif beserta:\n- Semua kelas\n- Semua siswa di kelas tersebut\n- Semua jadwal pelajaran\n\nProses ini TIDAK DAPAT DIBATALKAN!\n\nLanjutkan?')" class="w-full sm:w-auto">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2">
+                    <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
@@ -41,7 +41,7 @@
             @endif
             
             {{-- Tombol Tambah --}}
-            <a href="{{ route('admin.tahun-ajaran.create') }}" class="bg-blue-400 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-bold flex items-center space-x-2 shadow-sm transition-colors">
+            <a href="{{ route('admin.tahun-ajaran.create') }}" class="w-full sm:w-auto bg-blue-400 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                 </svg>
@@ -51,13 +51,13 @@
     </div>
 
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             {{ session('error') }}
         </div>
     @endif
@@ -73,7 +73,7 @@
         </div>
 
         {{-- Semester Cards --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 sm:mb-6">
             {{-- Semester Ganjil --}}
             @if($ta->ganjil)
             <div class="border-2 {{ $ta->ganjil->status == 'Aktif' ? 'border-green-400 bg-green-50' : 'border-gray-300 bg-gray-50' }} rounded-xl p-4">
@@ -184,7 +184,7 @@
         </div>
     </div>
     @empty
-    <div class="bg-white rounded-2xl shadow p-8 text-center">
+    <div class="bg-white rounded-2xl shadow p-4 sm:p-6 md:p-8 text-center">
         @if(request('status') && request('status') !== 'all')
             <p class="text-slate-500">Tidak ada tahun ajaran dengan status <span class="font-bold">{{ request('status') }}</span></p>
             <a href="{{ route('admin.tahun-ajaran.index') }}" class="text-blue-500 hover:underline mt-2 inline-block">Tampilkan semua</a>
@@ -195,3 +195,4 @@
     @endforelse
 </div>
 @endsection
+

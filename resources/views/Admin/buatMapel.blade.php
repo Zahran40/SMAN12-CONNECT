@@ -11,11 +11,11 @@
         <h1 class="text-2xl font-bold text-blue-700">Menambah Mata Pelajaran</h1>
     </div>
 
-    <div class="bg-white p-8 rounded-2xl shadow-sm">
-        <h3 class="text-xl font-bold text-blue-600 mb-6">Data Mata Pelajaran</h3>
+    <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
+        <h3 class="text-xl font-bold text-blue-600 mb-4 sm:mb-6">Data Mata Pelajaran</h3>
 
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
                 <div class="font-bold mb-2">Terjadi kesalahan:</div>
                 <ul class="list-disc list-inside space-y-1">
                     @foreach ($errors->all() as $error)
@@ -26,13 +26,13 @@
         @endif
 
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
                 {{ session('error') }}
             </div>
         @endif
@@ -72,9 +72,9 @@
                 @enderror
             </div>
 
-            <div class="flex justify-end">
-                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold flex items-center space-x-2 shadow-lg transition-all hover:shadow-xl">
-                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-6 h-6">
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold flex items-center justify-center space-x-2 shadow-lg transition-all hover:shadow-xl w-full sm:w-auto">
+                    <img src="{{ asset('images/save.png') }}" alt="save" class="w-5 h-5 sm:w-6 sm:h-6">
                     <span>Simpan</span>
                 </button>
             </div>

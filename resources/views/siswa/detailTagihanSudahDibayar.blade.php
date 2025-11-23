@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-8">
+    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
         <a href="{{ route('siswa.tagihan_sudah_dibayar') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -11,7 +11,7 @@
         <h2 class="text-3xl font-bold text-blue-500">{{ $tagihan->nama_tagihan }}</h2>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg border-2 border-green-300 p-6 md:p-8">
+    <div class="bg-white rounded-xl shadow-lg border-2 border-green-300 p-4 sm:p-6 md:p-8">
         
         <div class="mb-8">
             <div class="flex justify-between items-start mb-4">
@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 sm:mb-8">
             <div class="flex items-center space-x-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -118,3 +118,4 @@
     </script>
 
 @endsection
+

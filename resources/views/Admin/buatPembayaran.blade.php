@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="flex flex-col space-y-6 max-w-3xl">
+<div class="flex flex-col space-y-4 sm:space-y-6 max-w-3xl">
     <div>
         <a href="{{ route('admin.pembayaran.index') }}" class="text-blue-600 hover:text-blue-800 font-medium mb-4 inline-flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -24,7 +24,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.pembayaran.store') }}" class="bg-white p-6 rounded-xl shadow-sm space-y-6">
+    <form method="POST" action="{{ route('admin.pembayaran.store') }}" class="bg-white p-4 sm:p-6 rounded-xl shadow-sm space-y-4 sm:space-y-6">
         @csrf
 
         <!-- Tahun Ajaran -->
@@ -87,7 +87,7 @@
         </div>
 
         <!-- Bulan dan Tahun -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">Bulan <span class="text-red-500">*</span></label>
                 <div class="relative">
@@ -177,3 +177,5 @@ function toggleKelasSelect(show) {
 </script>
 
 @endsection
+
+

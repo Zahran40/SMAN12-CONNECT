@@ -4,10 +4,10 @@
 
 @section('content')
 
-    <h2 class="text-3xl font-bold text-slate-800 mb-6">Beranda</h2>
+    <h2 class="text-2xl sm:text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Beranda</h2>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
-        <div class="rounded-full overflow-hidden w-16 h-16 bg-slate-100 flex items-center justify-center ring-4 ring-blue-100">
+    <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 sm:mb-8 flex items-center space-x-3 sm:space-x-4">
+        <div class="rounded-full overflow-hidden w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 flex items-center justify-center ring-4 ring-blue-100 flex-shrink-0">
             @if($guru && $guru->foto_profil)
                 <img src="{{ asset('storage/' . $guru->foto_profil) }}" alt="Foto Guru" class="w-full h-full object-cover" />
             @else
@@ -15,37 +15,39 @@
             @endif
         </div>
         <div>
-            <h3 class="text-xl font-bold text-slate-900">{{ $guru->nama_lengkap ?? 'Nama Guru' }}</h3>
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900">{{ $guru->nama_lengkap ?? 'Nama Guru' }}</h3>
             <p class="text-sm text-slate-500">NIP: {{ $guru->nip ?? '-' }}</p>
             <span class="inline-block border border-yellow-400 text-yellow-600 text-xs font-semibold px-3 py-1 rounded-full mt-2">Guru</span>
         </div>
     </div>
 
     <section class="mb-8">
-        <h3 class="text-xl font-bold text-blue-600 mb-4">Jadwal Mengajar</h3>
+        <h3 class="text-lg sm:text-xl font-bold text-blue-600 mb-4">Jadwal Mengajar</h3>
         
-        <div class="flex space-x-2 mb-4">
-            @foreach($allDays as $day)
-                <button onclick="switchDay('{{ $day }}')" 
-                        class="day-tab px-8 py-10 rounded-lg text-sm font-medium {{ $day == $hariIni ? 'bg-blue-400 text-white' : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50' }}"
-                        data-day="{{ $day }}">
-                    {{ $day }}
-                </button>
-            @endforeach
+        <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 mb-4">
+            <div class="flex space-x-2 min-w-max">
+                @foreach($allDays as $day)
+                    <button onclick="switchDay('{{ $day }}')" 
+                            class="day-tab px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium flex-shrink-0 {{ $day == $hariIni ? 'bg-blue-400 text-white' : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50' }}"
+                            data-day="{{ $day }}">
+                        {{ $day }}
+                    </button>
+                @endforeach
+            </div>
         </div>
         
         @foreach($allDays as $day)
-            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-lg p-6 space-y-4 {{ $day != $hariIni ? 'hidden' : '' }}">
+            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-4 {{ $day != $hariIni ? 'hidden' : '' }}">
                 @if($jadwalPerHari[$day]->count() > 0)
                     @foreach($jadwalPerHari[$day] as $jadwal)
-                        <div class="border border-slate-100 rounded-xl p-4 hover:shadow-md transition-shadow">
-                            <div class="flex items-center text-blue-600 text-sm font-medium mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
+                        <div class="border border-slate-100 rounded-xl p-3 sm:p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center text-blue-600 text-xs sm:text-sm font-medium mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1 flex-shrink-0">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
                                 </svg>
                                 {{ substr($jadwal->jam_mulai, 0, 5) }}-{{ substr($jadwal->jam_selesai, 0, 5) }}
                             </div>
-                            <h4 class="text-lg font-bold text-slate-800">{{ $jadwal->nama_mapel }}</h4>
+                            <h4 class="text-base sm:text-lg font-bold text-slate-800">{{ $jadwal->nama_mapel }}</h4>
                             <p class="text-sm text-slate-500">Kelas {{ $jadwal->nama_kelas }}</p>
                         </div>
                     @endforeach
@@ -84,14 +86,14 @@
     </section>
 
     <section>
-        <h3 class="text-xl font-bold text-blue-600 mb-4">Mata Pelajaran Saya Hari ini</h3>
-        <div class="bg-white rounded-xl shadow-lg p-6 space-y-4">
+        <h3 class="text-lg sm:text-xl font-bold text-blue-600 mb-4">Mata Pelajaran Saya Hari ini</h3>
+        <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-4">
             @if($jadwalHariIni->count() > 0)
                 @foreach($jadwalHariIni as $jadwal)
                     <a href="{{ route('guru.materi', $jadwal->id_jadwal) }}" 
-                       class="border-2 border-blue-300 rounded-2xl p-4 flex items-center justify-between hover:bg-blue-50 transition-colors cursor-pointer block">
-                        <div class="flex items-center space-x-4">
-                            <img src="{{ asset('images/Book (1).png') }}" alt="Ikon Buku" class="w-14 h-14 object-contain">
+                       class="border-2 border-blue-300 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-blue-50 transition-colors cursor-pointer block gap-3">
+                        <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
+                            <img src="{{ asset('images/Book (1).png') }}" alt="Ikon Buku" class="w-10 h-10 sm:w-14 sm:h-14 object-contain flex-shrink-0">
                             
                             <div>
                                 <h4 class="text-base font-bold text-blue-600">{{ $jadwal->nama_mapel }}</h4>
@@ -111,9 +113,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center text-blue-400 text-sm font-medium">
-                            Pergi
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
+                        <div class="flex items-center justify-end sm:justify-start text-blue-400 text-xs sm:text-sm font-medium w-full sm:w-auto">
+                            <span>Pergi</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 sm:w-5 sm:h-5 ml-1 flex-shrink-0">
                                 <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
                             </svg>
                         </div>
@@ -132,3 +134,4 @@
     </section>
 
 @endsection
+

@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 
 @section('content')
-    <div class="flex flex-col space-y-6">
+    <div class="flex flex-col space-y-4 sm:space-y-6">
         <div>
             <h1 class="text-2xl font-bold text-blue-700">Manajemen Data Master</h1>
             <p class="text-slate-500 text-sm">(Manajemen untuk data-data kelas, siswa, guru dan mata pelajaran)</p>
@@ -60,8 +60,8 @@
             </div>
         </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-sm">
-            <h3 class="text-xl font-bold text-blue-600 mb-6">Daftar Siswa</h3>
+        <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm">
+            <h3 class="text-xl font-bold text-blue-600 mb-4 sm:mb-6">Daftar Siswa</h3>
 
             <div class="grid grid-cols-12 gap-4 text-blue-600 font-semibold mb-4 px-6 text-sm md:text-base">
                 <div class="col-span-1">No</div>

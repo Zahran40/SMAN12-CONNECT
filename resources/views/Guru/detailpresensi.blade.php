@@ -11,32 +11,32 @@
     currentKeterangan: ''
 }">
 
-    <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('guru.presensi') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
         </a>
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">{{ $pertemuan->jadwal->mataPelajaran->nama_mapel }}</h2>
+            <h2 class="text-3xl font-bold text-blue-500">{{ $pertemuan->jadwal->mataPelajaran->nama_mapel }}</h2>
             <p class="text-sm text-slate-500 mt-1">
                 {{ $pertemuan->jadwal->kelas->nama_kelas }} • Pertemuan ke-{{ $pertemuan->nomor_pertemuan }} • 
                 {{ \Carbon\Carbon::parse($pertemuan->tanggal_pertemuan)->isoFormat('dddd, D MMMM Y') }}
             </p>
             @if($pertemuan->topik_bahasan)
                 <p class="text-sm text-blue-600 mt-1 font-medium">
-                    📚 {{ $pertemuan->topik_bahasan }}
+                     {{ $pertemuan->topik_bahasan }}
                 </p>
             @endif
         </div>
     </div>
 
     {{-- Status Card --}}
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Total Siswa</p>
-                <p class="text-2xl font-bold text-blue-600">{{ $siswaList->count() }}</p>
+                <p class="text-2xl font-bold text-blue-400">{{ $siswaList->count() }}</p>
             </div>
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Hadir</p>
@@ -44,7 +44,7 @@
             </div>
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Sakit/Izin</p>
-                <p class="text-2xl font-bold text-yellow-600">{{ $siswaList->whereIn('status_kehadiran', ['Sakit', 'Izin'])->count() }}</p>
+                <p class="text-2xl font-bold text-yellow-500">{{ $siswaList->whereIn('status_kehadiran', ['Sakit', 'Izin'])->count() }}</p>
             </div>
             <div class="text-center">
                 <p class="text-sm text-slate-500 mb-1">Alfa</p>
@@ -56,11 +56,11 @@
             <div class="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
                 <div class="text-sm text-slate-600">
                     <span class="font-medium">Waktu Absensi:</span>
-                    <span class="text-green-600">
+                    <span class="text-blue-500">
                         {{ \Carbon\Carbon::parse($pertemuan->tanggal_absen_dibuka)->translatedFormat('d M Y') }}, {{ substr($pertemuan->jam_absen_buka, 0, 5) }}
+                        - 
                     </span>
-                    - 
-                    <span class="text-red-600">
+                    <span class="text-blue-500">
                         {{ \Carbon\Carbon::parse($pertemuan->tanggal_absen_ditutup)->translatedFormat('d M Y') }}, {{ substr($pertemuan->jam_absen_tutup, 0, 5) }}
                     </span>
                     
@@ -87,7 +87,7 @@
                             <form action="{{ route('guru.unlock_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin membuka kembali absensi ini?')">
                                 @csrf
                                 <button type="submit" class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-200">
-                                    🔓 Buka Kembali
+                                     Buka Kembali
                                 </button>
                             </form>
                         @endif
@@ -95,7 +95,7 @@
                 @else
                     <form action="{{ route('guru.submit_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin submit? Data akan terkunci.')">
                         @csrf
-                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors font-medium">
+                        <button type="submit" class="bg-blue-500 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-blue-600 transition-colors font-medium w-full sm:w-auto">
                             Submit & Lock Presensi
                         </button>
                     </form>
@@ -105,8 +105,8 @@
     </div>
 
     {{-- Daftar Siswa --}}
-    <div class="bg-white rounded-xl shadow-lg p-8">
-        <h3 class="text-xl font-bold text-slate-800 mb-6">Daftar Kehadiran Siswa</h3>
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
+        <h3 class="text-xl font-bold text-slate-800 mb-4 sm:mb-6">Daftar Kehadiran Siswa</h3>
         
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -213,8 +213,8 @@
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
         @click.self="showModal = false"
     >
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md" @click.stop>
-            <h3 class="text-2xl font-bold text-slate-800 mb-6">Update Status Kehadiran</h3>
+        <div class="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-md" @click.stop>
+            <h3 class="text-2xl font-bold text-slate-800 mb-4 sm:mb-6">Update Status Kehadiran</h3>
             
             <form :action="`{{ route('guru.update_status_presensi', $pertemuan->id_pertemuan) }}`" method="POST">
                 @csrf
@@ -279,3 +279,5 @@
 </style>
 
 @endsection
+
+

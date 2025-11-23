@@ -2,16 +2,16 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('guru.input_nilai', $jadwal->id_jadwal) }}" class="text-blue-400 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
         </a>
-        <h2 class="text-3xl font-bold text-slate-800">Detail Raport - {{ $jadwal->mataPelajaran->nama_mapel }}</h2>
+        <h2 class="text-3xl font-bold text-blue-500">Detail Raport - {{ $jadwal->mataPelajaran->nama_mapel }}</h2>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center space-x-4">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 flex items-center space-x-4">
            <div class="rounded-full overflow-hidden w-16 h-16 ring-4 ring-blue-100">
              <img src="{{ asset('images/Frame 50.png') }}" alt="Foto Siswa" class="w-full h-full object-cover" />
         </div>
@@ -22,15 +22,15 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border-2 border-blue-100">
-        <h3 class="text-xl font-semibold text-blue-600 mb-8 text-center">Perkembangan Siswa</h3>
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-blue-100">
+        <h3 class="text-xl font-semibold text-blue-600 mb-6 sm:mb-8 text-center">Perkembangan Siswa - Semester 1</h3>
         
         {{-- Chart.js Canvas --}}
         <div class="px-6" style="max-width: 800px; margin: 0 auto;">
             <canvas id="nilaiChart" height="300"></canvas>
         </div>
 
-        <div class="flex justify-center space-x-8 mt-6">
+        <div class="flex justify-center space-x-8 mt-4 sm:mt-6">
             <div class="flex items-center space-x-2">
                 <div class="w-4 h-4 rounded-full bg-purple-600"></div>
                 <span class="text-sm text-slate-600 font-medium">Tahun Ajaran {{ $tahunAjaranLabel }}</span>
@@ -39,10 +39,10 @@
     </div>
 
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-        <h3 class="text-xl font-semibold text-slate-800 mb-6">Mengisi Nilai - {{ $tahunAjaranLabel }}</h3>
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+        <h3 class="text-xl font-semibold text-slate-800 mb-4 sm:mb-6">Mengisi Nilai - {{ $tahunAjaranLabel }}</h3>
 
-        <div class="flex space-x-4 mb-8">
+        <div class="flex space-x-4 mb-6 sm:mb-8">
             <button class="px-8 py-2.5 rounded-full bg-blue-500 text-white font-semibold text-sm shadow-md">Semester 1 (Ganjil)</button>
             <a href="{{ route('guru.chart_raport_siswa_s2', [$jadwal->id_jadwal, $siswa->id_siswa]) }}" class="px-8 py-2.5 rounded-full bg-white text-slate-600 border-2 border-slate-200 font-semibold text-sm hover:bg-slate-50 transition-colors">Semester 2 (Genap)</a>
         </div>
@@ -53,12 +53,12 @@
             
             <div class="space-y-6">
                 
-                <div class="flex justify-between items-center bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                <div class="flex justify-between items-center">
                     <div>
-                        <h4 class="text-base font-bold text-slate-800">Nilai Tugas</h4>
+                        <h4 class="text-base font-medium text-slate-800">Nilai Tugas</h4>
                         <p class="text-xs text-blue-600 mt-1">✓ Dihitung otomatis dari rata-rata semua tugas siswa</p>
                     </div>
-                    <div class="w-32 bg-white border-2 border-blue-300 rounded-lg px-4 py-2 text-center font-bold text-blue-600">
+                    <div class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold text-slate-400">
                         {{ $averageTugas ? number_format($averageTugas, 2) : '0.00' }}
                     </div>
                 </div>
@@ -93,9 +93,9 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end">
-                    <button type="submit" class="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition-colors">
-                        💾 Simpan Nilai
+                <div class="flex flex-col sm:flex-row justify-end gap-3">
+                    <button type="submit" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-colors w-full sm:w-auto">
+                        Simpan Nilai
                     </button>
                 </div>
 
@@ -196,3 +196,4 @@
     });
 </script>
 @endpush
+

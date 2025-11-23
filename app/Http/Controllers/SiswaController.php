@@ -38,6 +38,7 @@ class SiswaController extends Controller
             
             return view('siswa.beranda', [
                 'siswa' => $siswa,
+                'kelasNama' => null,
                 'presensiAktif' => collect(),
                 'hariIni' => Carbon::now()->locale('id')->dayName,
                 'allDays' => $allDays,
@@ -77,7 +78,10 @@ class SiswaController extends Controller
                 return $pertemuan;
             });
         
-        return view('siswa.beranda', compact('siswa', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari'));
+        // Get nama kelas
+        $kelasNama = $siswaKelas->nama_kelas;
+        
+        return view('siswa.beranda', compact('siswa', 'kelasNama', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari'));
     }
     
     public function profil()
@@ -85,6 +89,18 @@ class SiswaController extends Controller
         $user = Auth::user();
         $siswa = Siswa::where('user_id', $user->id)->first();
         
-        return view('siswa.profil', compact('siswa'));
+        // Get kelas siswa dari relasi siswa_kelas untuk tahun ajaran aktif
+        $siswaKelas = DB::table('siswa_kelas as sk')
+            ->join('kelas as k', 'sk.kelas_id', '=', 'k.id_kelas')
+            ->join('tahun_ajaran as ta', 'k.tahun_ajaran_id', '=', 'ta.id_tahun_ajaran')
+            ->where('sk.siswa_id', $siswa->id_siswa)
+            ->where('ta.status', 'Aktif')
+            ->where('sk.status', 'Aktif')
+            ->select('k.nama_kelas')
+            ->first();
+        
+        $kelasNama = $siswaKelas ? $siswaKelas->nama_kelas : null;
+        
+        return view('siswa.profil', compact('siswa', 'kelasNama'));
     }
 }
