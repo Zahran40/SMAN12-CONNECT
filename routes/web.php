@@ -156,6 +156,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}', [App\Http\Controllers\Admin\KelasController::class, 'show'])->name('kelas.show');
     Route::post('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/add-siswa', [App\Http\Controllers\Admin\KelasController::class, 'addSiswa'])->name('kelas.add-siswa');
     Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/siswa/{siswaId}', [App\Http\Controllers\Admin\KelasController::class, 'removeSiswa'])->name('kelas.remove-siswa');
+    Route::post('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/add-mapel', [App\Http\Controllers\Admin\KelasController::class, 'addMapel'])->name('kelas.add-mapel');
+    Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/mapel/{jadwalId}', [App\Http\Controllers\Admin\KelasController::class, 'removeMapel'])->name('kelas.remove-mapel');
     Route::put('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}/wali-kelas', [App\Http\Controllers\Admin\KelasController::class, 'updateWaliKelas'])->name('kelas.update-wali');
     Route::delete('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}', [App\Http\Controllers\Admin\KelasController::class, 'destroy'])->name('kelas.destroy');
 
