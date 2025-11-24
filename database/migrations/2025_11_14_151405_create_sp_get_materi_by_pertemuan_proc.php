@@ -1,17 +1,11 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_get_materi_by_pertemuan");
-        
         DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_materi_by_pertemuan`(IN `pertemuan_id_param` BIGINT)
 BEGIN
   SELECT p.id_pertemuan,
@@ -39,10 +33,6 @@ BEGIN
   ORDER BY m.created_at DESC, t.tgl_upload DESC;
 END");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_get_materi_by_pertemuan");

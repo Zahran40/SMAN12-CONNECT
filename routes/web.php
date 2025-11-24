@@ -147,7 +147,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/tahun-ajaran/{id}', [TahunAjaranController::class, 'show'])->name('tahun-ajaran.show');
     Route::put('/tahun-ajaran/{id}/status', [TahunAjaranController::class, 'updateStatus'])->name('tahun-ajaran.update-status');
     Route::delete('/tahun-ajaran/{id}', [TahunAjaranController::class, 'destroy'])->name('tahun-ajaran.destroy');
-    Route::delete('/tahun-ajaran-inactive/destroy-all', [TahunAjaranController::class, 'destroyInactive'])->name('tahun-ajaran.destroy-inactive');
+    // Hapus seluruh tahun ajaran (kedua semester) berdasarkan tahun mulai/selesai
+    Route::delete('/tahun-ajaran/{tahunMulai}/{tahunSelesai}', [TahunAjaranController::class, 'destroyYear'])->name('tahun-ajaran.destroy-year');
 
     // KELAS ROUTES
     Route::get('/kelas', [App\Http\Controllers\Admin\KelasController::class, 'all'])->name('kelas.all');
@@ -172,6 +173,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/data-master/siswa/{id}', [DataMasterController::class, 'storeSiswa'])->name('data-master.siswa.update');
     Route::get('/data-master/siswa/{id}', [DataMasterController::class, 'detailSiswa'])->name('data-master.siswa.show');
     Route::delete('/data-master/siswa/{id}', [DataMasterController::class, 'deleteSiswa'])->name('data-master.siswa.destroy');
+    
+    // Siswa Kelas (untuk assign siswa ke kelas per tahun ajaran)
+    Route::post('/data-master/siswa/{siswa_id}/assign-kelas', [DataMasterController::class, 'assignSiswaKelas'])->name('data-master.siswa.assign-kelas');
+    Route::put('/data-master/siswa-kelas/{id}', [DataMasterController::class, 'updateSiswaKelas'])->name('data-master.siswa-kelas.update');
+    Route::delete('/data-master/siswa-kelas/{id}', [DataMasterController::class, 'deleteSiswaKelas'])->name('data-master.siswa-kelas.destroy');
     
     // Guru
     Route::get('/data-master/guru/create', [DataMasterController::class, 'createGuru'])->name('data-master.guru.create');
@@ -203,6 +209,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     // Jadwal
     Route::get('/akademik/jadwal', [AkademikController::class, 'jadwal'])->name('akademik.jadwal.index');
     Route::post('/akademik/jadwal', [AkademikController::class, 'storeJadwal'])->name('akademik.jadwal.store');
+    Route::put('/akademik/jadwal/{id}', [AkademikController::class, 'updateJadwal'])->name('akademik.jadwal.update');
     Route::delete('/akademik/jadwal/{id}', [AkademikController::class, 'deleteJadwal'])->name('akademik.jadwal.destroy');
 
     // PENGUMUMAN ROUTES (sudah ada)

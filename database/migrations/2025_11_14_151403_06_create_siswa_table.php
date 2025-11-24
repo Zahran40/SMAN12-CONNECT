@@ -1,14 +1,9 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('siswa', function (Blueprint $table) {
@@ -26,17 +21,11 @@ return new class extends Migration
             $table->string('agama', 50)->nullable();
             $table->string('golongan_darah', 5)->nullable();
             $table->string('foto_profil', 255)->nullable();
-            $table->bigInteger('kelas_id')->nullable()->index('idx_kelas'); // Nullable karena relasi di siswa_kelas
-            
-            // Foreign Keys
+            $table->bigInteger('kelas_id')->nullable()->index('idx_kelas'); 
             $table->foreign(['user_id'], 'fk_siswa_user')->references(['id'])->on('users')->onUpdate('no action')->onDelete('set null');
             $table->foreign(['kelas_id'], 'fk_siswa_kelas')->references(['id_kelas'])->on('kelas')->onUpdate('cascade')->onDelete('set null');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('siswa');

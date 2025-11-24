@@ -1,16 +1,10 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        // View 1: Jadwal Mengajar Guru
         DB::statement("
             CREATE OR REPLACE VIEW view_jadwal_mengajar AS
             SELECT 
@@ -21,20 +15,25 @@ return new class extends Migration
                 jp.hari,
                 jp.jam_mulai,
                 jp.jam_selesai,
+                jp.tahun_ajaran_id,
                 mp.nama_mapel,
                 k.nama_kelas,
                 g.nama_lengkap AS nama_guru,
-                (SELECT COUNT(*) FROM siswa WHERE kelas_id = jp.kelas_id) AS jumlah_siswa
+                (SELECT COUNT(*) 
+                 FROM siswa_kelas sk 
+                 WHERE sk.kelas_id = jp.kelas_id 
+                 AND sk.tahun_ajaran_id = jp.tahun_ajaran_id 
+                 AND sk.status = 'Aktif') AS jumlah_siswa
             FROM jadwal_pelajaran jp
             INNER JOIN mata_pelajaran mp ON jp.mapel_id = mp.id_mapel
             INNER JOIN kelas k ON jp.kelas_id = k.id_kelas
             INNER JOIN guru g ON jp.guru_id = g.id_guru
+            INNER JOIN tahun_ajaran ta ON jp.tahun_ajaran_id = ta.id_tahun_ajaran
+            WHERE ta.status = 'Aktif' AND ta.is_archived = 0
             ORDER BY 
                 FIELD(jp.hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'),
                 jp.jam_mulai
         ");
-
-        // View 2: Jadwal Pelajaran Siswa
         DB::statement("
             CREATE OR REPLACE VIEW view_jadwal_siswa AS
             SELECT 
@@ -56,8 +55,6 @@ return new class extends Migration
                 FIELD(jp.hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'),
                 jp.jam_mulai
         ");
-
-        // View 3: Presensi Aktif (untuk siswa)
         DB::statement("
             CREATE OR REPLACE VIEW view_presensi_aktif AS
             SELECT 
@@ -94,8 +91,6 @@ return new class extends Migration
               AND p.waktu_absen_dibuka IS NOT NULL
               AND p.waktu_absen_ditutup IS NOT NULL
         ");
-
-        // View 4: Status Absensi Siswa
         DB::statement("
             CREATE OR REPLACE VIEW view_status_absensi_siswa AS
             SELECT 
@@ -120,10 +115,6 @@ return new class extends Migration
             INNER JOIN siswa s ON da.siswa_id = s.id_siswa
         ");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::statement('DROP VIEW IF EXISTS view_status_absensi_siswa');

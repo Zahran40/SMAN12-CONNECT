@@ -328,5 +328,26 @@ class PembayaranController extends Controller
     {
         return redirect()->route('siswa.tagihan.index')->with('success', 'Silakan cek status pembayaran Anda');
     }
+    
+    /**
+     * Cetak tagihan pembayaran (Print)
+     */
+    public function cetakTagihan()
+    {
+        $user = Auth::user();
+        $siswa = Siswa::where('user_id', $user->id)->with('kelas')->firstOrFail();
+        
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+
+        $tagihanBelumLunas = PembayaranSpp::where('siswa_id', $siswa->id_siswa)
+            ->where('status', 'Belum Lunas')
+            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
+            ->with('tahunAjaran')
+            ->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->get();
+
+        return view('siswa.cetak_tagihan', compact('siswa', 'tagihanBelumLunas', 'tahunAjaranAktif'));
+    }
 }
 

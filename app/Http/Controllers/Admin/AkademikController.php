@@ -74,7 +74,7 @@ class AkademikController extends Controller
      */
     public function detailMapel($id)
     {
-        $mapel = MataPelajaran::with(['guru', 'jadwal.kelas'])->findOrFail($id);
+        $mapel = MataPelajaran::with(['guru', 'jadwal.kelas', 'jadwal.guru', 'jadwal.tahunAjaran'])->findOrFail($id);
         
         return view('Admin.detailMapel', compact('mapel'));
     }
@@ -180,12 +180,18 @@ class AkademikController extends Controller
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
         ]);
 
         try {
-            // Get tahun_ajaran_id from kelas
+            // Validasi: kelas_id harus sesuai dengan tahun_ajaran_id yang dipilih
             $kelas = Kelas::findOrFail($validated['kelas_id']);
-            $validated['tahun_ajaran_id'] = $kelas->tahun_ajaran_id;
+            if ($kelas->tahun_ajaran_id != $validated['tahun_ajaran_id']) {
+                return back()->with('error', 'Kelas yang dipilih tidak sesuai dengan tahun ajaran. Pilih kelas dengan tahun ajaran ' . 
+                    TahunAjaran::find($validated['tahun_ajaran_id'])->tahun_mulai . '/' . 
+                    TahunAjaran::find($validated['tahun_ajaran_id'])->tahun_selesai)
+                    ->withInput();
+            }
 
             // Cek bentrok jadwal
             $bentrok = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
@@ -213,9 +219,57 @@ class AkademikController extends Controller
         }
     }
 
-    /**
-     * Hapus jadwal
-     */
+    public function updateJadwal(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'kelas_id' => 'required|exists:kelas,id_kelas',
+                'mapel_id' => 'required|exists:mata_pelajaran,id_mapel',
+                'guru_id' => 'required|exists:guru,id_guru',
+                'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
+                'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+                'jam_mulai' => 'required',
+                'jam_selesai' => 'required|after:jam_mulai',
+            ]);
+
+            // Validasi: kelas_id harus sesuai dengan tahun_ajaran_id yang dipilih
+            $kelas = Kelas::findOrFail($validated['kelas_id']);
+            if ($kelas->tahun_ajaran_id != $validated['tahun_ajaran_id']) {
+                return back()->with('error', 'Kelas yang dipilih tidak sesuai dengan tahun ajaran. Pilih kelas dengan tahun ajaran ' . 
+                    TahunAjaran::find($validated['tahun_ajaran_id'])->tahun_mulai . '/' . 
+                    TahunAjaran::find($validated['tahun_ajaran_id'])->tahun_selesai)
+                    ->withInput();
+            }
+
+            $jadwal = JadwalPelajaran::findOrFail($id);
+
+            $bentrok = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
+                ->where('hari', $validated['hari'])
+                ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
+                ->where('id_jadwal', '!=', $id)
+                ->where(function($query) use ($validated) {
+                    $query->whereBetween('jam_mulai', [$validated['jam_mulai'], $validated['jam_selesai']])
+                        ->orWhereBetween('jam_selesai', [$validated['jam_mulai'], $validated['jam_selesai']])
+                        ->orWhere(function($q) use ($validated) {
+                            $q->where('jam_mulai', '<=', $validated['jam_mulai'])
+                              ->where('jam_selesai', '>=', $validated['jam_selesai']);
+                        });
+                })->exists();
+
+            if ($bentrok) {
+                return back()->with('error', 'Jadwal bentrok dengan jadwal lain pada hari dan waktu yang sama')
+                    ->withInput();
+            }
+
+            $jadwal->update($validated);
+
+            return back()->with('success', 'Jadwal berhasil diperbarui');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memperbarui jadwal: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
     public function deleteJadwal($id)
     {
         try {

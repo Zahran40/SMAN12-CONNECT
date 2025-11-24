@@ -20,15 +20,19 @@ class RaportController extends Controller
     {
         $guru = Auth::user()->guru;
         
-        // Ambil semua jadwal mengajar guru (unique per mapel dan kelas)
+        // Ambil tahun ajaran aktif
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        
+        // Ambil semua jadwal mengajar guru di tahun ajaran aktif (unique per mapel dan kelas)
         $jadwalList = JadwalPelajaran::where('guru_id', $guru->id_guru)
+            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
             ->with(['mataPelajaran', 'kelas'])
             ->get()
             ->unique(function ($item) {
                 return $item->id_mapel . '-' . $item->kelas_id;
             });
         
-        return view('Guru.raport', compact('jadwalList'));
+        return view('Guru.raport', compact('jadwalList', 'tahunAjaranAktif'));
     }
 
     /**
@@ -42,10 +46,14 @@ class RaportController extends Controller
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
         $tahunAjaran = $tahunAjaranAktif->id_tahun_ajaran;
         $tahunAjaranLabel = $tahunAjaranAktif->tahun_mulai . '/' . $tahunAjaranAktif->tahun_selesai;
-        $semesterAktif = $tahunAjaranAktif->semester; // 'Ganjil' atau 'Genap'
+        $semesterAktif = $tahunAjaranAktif->semester;
         
-        // Ambil semua siswa di kelas ini dengan nilai raport
-        $siswaList = Siswa::where('kelas_id', $jadwal->kelas_id)
+        // Ambil semua siswa di kelas ini dengan nilai raport menggunakan siswa_kelas
+        $siswaList = Siswa::whereHas('siswaKelas', function($query) use ($jadwal, $tahunAjaran) {
+                $query->where('kelas_id', $jadwal->kelas_id)
+                      ->where('tahun_ajaran_id', $tahunAjaran)
+                      ->where('status', 'Aktif');
+            })
             ->with(['user', 'nilai' => function($query) use ($jadwal, $tahunAjaran, $semesterAktif) {
                 $query->where('mapel_id', $jadwal->mapel_id)
                       ->where('tahun_ajaran_id', $tahunAjaran)

@@ -93,6 +93,7 @@
                         <th class="text-left py-3 px-4 font-semibold text-slate-700">Hari</th>
                         <th class="text-left py-3 px-4 font-semibold text-slate-700">Jam</th>
                         <th class="text-left py-3 px-4 font-semibold text-slate-700">Guru</th>
+                        <th class="text-left py-3 px-4 font-semibold text-slate-700">Tahun Ajaran</th>
                         <th class="text-center py-3 px-4 font-semibold text-slate-700">Aksi</th>
                     </tr>
                 </thead>
@@ -103,7 +104,13 @@
                         <td class="py-3 px-4">{{ $jadwal->hari }}</td>
                         <td class="py-3 px-4">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
                         <td class="py-3 px-4">{{ $jadwal->guru->nama_lengkap ?? '-' }}</td>
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium {{ $jadwal->tahunAjaran->status == 'Aktif' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
+                                {{ $jadwal->tahunAjaran->tahun_mulai }}/{{ $jadwal->tahunAjaran->tahun_selesai }} {{ $jadwal->tahunAjaran->semester }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-center space-x-2">
+                            <button onclick="openEditModal({{ $jadwal->id_jadwal }}, '{{ $jadwal->kelas_id }}', '{{ $jadwal->guru_id }}', '{{ $jadwal->hari }}', '{{ $jadwal->jam_mulai }}', '{{ $jadwal->jam_selesai }}', '{{ $jadwal->tahun_ajaran_id }}')" class="text-blue-500 hover:text-blue-700 font-medium">Edit</button>
                             <form action="{{ route('admin.akademik.jadwal.destroy', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -139,11 +146,25 @@
             <input type="hidden" name="mapel_id" value="{{ $mapel->id_mapel }}">
             
             <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Tahun Ajaran</label>
+                <select id="tambah_tahun_ajaran_id" name="tahun_ajaran_id" required onchange="filterKelasByTahunAjaran()" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="">Pilih Tahun Ajaran</option>
+                    @foreach(\App\Models\TahunAjaran::orderBy('tahun_mulai', 'desc')->get() as $ta)
+                        <option value="{{ $ta->id_tahun_ajaran }}" {{ $ta->status == 'Aktif' ? 'selected' : '' }}>
+                            {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} - {{ $ta->semester }} {{ $ta->status == 'Aktif' ? '(Aktif)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-2">Kelas</label>
-                <select name="kelas_id" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
-                    <option value="">Pilih Kelas</option>
+                <select id="tambah_kelas_id" name="kelas_id" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="">Pilih Tahun Ajaran terlebih dahulu</option>
                     @foreach(\App\Models\Kelas::all() as $kelas)
-                        <option value="{{ $kelas->id_kelas }}">{{ $kelas->nama_kelas }}</option>
+                        <option value="{{ $kelas->id_kelas }}" data-tahun-ajaran="{{ $kelas->tahun_ajaran_id }}" style="display:none;">
+                            {{ $kelas->nama_kelas }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -213,5 +234,152 @@
         </form>
     </div>
 </div>
+
+{{-- Modal Edit Jadwal --}}
+<div id="modalEditJadwal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-blue-600">Edit Jadwal</h3>
+            <button onclick="document.getElementById('modalEditJadwal').classList.add('hidden')" class="text-slate-500 hover:text-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form id="formEditJadwal" method="POST" class="space-y-4">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="mapel_id" value="{{ $mapel->id_mapel }}">
+            
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Tahun Ajaran</label>
+                <select id="edit_tahun_ajaran_id" name="tahun_ajaran_id" required onchange="filterEditKelasByTahunAjaran()" class="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-400">
+                    @foreach(\App\Models\TahunAjaran::orderBy('tahun_mulai', 'desc')->get() as $ta)
+                        <option value="{{ $ta->id_tahun_ajaran }}">{{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} - {{ $ta->semester }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Kelas</label>
+                <select id="edit_kelas_id" name="kelas_id" required class="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-400">
+                    <option value="">Pilih Tahun Ajaran terlebih dahulu</option>
+                    @foreach(\App\Models\Kelas::all() as $kelas)
+                        <option value="{{ $kelas->id_kelas }}" data-tahun-ajaran="{{ $kelas->tahun_ajaran_id }}">
+                            {{ $kelas->nama_kelas }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Hari</label>
+                <select id="edit_hari" name="hari" required class="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-400">
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Jam Mulai</label>
+                    <input type="time" id="edit_jam_mulai" name="jam_mulai" required class="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Jam Selesai</label>
+                    <input type="time" id="edit_jam_selesai" name="jam_selesai" required class="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-400">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Guru Pengajar</label>
+                <select id="edit_guru_id" name="guru_id" required class="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-400">
+                    @foreach(\App\Models\Guru::all() as $guru)
+                        <option value="{{ $guru->id_guru }}">{{ $guru->nama_lengkap }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="document.getElementById('modalEditJadwal').classList.add('hidden')" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-bold transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="bg-green-400 hover:bg-green-500 text-white px-6 py-2 rounded-lg font-bold transition-colors">
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Initialize filtering on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Trigger filtering untuk Tambah Jadwal form jika tahun ajaran sudah dipilih
+    const tambahTaSelect = document.getElementById('tambah_tahun_ajaran_id');
+    if (tambahTaSelect.value) {
+        filterKelasByTahunAjaran();
+    }
+});
+
+function openEditModal(id, kelasId, guruId, hari, jamMulai, jamSelesai, tahunAjaranId) {
+    document.getElementById('formEditJadwal').action = '/admin/akademik/jadwal/' + id;
+    document.getElementById('edit_tahun_ajaran_id').value = tahunAjaranId;
+    
+    // Filter kelas berdasarkan tahun ajaran yang dipilih
+    filterEditKelasByTahunAjaran();
+    
+    // Set nilai kelas setelah filtering
+    document.getElementById('edit_kelas_id').value = kelasId;
+    document.getElementById('edit_guru_id').value = guruId;
+    document.getElementById('edit_hari').value = hari;
+    document.getElementById('edit_jam_mulai').value = jamMulai;
+    document.getElementById('edit_jam_selesai').value = jamSelesai;
+    
+    document.getElementById('modalEditJadwal').classList.remove('hidden');
+}
+
+function filterKelasByTahunAjaran() {
+    const taId = document.getElementById('tambah_tahun_ajaran_id').value;
+    const kelasSelect = document.getElementById('tambah_kelas_id');
+    const options = kelasSelect.querySelectorAll('option');
+    
+    options.forEach(opt => {
+        if (opt.value === '') {
+            opt.style.display = 'block';
+            opt.textContent = taId ? 'Pilih Kelas' : 'Pilih Tahun Ajaran terlebih dahulu';
+        } else if (opt.dataset.tahunAjaran == taId) {
+            opt.style.display = 'block';
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+    
+    // Reset selection
+    kelasSelect.value = '';
+}
+
+function filterEditKelasByTahunAjaran() {
+    const taId = document.getElementById('edit_tahun_ajaran_id').value;
+    const kelasSelect = document.getElementById('edit_kelas_id');
+    const options = kelasSelect.querySelectorAll('option');
+    
+    options.forEach(opt => {
+        if (opt.value === '') {
+            opt.style.display = 'block';
+            opt.textContent = taId ? 'Pilih Kelas' : 'Pilih Tahun Ajaran terlebih dahulu';
+        } else if (opt.dataset.tahunAjaran == taId) {
+            opt.style.display = 'block';
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+}
+</script>
 @endsection
 

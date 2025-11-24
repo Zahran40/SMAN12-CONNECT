@@ -8,6 +8,7 @@ use App\Models\JadwalPelajaran;
 use App\Models\Pertemuan;
 use App\Models\Tugas;
 use App\Models\DetailTugas;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -23,15 +24,19 @@ class MateriController extends Controller
     {
         $guru = Auth::user()->guru;
         
-        // Ambil semua jadwal mengajar guru dengan relasi mata pelajaran dan kelas
+        // Ambil tahun ajaran aktif
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        
+        // Ambil semua jadwal mengajar guru di tahun ajaran aktif dengan relasi mata pelajaran dan kelas
         $jadwalMengajar = JadwalPelajaran::where('guru_id', $guru->id_guru)
+            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
             ->with(['mataPelajaran', 'kelas', 'tahunAjaran'])
             ->get()
             ->groupBy(function($item) {
                 return $item->mapel_id . '-' . $item->kelas_id;
             });
 
-        return view('Guru.materi', compact('jadwalMengajar'));
+        return view('Guru.materi', compact('jadwalMengajar', 'tahunAjaranAktif'));
     }
 
     /**

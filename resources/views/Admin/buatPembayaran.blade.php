@@ -10,8 +10,8 @@
             </svg>
             Kembali
         </a>
-        <h1 class="text-2xl font-bold text-blue-700 mt-4">Buat Tagihan SPP (Bulk Selection)</h1>
-        <p class="text-slate-500 text-sm">Pilih siswa dan buat tagihan secara massal dengan ACID compliance</p>
+        <h1 class="text-2xl font-bold text-blue-700 mt-4">Buat Tagihan SPP </h1>
+        <p class="text-slate-500 text-sm"> </p>
     </div>
 
     @if($errors->any())
@@ -60,9 +60,11 @@
                 <!-- Tahun Ajaran -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Tahun Ajaran</label>
-                    <select name="tahun_ajaran" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+                    <select name="tahun_ajaran" id="tahunAjaranSelect" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
                         @foreach($tahunAjaranList as $ta)
-                            <option value="{{ $ta->id_tahun_ajaran }}" {{ $tahunAjaranId == $ta->id_tahun_ajaran ? 'selected' : '' }}>
+                            <option value="{{ $ta->id_tahun_ajaran }}" 
+                                    data-semester="{{ $ta->semester }}"
+                                    {{ $tahunAjaranId == $ta->id_tahun_ajaran ? 'selected' : '' }}>
                                 {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} - {{ $ta->semester }}
                             </option>
                         @endforeach
@@ -72,13 +74,22 @@
                 <!-- Bulan -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Bulan <span class="text-red-500">*</span></label>
-                    <select name="bulan" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+                    <select name="bulan" id="bulanSelect" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
                         <option value="">Pilih Bulan</option>
-                        @for($i = 1; $i <= 12; $i++)
-                            <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create(null, $i)->translatedFormat('F') }}
-                            </option>
-                        @endfor
+                        <!-- Ganjil: Juli-Desember (7-12) -->
+                        <option value="7" data-semester="Ganjil" {{ $bulan == 7 ? 'selected' : '' }}>Juli</option>
+                        <option value="8" data-semester="Ganjil" {{ $bulan == 8 ? 'selected' : '' }}>Agustus</option>
+                        <option value="9" data-semester="Ganjil" {{ $bulan == 9 ? 'selected' : '' }}>September</option>
+                        <option value="10" data-semester="Ganjil" {{ $bulan == 10 ? 'selected' : '' }}>Oktober</option>
+                        <option value="11" data-semester="Ganjil" {{ $bulan == 11 ? 'selected' : '' }}>November</option>
+                        <option value="12" data-semester="Ganjil" {{ $bulan == 12 ? 'selected' : '' }}>Desember</option>
+                        <!-- Genap: Januari-Juni (1-6) -->
+                        <option value="1" data-semester="Genap" {{ $bulan == 1 ? 'selected' : '' }}>Januari</option>
+                        <option value="2" data-semester="Genap" {{ $bulan == 2 ? 'selected' : '' }}>Februari</option>
+                        <option value="3" data-semester="Genap" {{ $bulan == 3 ? 'selected' : '' }}>Maret</option>
+                        <option value="4" data-semester="Genap" {{ $bulan == 4 ? 'selected' : '' }}>April</option>
+                        <option value="5" data-semester="Genap" {{ $bulan == 5 ? 'selected' : '' }}>Mei</option>
+                        <option value="6" data-semester="Genap" {{ $bulan == 6 ? 'selected' : '' }}>Juni</option>
                     </select>
                 </div>
 
@@ -132,7 +143,7 @@
             </div>
 
             <div class="md:col-span-2">
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Deskripsi Batch (Opsional)</label>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Deskripsi </label>
                 <input type="text" name="deskripsi_batch" placeholder="Contoh: Tagihan SPP untuk seluruh siswa kelas X" class="w-full border-2 border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
             </div>
         </div>
@@ -190,7 +201,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    <span>Generate Tagihan</span>
+                    <span>Buat Tagihan</span>
                 </button>
                 <a href="{{ route('admin.pembayaran.index') }}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-8 py-3 rounded-lg transition-colors">
                     Batal
@@ -272,6 +283,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const jumlahBayarInput = document.querySelector('input[name="jumlah_bayar"]');
     if (jumlahBayarInput) {
         jumlahBayarInput.addEventListener('input', updateCount);
+    }
+    
+    // Filter bulan berdasarkan semester
+    const tahunAjaranSelect = document.getElementById('tahunAjaranSelect');
+    const bulanSelect = document.getElementById('bulanSelect');
+    
+    function filterBulan() {
+        const selectedOption = tahunAjaranSelect.options[tahunAjaranSelect.selectedIndex];
+        const semester = selectedOption.getAttribute('data-semester');
+        
+        // Show/hide options based on semester
+        Array.from(bulanSelect.options).forEach(option => {
+            if (option.value === '') {
+                option.style.display = 'block'; // Always show "Pilih Bulan"
+                return;
+            }
+            
+            const bulanSemester = option.getAttribute('data-semester');
+            if (bulanSemester === semester) {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+                // Reset selection if currently selected month doesn't match
+                if (option.selected) {
+                    bulanSelect.value = '';
+                }
+            }
+        });
+    }
+    
+    // Run filter on page load
+    if (tahunAjaranSelect && bulanSelect) {
+        filterBulan();
+        tahunAjaranSelect.addEventListener('change', filterBulan);
     }
 });
 </script>

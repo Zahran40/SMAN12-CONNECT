@@ -20,8 +20,9 @@ class TahunAjaranController extends Controller
     {
         $statusFilter = $request->get('status', 'all'); // all, Aktif, Tidak Aktif
         
-        // Ambil semua tahun ajaran dan group by tahun_mulai + tahun_selesai
-        $tahunAjaranRaw = TahunAjaran::orderBy('tahun_mulai', 'desc')
+        // Ambil semua tahun ajaran yang tidak di-archive dan group by tahun_mulai + tahun_selesai
+        $tahunAjaranRaw = TahunAjaran::where('is_archived', false)
+            ->orderBy('tahun_mulai', 'desc')
             ->orderBy('semester', 'asc')
             ->get();
         
@@ -39,11 +40,11 @@ class TahunAjaranController extends Controller
             $genap = $group->firstWhere('semester', 'Genap');
             
             // Hitung statistik untuk tahun ajaran ini
-            // Kelas hanya ada di semester Ganjil (digunakan untuk kedua semester)
-            $jumlahKelas = $ganjil ? Kelas::where('tahun_ajaran_id', $ganjil->id_tahun_ajaran)->count() : 0;
-            
-            // Hitung siswa unik dari kedua semester
+            // Kelas: hitung dari kedua semester jika ada
             $allSemesterIds = $group->pluck('id_tahun_ajaran');
+            $jumlahKelas = Kelas::whereIn('tahun_ajaran_id', $allSemesterIds)->count();
+
+            // Hitung siswa unik dari kedua semester
             $jumlahSiswa = \App\Models\SiswaKelas::whereIn('tahun_ajaran_id', $allSemesterIds)
                 ->where('status', 'Aktif')
                 ->distinct('siswa_id')
@@ -56,6 +57,12 @@ class TahunAjaranController extends Controller
                 }
             }
             
+            // Tentukan apakah tahun ajaran ini aman untuk dihapus
+            // Tahun ajaran bisa dihapus jika SEMUA semester tidak aktif
+            // Data siswa/kelas/jadwal tidak perlu dihapus (untuk history)
+            $isAnyActive = ($ganjil && $ganjil->status === 'Aktif') || ($genap && $genap->status === 'Aktif');
+            $canDelete = !$isAnyActive;
+
             $tahunAjaran[] = (object)[
                 'tahun_mulai' => $tahunMulai,
                 'tahun_selesai' => $tahunSelesai,
@@ -65,6 +72,7 @@ class TahunAjaranController extends Controller
                 'jumlah_siswa' => $jumlahSiswa,
                 'jumlah_guru' => Guru::count(),
                 'jumlah_mapel' => MataPelajaran::count(),
+                'can_delete' => $canDelete,
             ];
         }
         
@@ -296,6 +304,45 @@ class TahunAjaranController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menghapus tahun ajaran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Hapus (arsipkan) seluruh tahun ajaran (kedua semester) berdasarkan tahun mulai dan tahun selesai
+     * PENTING: Tidak benar-benar menghapus, hanya mengarsipkan (is_archived = true)
+     * Data kelas/siswa_kelas/jadwal tetap utuh untuk history raport
+     */
+    public function destroyYear($tahunMulai, $tahunSelesai)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tas = TahunAjaran::where('tahun_mulai', $tahunMulai)
+                ->where('tahun_selesai', $tahunSelesai)
+                ->get();
+
+            if ($tas->isEmpty()) {
+                return back()->with('error', 'Tahun ajaran tidak ditemukan');
+            }
+
+            // Jika salah satu semester aktif, tolak
+            foreach ($tas as $ta) {
+                if ($ta->status === 'Aktif') {
+                    return back()->with('error', 'Tidak dapat menghapus tahun ajaran yang sedang aktif. Nonaktifkan terlebih dahulu.');
+                }
+            }
+
+            // Set is_archived = true untuk menyembunyikan dari daftar
+            // Data tetap ada di database untuk history raport siswa
+            foreach ($tas as $ta) {
+                $ta->update(['is_archived' => true]);
+            }
+
+            DB::commit();
+            return back()->with('success', "Tahun ajaran {$tahunMulai}/{$tahunSelesai} berhasil diarsipkan. Data kelas, siswa, dan jadwal tetap tersimpan untuk history raport.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal mengarsipkan tahun ajaran: ' . $e->getMessage());
         }
     }
 }
