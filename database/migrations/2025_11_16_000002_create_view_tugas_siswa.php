@@ -1,14 +1,8 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     * View untuk melihat semua tugas per siswa
-     */
     public function up(): void
     {
         DB::unprepared("
@@ -57,10 +51,6 @@ return new class extends Migration
             ORDER BY t.deadline DESC, s.nama_lengkap ASC
         ");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared("DROP VIEW IF EXISTS view_tugas_siswa");

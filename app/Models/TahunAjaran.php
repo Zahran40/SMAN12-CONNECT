@@ -15,6 +15,7 @@ class TahunAjaran extends Model
         'tahun_selesai',
         'semester',
         'status',
+        'is_archived',
     ];
 
     /**

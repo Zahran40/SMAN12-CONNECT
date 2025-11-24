@@ -1,14 +1,9 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('guru', function (Blueprint $table) {
@@ -26,16 +21,10 @@ return new class extends Migration
             $table->string('golongan_darah', 5)->nullable();
             $table->bigInteger('mapel_id')->nullable()->index('idx_mapel');
             $table->string('foto_profil', 255)->nullable();
-            
-            // Foreign Keys
             $table->foreign(['user_id'], 'fk_guru_user')->references(['id'])->on('users')->onUpdate('no action')->onDelete('set null');
             $table->foreign(['mapel_id'], 'fk_guru_mapel')->references(['id_mapel'])->on('mata_pelajaran')->onUpdate('no action')->onDelete('set null');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('guru');

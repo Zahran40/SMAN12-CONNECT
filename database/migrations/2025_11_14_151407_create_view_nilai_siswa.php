@@ -1,13 +1,8 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         DB::unprepared("
@@ -45,10 +40,6 @@ return new class extends Migration
             JOIN tahun_ajaran ta ON n.tahun_ajaran_id = ta.id_tahun_ajaran
         ");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared("DROP VIEW IF EXISTS view_nilai_siswa");

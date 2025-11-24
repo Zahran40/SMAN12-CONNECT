@@ -113,8 +113,8 @@ class DataMasterController extends Controller
             'tempat_lahir' => 'required|string|max:255',
             'alamat' => 'required|string',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'nis' => 'required|string|max:50|unique:siswa,nis' . ($id ? ",$id,id_siswa" : ''),
-            'nisn' => 'required|string|max:50|unique:siswa,nisn' . ($id ? ",$id,id_siswa" : ''),
+            'nis' => 'required|string|max:50|regex:/^[0-9]+$/|unique:siswa,nis' . ($id ? ",$id,id_siswa" : ''),
+            'nisn' => 'required|string|max:50|regex:/^[0-9]+$/|unique:siswa,nisn' . ($id ? ",$id,id_siswa" : ''),
             'no_telepon' => 'required|string|max:20',
             'email' => 'required|email|unique:users,email' . ($id ? "," . Siswa::find($id)?->user_id . ",id" : ''),
             'agama' => 'required|string',
@@ -127,7 +127,11 @@ class DataMasterController extends Controller
             'nama_lengkap.required' => 'Nama wajib diisi',
             'email.required' => 'Email wajib diisi',
             'email.unique' => 'Email sudah terdaftar',
+            'nis.required' => 'NIS wajib diisi',
+            'nis.regex' => 'NIS hanya boleh berisi angka',
             'nis.unique' => 'NIS sudah terdaftar',
+            'nisn.required' => 'NISN wajib diisi',
+            'nisn.regex' => 'NISN hanya boleh berisi angka',
             'nisn.unique' => 'NISN sudah terdaftar',
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 8 karakter',
@@ -265,7 +269,7 @@ class DataMasterController extends Controller
             'tempat_lahir' => 'required|string|max:255',
             'alamat' => 'required|string',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'nip' => 'required|string|max:50|unique:guru,nip' . ($id ? ",$id,id_guru" : ''),
+            'nip' => 'required|string|max:50|regex:/^[0-9]+$/|unique:guru,nip' . ($id ? ",$id,id_guru" : ''),
             'no_telepon' => 'required|string|max:20',
             'email' => 'required|email|unique:users,email' . ($id ? "," . Guru::find($id)?->user_id . ",id" : ''),
             'agama' => 'required|string',
@@ -277,6 +281,8 @@ class DataMasterController extends Controller
             'nama_lengkap.required' => 'Nama wajib diisi',
             'email.required' => 'Email wajib diisi',
             'email.unique' => 'Email sudah terdaftar',
+            'nip.required' => 'NIP wajib diisi',
+            'nip.regex' => 'NIP hanya boleh berisi angka',
             'nip.unique' => 'NIP sudah terdaftar',
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 8 karakter',
@@ -353,8 +359,17 @@ class DataMasterController extends Controller
      */
     public function detailSiswa($id)
     {
-        $siswa = Siswa::with('kelas.tahunAjaran', 'user')->findOrFail($id);
-        return view('Admin.detailSiswa', compact('siswa'));
+        $siswa = Siswa::with(['siswaKelas.kelas.tahunAjaran', 'siswaKelas' => function($q) {
+            $q->orderBy('tahun_ajaran_id', 'desc');
+        }, 'user'])->findOrFail($id);
+        
+        // Get all tahun ajaran for dropdown
+        $tahunAjaranList = \App\Models\TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        
+        // Get all kelas for dropdown
+        $kelasList = \App\Models\Kelas::orderBy('nama_kelas')->get();
+        
+        return view('Admin.detailSiswa', compact('siswa', 'tahunAjaranList', 'kelasList'));
     }
 
     /**
@@ -560,5 +575,79 @@ class DataMasterController extends Controller
         }
 
         return view('Admin.dataMaster_Mapel', compact('mapelList', 'tahunAjaranList', 'tahunAjaranId', 'kelasId', 'kelasList'));
+    }
+
+    /**
+     * Assign siswa ke kelas untuk tahun ajaran tertentu
+     */
+    public function assignSiswaKelas(Request $request, $siswa_id)
+    {
+        $validated = $request->validate([
+            'kelas_id' => 'required|exists:kelas,id_kelas',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
+            'status' => 'required|in:Aktif,Pindah,Lulus,Keluar',
+        ]);
+
+        try {
+            // Cek apakah siswa sudah ada di kelas untuk tahun ajaran ini
+            $existing = \DB::table('siswa_kelas')
+                ->where('siswa_id', $siswa_id)
+                ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
+                ->where('status', 'Aktif')
+                ->first();
+
+            if ($existing) {
+                return back()->with('error', 'Siswa sudah terdaftar di kelas lain untuk tahun ajaran ini. Edit data yang ada atau ubah status menjadi tidak aktif.');
+            }
+
+            \DB::table('siswa_kelas')->insert([
+                'siswa_id' => $siswa_id,
+                'kelas_id' => $validated['kelas_id'],
+                'tahun_ajaran_id' => $validated['tahun_ajaran_id'],
+                'status' => $validated['status'],
+                'tanggal_masuk' => now(),
+            ]);
+
+            return back()->with('success', 'Siswa berhasil ditambahkan ke kelas');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menambahkan siswa ke kelas: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update siswa_kelas
+     */
+    public function updateSiswaKelas(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'kelas_id' => 'required|exists:kelas,id_kelas',
+            'status' => 'required|in:Aktif,Pindah,Lulus,Keluar',
+        ]);
+
+        try {
+            \DB::table('siswa_kelas')
+                ->where('id', $id)
+                ->update([
+                    'kelas_id' => $validated['kelas_id'],
+                    'status' => $validated['status'],
+                ]);
+
+            return back()->with('success', 'Data kelas siswa berhasil diupdate');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengupdate data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete siswa_kelas
+     */
+    public function deleteSiswaKelas($id)
+    {
+        try {
+            \DB::table('siswa_kelas')->where('id', $id)->delete();
+            return back()->with('success', 'Data kelas siswa berhasil dihapus');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
     }
 }

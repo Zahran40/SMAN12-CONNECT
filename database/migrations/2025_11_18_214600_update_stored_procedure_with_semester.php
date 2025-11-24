@@ -1,19 +1,11 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        // Drop old procedure
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_calculate_average_tugas');
-        
-        // Create new procedure with semester filter
         DB::unprepared("
             CREATE PROCEDURE sp_calculate_average_tugas(
                 IN p_siswa_id INT,
@@ -36,16 +28,9 @@ return new class extends Migration
             END
         ");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        // Drop new procedure
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_calculate_average_tugas');
-        
-        // Restore old procedure (without semester filter)
         DB::unprepared("
             CREATE PROCEDURE sp_calculate_average_tugas(
                 IN p_siswa_id INT,

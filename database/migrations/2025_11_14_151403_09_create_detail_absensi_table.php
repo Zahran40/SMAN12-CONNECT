@@ -1,14 +1,9 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('detail_absensi', function (Blueprint $table) {
@@ -21,18 +16,11 @@ return new class extends Migration
             $table->decimal('longitude', 11, 8)->nullable();
             $table->text('alamat_lengkap')->nullable();
             $table->timestamp('dicatat_pada')->nullable()->useCurrent();
-
             $table->unique(['pertemuan_id', 'siswa_id'], 'uk_absensi_unik');
-            
-            // Foreign Keys
             $table->foreign(['pertemuan_id'], 'fk_absensi_pertemuan')->references(['id_pertemuan'])->on('pertemuan')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign(['siswa_id'], 'fk_absensi_siswa')->references(['id_siswa'])->on('siswa')->onUpdate('cascade')->onDelete('cascade');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('detail_absensi');

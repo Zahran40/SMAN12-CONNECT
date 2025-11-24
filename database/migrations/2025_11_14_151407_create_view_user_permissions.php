@@ -1,13 +1,8 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         DB::unprepared("
@@ -44,10 +39,6 @@ return new class extends Migration
             LEFT JOIN guru g_admin ON u.id = g_admin.user_id AND u.role = 'admin'
         ");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared("DROP VIEW IF EXISTS view_user_permissions");
