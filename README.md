@@ -101,3 +101,181 @@ Di Laragon, klik Start All dan aktifkan Auto virtual hosts. Akses aplikasi melal
 - http://SMAN12-CONNECT.test
 
 Biarkan `npm run dev` tetap berjalan selama pengembangan untuk kompilasi Tailwind CSS dan auto-refresh.
+
+---
+
+## Konfigurasi Tambahan
+
+### 🔑 Setup Email (Forgot Password)
+
+Sistem lupa password menggunakan Gmail SMTP. Ikuti langkah berikut:
+
+#### 1. Login ke Akun Google
+Buka [myaccount.google.com](https://myaccount.google.com) dengan email yang akan digunakan.
+
+#### 2. Aktifkan Verifikasi 2 Langkah (WAJIB!)
+1. Klik menu **Keamanan** (Security)
+2. Cari **Verifikasi 2 Langkah** (2-Step Verification)
+3. Aktifkan jika belum aktif
+4. Tautkan nomor HP Anda
+
+#### 3. Buat App Password
+1. Masih di menu **Keamanan**, klik **Verifikasi 2 Langkah**
+2. Scroll ke **paling bawah** halaman
+3. Klik **"Sandi Aplikasi"** (App passwords)
+4. Pilih aplikasi: **Email** (Mail)
+5. Pilih perangkat: **Lainnya** (Other), ketik: `SMAN12-CONNECT`
+6. Klik **Buat** (Generate)
+7. **Copy kode 16 karakter** (tanpa spasi)
+
+#### 4. Update File .env
+```env
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_ENCRYPTION=tls
+MAIL_USERNAME="emailanda@gmail.com"
+MAIL_PASSWORD="abcdefghijklmnop"  # 16 digit App Password
+MAIL_FROM_ADDRESS="emailanda@gmail.com"
+MAIL_FROM_NAME="SMAN 12 Connect"
+```
+
+#### 5. Clear Cache Laravel
+```powershell
+php artisan config:clear
+php artisan cache:clear
+```
+
+#### 6. Test Email
+1. Akses halaman **Forgot Password** di aplikasi
+2. Masukkan email yang terdaftar
+3. Cek inbox email (atau folder Spam)
+
+---
+
+### 💳 Setup Midtrans Payment Gateway
+
+Konfigurasi Midtrans untuk pembayaran SPP sudah tersedia dalam mode **Sandbox/Testing**.
+
+#### Update File .env
+```env
+MIDTRANS_MERCHANT_ID=Your_API_MerchantID_Key
+MIDTRANS_CLIENT_KEY=Your_API_Client_Key
+MIDTRANS_SERVER_KEY=Your_API_Server_Key
+MIDTRANS_IS_PRODUCTION=false
+MIDTRANS_SANITIZED=true
+MIDTRANS_3DS=true
+```
+
+#### Cara Testing
+1. Akses fitur pembayaran SPP
+2. Gunakan test card dari [Midtrans Sandbox](https://docs.midtrans.com/docs/testing-payment-on-sandbox)
+3. Contoh test card: `4811 1111 1111 1114` (Visa, sukses)
+
+**Catatan:**
+- Mode: **Sandbox** (IS_PRODUCTION=false)
+- 3D Secure: Aktif untuk keamanan
+- Untuk production, ganti credentials di [Midtrans Dashboard](https://dashboard.midtrans.com/)
+
+---
+
+### 🗺️ Setup Google Maps API (Untuk Absensi GPS)
+
+Sistem absensi menggunakan GPS tracking. Ada 2 pilihan:
+
+#### Pilihan 1: Nominatim OSM (GRATIS, Sudah Aktif) ✅ **RECOMMENDED**
+Sistem sudah menggunakan Nominatim OpenStreetMap secara default.
+
+**Keuntungan:**
+- ✅ 100% Gratis, tidak perlu API key
+- ✅ Tidak perlu billing account
+- ✅ Akurasi bagus untuk Indonesia
+- ✅ Sudah langsung bisa dipakai
+
+**Kekurangan:**
+- Rate limit: 1 request/second
+- Tidak seprestisius Google Maps
+
+#### Pilihan 2: Google Maps API (Premium, Opsional)
+
+Jika ingin menggunakan Google Maps (lebih akurat):
+
+**1. Buka Google Cloud Console**
+- https://console.cloud.google.com/
+- Login dengan akun Google Anda
+
+**2. Pilih/Buat Project**
+- Klik dropdown project di bagian atas
+- Buat project baru: `SMAN12-CONNECT`
+
+**3. Enable Geocoding API**
+1. Menu ☰ → **APIs & Services** → **Enabled APIs & services**
+2. Klik **+ ENABLE APIS AND SERVICES**
+3. Cari: **Geocoding API**
+4. Klik dan **ENABLE**
+
+**4. Setup Billing Account (WAJIB!)**
+1. Menu ☰ → **Billing**
+2. Klik **LINK A BILLING ACCOUNT**
+3. Isi informasi billing (kartu kredit untuk verifikasi)
+4. **PENTING:** Google tidak akan charge otomatis
+5. Free tier: $200 credit/bulan atau 28,500 requests
+
+**5. Buat API Key**
+1. **APIs & Services** → **Credentials**
+2. Klik **+ CREATE CREDENTIALS** → **API key**
+3. Copy API key yang dihasilkan
+
+**6. Restrict API Key (Keamanan)**
+1. Klik API key yang baru dibuat
+2. **Application restrictions**: Pilih **HTTP referrers**
+   ```
+   http://localhost/*
+   http://SMAN12-CONNECT.test/*
+   ```
+3. **API restrictions**: Restrict key, centang **Geocoding API**
+4. Klik **SAVE**
+
+**7. Update File .env**
+```env
+GOOGLE_MAPS_API_KEY=your_api_key_here
+```
+
+**8. Test API Key**
+Buka URL ini di browser:
+```
+https://maps.googleapis.com/maps/api/geocode/json?latlng=3.5952,-98.6722&key=YOUR_API_KEY
+```
+
+**Biaya:**
+- Free tier: $200/bulan (cukup untuk ~28,500 requests)
+- Untuk 1000 siswa absen/bulan = ~$5 (masih dalam free tier)
+
+---
+
+## ⚠️ Troubleshooting
+
+### Email tidak terkirim
+**Solusi:**
+1. Pastikan App Password di-copy tanpa spasi
+2. Pastikan Verifikasi 2 Langkah sudah aktif
+3. Cek log: `storage/logs/laravel.log`
+4. Test dengan command:
+   ```powershell
+   php artisan tinker
+   Mail::raw('Test', function($msg) { $msg->to('test@example.com')->subject('Test'); });
+   ```
+
+### Midtrans Error "Unauthorized"
+**Solusi:**
+1. Cek ulang credentials di [Midtrans Dashboard](https://dashboard.midtrans.com/)
+2. Jalankan: `php artisan config:clear`
+3. Restart server
+
+### GPS Tracking tidak akurat
+**Solusi:**
+1. Pastikan browser mengizinkan akses lokasi
+2. Gunakan HTTPS (atau localhost) untuk geolocation API
+3. Jika menggunakan Google Maps, pastikan API key sudah aktif
+4. Default Nominatim OSM sudah cukup akurat untuk Indonesia
