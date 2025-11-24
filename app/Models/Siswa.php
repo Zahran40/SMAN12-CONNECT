@@ -92,4 +92,12 @@ class Siswa extends Model
     {
         return $this->hasMany(SiswaKelas::class, 'siswa_id', 'id_siswa');
     }
+
+    /**
+     * Relasi ke Pembayaran SPP
+     */
+    public function pembayaranSpp()
+    {
+        return $this->hasMany(PembayaranSpp::class, 'siswa_id', 'id_siswa');
+    }
 }

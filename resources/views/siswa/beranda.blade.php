@@ -4,6 +4,36 @@
 
 @section('content')
 
+    <!-- ALERT TUNGGAKAN SPP -->
+    @if(isset($tunggakan) && $tunggakan && $tunggakan->jumlah_tunggakan > 0)
+        @if($tunggakan->jumlah_tunggakan >= 3)
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 shadow-lg" role="alert">
+            <div class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex-1">
+                    <p class="font-bold text-base sm:text-lg">⚠️ Akses Terbatas - Tunggakan SPP</p>
+                    <p class="text-sm sm:text-base mt-1">Anda memiliki <strong>{{ $tunggakan->jumlah_tunggakan }} bulan</strong> tunggakan SPP senilai <strong>Rp {{ number_format($tunggakan->total_tunggakan, 0, ',', '.') }}</strong></p>
+                    <p class="text-sm mt-2">Akses menu lain dibatasi. Segera lakukan pembayaran atau hubungi bagian keuangan.</p>
+                </div>
+            </div>
+        </div>
+        @elseif($tunggakan->jumlah_tunggakan >= 1)
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-6 shadow" role="alert">
+            <div class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex-1">
+                    <p class="font-bold">Peringatan Pembayaran SPP</p>
+                    <p class="text-sm mt-1">Anda memiliki {{ $tunggakan->jumlah_tunggakan }} bulan tunggakan SPP. Segera lakukan pembayaran.</p>
+                </div>
+            </div>
+        </div>
+        @endif
+    @endif
+
     <h2 class="text-2xl sm:text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Beranda</h2>
 
     <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 flex items-center space-x-3 sm:space-x-4">
