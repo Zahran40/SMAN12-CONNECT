@@ -9,6 +9,7 @@ use App\Models\Kelas;
 use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class PembayaranController extends Controller
@@ -181,7 +182,7 @@ class PembayaranController extends Controller
 
             // Create batch record untuk audit trail
             $batch = DB::table('tagihan_batch')->insertGetId([
-                'admin_id' => auth()->id(),
+                'admin_id' => Auth::id(),
                 'tahun_ajaran_id' => $validated['tahun_ajaran_id'],
                 'bulan' => $validated['bulan'],
                 'tahun' => $validated['tahun'],
