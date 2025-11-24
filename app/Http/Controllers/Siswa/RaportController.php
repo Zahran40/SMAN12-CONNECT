@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Raport;
 use App\Models\MataPelajaran;
 use App\Models\TahunAjaran;
+use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;  
@@ -17,7 +18,8 @@ class RaportController extends Controller
      */
     public function index()
     {
-        $siswa = auth()->user()->siswa;
+        $user = Auth::user();
+        $siswa = Siswa::where('user_id', $user->id)->firstOrFail();
         
         // Ambil tahun ajaran aktif
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
@@ -35,7 +37,8 @@ class RaportController extends Controller
      */
     public function detail($mapelId)
     {
-        $siswa = auth()->user()->siswa;
+        $user = Auth::user();
+        $siswa = Siswa::where('user_id', $user->id)->firstOrFail();
         
         // Ambil tahun ajaran aktif
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
@@ -57,7 +60,8 @@ class RaportController extends Controller
      */
     public function detailAll(Request $request)
     {
-        $siswa = auth()->user()->siswa;
+        $user = Auth::user();
+        $siswa = Siswa::where('user_id', $user->id)->firstOrFail();
         $semester = $request->query('semester', 'Ganjil'); // Default Ganjil
         
         // Ambil tahun ajaran aktif
