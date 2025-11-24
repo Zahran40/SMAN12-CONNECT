@@ -1,13 +1,8 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         DB::unprepared("
@@ -36,10 +31,6 @@ return new class extends Migration
             GROUP BY s.id_siswa, s.nis, s.nisn, s.nama_lengkap, k.nama_kelas, k.tingkat, ta.tahun_mulai, ta.tahun_selesai, ta.semester
         ");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared("DROP VIEW IF EXISTS view_dashboard_siswa");

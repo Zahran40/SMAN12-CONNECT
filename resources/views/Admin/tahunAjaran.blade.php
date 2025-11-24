@@ -25,20 +25,6 @@
                     <option value="Tidak Aktif" {{ request('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                 </select>
             </form>
-
-            {{-- Tombol Hapus Semua Tidak Aktif --}}
-            @if(\App\Models\TahunAjaran::where('status', 'Tidak Aktif')->count() > 0)
-                <form action="{{ route('admin.tahun-ajaran.destroy-inactive') }}" method="POST" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA tahun ajaran tidak aktif beserta:\n- Semua kelas\n- Semua siswa di kelas tersebut\n- Semua jadwal pelajaran\n\nProses ini TIDAK DAPAT DIBATALKAN!\n\nLanjutkan?')" class="w-full sm:w-auto">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        <span>Hapus Semua Tidak Aktif</span>
-                    </button>
-                </form>
-            @endif
             
             {{-- Tombol Tambah --}}
             <a href="{{ route('admin.tahun-ajaran.create') }}" class="w-full sm:w-auto bg-blue-400 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors">
@@ -70,6 +56,28 @@
                 <img src="{{ asset('images/school.png') }}" alt="Icon Tahun Ajaran" class="w-7 h-7">
                 <h2 class="font-semibold text-gray-700 text-lg">Tahun Ajaran {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }}</h2>
             </div>
+
+            <div class="flex items-center gap-2">
+                @if(isset($ta->can_delete) && $ta->can_delete)
+                    <form action="{{ route('admin.tahun-ajaran.destroy-year', [$ta->tahun_mulai, $ta->tahun_selesai]) }}" method="POST" onsubmit="return confirm('Yakin ingin mengarsipkan tahun ajaran {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }}? Tahun ajaran akan disembunyikan dari daftar, tapi data kelas, siswa, dan raport tetap tersimpan.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                            </svg>
+                            Arsipkan
+                        </button>
+                    </form>
+                @else
+                    <button disabled class="bg-gray-300 text-gray-500 px-3 py-2 rounded-lg text-sm font-medium cursor-not-allowed" title="Nonaktifkan semua semester terlebih dahulu untuk mengarsipkan">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                        </svg>
+                        Arsipkan
+                    </button>
+                @endif
+            </div>
         </div>
 
         {{-- Semester Cards --}}
@@ -78,7 +86,7 @@
             @if($ta->ganjil)
             <div class="border-2 {{ $ta->ganjil->status == 'Aktif' ? 'border-green-400 bg-green-50' : 'border-gray-300 bg-gray-50' }} rounded-xl p-4">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="font-semibold text-gray-700">📅 Semester Ganjil</h3>
+                    <h3 class="font-semibold text-gray-700"> Semester Ganjil</h3>
                     @if($ta->ganjil->status == 'Aktif')
                         <span class="text-xs bg-green-500 text-white font-semibold px-3 py-1 rounded-full">Aktif</span>
                     @else
@@ -101,7 +109,7 @@
             @if($ta->genap)
             <div class="border-2 {{ $ta->genap->status == 'Aktif' ? 'border-green-400 bg-green-50' : 'border-gray-300 bg-gray-50' }} rounded-xl p-4">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="font-semibold text-gray-700">📅 Semester Genap</h3>
+                    <h3 class="font-semibold text-gray-700"> Semester Genap</h3>
                     @if($ta->genap->status == 'Aktif')
                         <span class="text-xs bg-green-500 text-white font-semibold px-3 py-1 rounded-full">Aktif</span>
                     @else

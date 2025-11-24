@@ -1,19 +1,10 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     * 
-     * Membuat database views untuk Data Master Admin
-     * Sesuai prinsip MSBD: Views memastikan data konsisten dan aman
-     */
     public function up(): void
     {
-        // View untuk Siswa dengan Kelas dan Tahun Ajaran
         DB::statement("CREATE OR REPLACE VIEW view_siswa_kelas AS
             SELECT 
                 s.id_siswa,
@@ -45,8 +36,6 @@ return new class extends Migration
             LEFT JOIN kelas k ON sk.kelas_id = k.id_kelas
             LEFT JOIN tahun_ajaran ta ON sk.tahun_ajaran_id = ta.id_tahun_ajaran
         ");
-
-        // View untuk Guru dengan Mata Pelajaran yang Diajar (via Jadwal)
         DB::statement("CREATE OR REPLACE VIEW view_guru_mengajar AS
             SELECT DISTINCT
                 g.id_guru,
@@ -77,8 +66,6 @@ return new class extends Migration
             LEFT JOIN kelas k ON jp.kelas_id = k.id_kelas
             LEFT JOIN tahun_ajaran ta ON jp.tahun_ajaran_id = ta.id_tahun_ajaran
         ");
-
-        // View untuk Mata Pelajaran dengan Guru dan Kelas yang Mengajar (via Jadwal)
         DB::statement("CREATE OR REPLACE VIEW view_mapel_diajarkan AS
             SELECT DISTINCT
                 mp.id_mapel,
@@ -105,8 +92,6 @@ return new class extends Migration
             LEFT JOIN kelas k ON jp.kelas_id = k.id_kelas
             LEFT JOIN tahun_ajaran ta ON jp.tahun_ajaran_id = ta.id_tahun_ajaran
         ");
-
-        // View untuk Kelas dengan Jumlah Siswa, Wali Kelas, dan Mata Pelajaran
         DB::statement("CREATE OR REPLACE VIEW view_kelas_detail AS
             SELECT 
                 k.id_kelas,
@@ -137,10 +122,6 @@ return new class extends Migration
             LEFT JOIN guru g ON k.wali_kelas_id = g.id_guru
         ");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::statement("DROP VIEW IF EXISTS view_siswa_kelas");

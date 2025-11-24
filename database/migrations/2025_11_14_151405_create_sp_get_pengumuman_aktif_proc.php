@@ -1,17 +1,11 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_get_pengumuman_aktif");
-        
         DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_pengumuman_aktif`(IN `target_role_param` VARCHAR(20))
 BEGIN
   SELECT p.id_pengumuman,
@@ -31,10 +25,6 @@ BEGIN
   ORDER BY p.tgl_publikasi DESC;
 END");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_get_pengumuman_aktif");

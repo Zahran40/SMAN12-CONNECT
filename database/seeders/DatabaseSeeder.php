@@ -65,11 +65,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
         
-        // ✅ FORCE CREATE GRANTS jika belum ada
-        if (!$admin->db_user) {
-            $admin->createDatabaseUser();
-            $admin->applyRoleGrants();
-        }
         $this->command->info("✅ Admin: {$admin->email}");
 
         // 2. GURU (guru1)
@@ -107,11 +102,6 @@ class DatabaseSeeder extends Seeder
         // ✅ UPDATE user_id di tabel guru
         DB::table('guru')->where('id_guru', $guruId)->update(['user_id' => $guru->id]);
         
-        // ✅ FORCE CREATE GRANTS jika belum ada
-        if (!$guru->db_user) {
-            $guru->createDatabaseUser();
-            $guru->applyRoleGrants();
-        }
         $this->command->info("✅ Guru: {$guru->email} (NIP: 11111)");
 
         // 3. SISWA (siswa1)
@@ -169,11 +159,6 @@ class DatabaseSeeder extends Seeder
             ]);
         }
         
-        // ✅ FORCE CREATE GRANTS jika belum ada
-        if (!$siswa->db_user) {
-            $siswa->createDatabaseUser();
-            $siswa->applyRoleGrants();
-        }
         $this->command->info("✅ Siswa: {$siswa->email} (NIS: 12345, Kelas: X-1 IPA)");
 
         // ============================================

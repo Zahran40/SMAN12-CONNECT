@@ -35,8 +35,12 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                 @foreach($jadwalList as $jadwal)
                     @php
-                        // Hitung jumlah siswa
-                        $jumlahSiswa = DB::table('siswa')->where('kelas_id', $jadwal->kelas_id)->count();
+                        // Hitung jumlah siswa dari siswa_kelas dengan filter tahun ajaran aktif
+                        $jumlahSiswa = DB::table('siswa_kelas')
+                            ->where('kelas_id', $jadwal->kelas_id)
+                            ->where('tahun_ajaran_id', $jadwal->tahun_ajaran_id)
+                            ->where('status', 'Aktif')
+                            ->count();
                     @endphp
                     
                                         <div class="bg-white rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-shadow border-2 border-slate-200">

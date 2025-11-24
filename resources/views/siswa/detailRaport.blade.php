@@ -2,13 +2,22 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-6 sm:mb-8">
-        <a href="{{ route('siswa.nilai') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
-             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </img>
-        </a>
-        <h2 class="text-3xl font-bold text-blue-500">Laporan Nilai Raport</h2>
+    <div class="flex items-center justify-between mb-6 sm:mb-8">
+        <div class="flex items-center space-x-4">
+            <a href="{{ route('siswa.nilai', ['tahun_ajaran_id' => $tahunAjaranId ?? '']) }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
+                 <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </img>
+            </a>
+            <h2 class="text-3xl font-bold text-blue-500">Laporan Nilai Raport</h2>
+        </div>
+        <button onclick="cetakRaport()" class="flex items-center space-x-2 bg-green-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+              <path fill-rule="evenodd" d="M5 2.75C5 1.784 5.784 1 6.75 1h6.5c.966 0 1.75.784 1.75 1.75v3.5A1.75 1.75 0 0 1 13.25 8H6.75A1.75 1.75 0 0 1 5 6.25v-3.5ZM11.5 4a.5.5 0 0 0 0-1H8.5a.5.5 0 0 0 0 1h3Z" clip-rule="evenodd" />
+              <path fill-rule="evenodd" d="M1.5 8.75A1.75 1.75 0 0 1 3.25 7h13.5A1.75 1.75 0 0 1 18.5 8.75v5.75c0 .59-.224 1.135-.59 1.562l-2.148 2.148A1.75 1.75 0 0 1 14.22 19H5.78a1.75 1.75 0 0 1-1.543-.89l-2.148-2.148A1.75 1.75 0 0 1 1.5 14.5v-5.75ZM3.25 8.5a.25.25 0 0 0-.25.25v5.75c0 .1.03.192.08.27l2.148 2.148c.078.078.17.13.27.13h8.44a.25.25 0 0 0 .19-.08l2.148-2.148a.25.25 0 0 0 .08-.27v-5.75a.25.25 0 0 0-.25-.25H3.25Z" clip-rule="evenodd" />
+            </svg>
+            <span>Cetak Raport</span>
+        </button>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg border-2 border-blue-200 p-4 sm:p-6">
@@ -60,7 +69,7 @@
         </div>
 
         <div class="mt-6 flex justify-end">
-            <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-lg transition-colors flex items-center space-x-2">
+            <button onclick="cetakRaport()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-lg transition-colors flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
@@ -70,11 +79,21 @@
 
         @else
         <div class="text-center py-12">
-            <p class="text-slate-500">Nilai untuk semester ini belum tersedia</p>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-slate-500 font-medium">Nilai untuk semester ini belum tersedia</p>
+            <p class="text-slate-400 text-sm mt-2">Silakan pilih tahun ajaran atau semester lain</p>
         </div>
         @endif
 
     </div>
+
+    <script>
+        function cetakRaport() {
+            window.print();
+        }
+    </script>
 
 @endsection
 

@@ -1,17 +1,11 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_rekap_nilai_siswa");
-        
         DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_rekap_nilai_siswa`(IN `siswa_id_param` BIGINT, IN `tahun_ajaran_id_param` BIGINT)
 BEGIN
   SELECT s.nama_lengkap,
@@ -27,10 +21,6 @@ BEGIN
     AND n.tahun_ajaran_id = id_tahun_ajaran_param;
 END");
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS sp_rekap_nilai_siswa");

@@ -2,16 +2,7 @@
 
 @section('content')
 
-    <div class="flex justify-between items-center mb-4 sm:mb-6">
-        <h2 class="text-3xl font-bold text-blue-500">Tagihan Uang Sekolah</h2>
-        <button class="flex items-center space-x-2 bg-blue-100 text-blue-700 font-medium px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-              <path fill-rule="evenodd" d="M5 2.75C5 1.784 5.784 1 6.75 1h6.5c.966 0 1.75.784 1.75 1.75v3.5A1.75 1.75 0 0 1 13.25 8H6.75A1.75 1.75 0 0 1 5 6.25v-3.5ZM11.5 4a.5.5 0 0 0 0-1H8.5a.5.5 0 0 0 0 1h3Z" clip-rule="evenodd" />
-              <path fill-rule="evenodd" d="M1.5 8.75A1.75 1.75 0 0 1 3.25 7h13.5A1.75 1.75 0 0 1 18.5 8.75v5.75c0 .59-.224 1.135-.59 1.562l-2.148 2.148A1.75 1.75 0 0 1 14.22 19H5.78a1.75 1.75 0 0 1-1.543-.89l-2.148-2.148A1.75 1.75 0 0 1 1.5 14.5v-5.75ZM3.25 8.5a.25.25 0 0 0-.25.25v5.75c0 .1.03.192.08.27l2.148 2.148c.078.078.17.13.27.13h8.44a.25.25 0 0 0 .19-.08l2.148-2.148a.25.25 0 0 0 .08-.27v-5.75a.25.25 0 0 0-.25-.25H3.25Z" clip-rule="evenodd" />
-            </svg>
-            <span>Cetak Tagihan</span>
-        </button>
-    </div>
+    <h2 class="text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Tagihan Uang Sekolah</h2>
 
     @if(session('success'))
         <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">

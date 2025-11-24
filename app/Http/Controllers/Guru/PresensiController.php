@@ -7,6 +7,7 @@ use App\Models\Pertemuan;
 use App\Models\DetailAbsensi;
 use App\Models\Guru;
 use App\Models\JadwalPelajaran;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,9 +29,13 @@ class PresensiController extends Controller
         // Daftar hari
         $daftarHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
         
-        // Get SEMUA jadwal guru (semua hari jika tidak ada filter)
+        // Ambil tahun ajaran aktif
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        
+        // Get jadwal guru untuk tahun ajaran aktif
         $query = JadwalPelajaran::with(['mataPelajaran', 'kelas', 'pertemuan'])
-            ->where('guru_id', $guru->id_guru);
+            ->where('guru_id', $guru->id_guru)
+            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran);
         
         // Terapkan filter hari jika ada
         if ($hariFilter) {
@@ -58,26 +63,29 @@ class PresensiController extends Controller
             abort(403, 'Anda tidak memiliki akses ke pertemuan ini');
         }
 
-        // Get all siswa di kelas dengan status absensi
-        $siswaList = DB::table('siswa')
-            ->leftJoin('detail_absensi', function($join) use ($pertemuanId) {
-                $join->on('siswa.id_siswa', '=', 'detail_absensi.siswa_id')
-                     ->where('detail_absensi.pertemuan_id', '=', $pertemuanId);
+        // Get all siswa di kelas dengan status absensi menggunakan siswa_kelas
+        $siswaList = DB::table('siswa_kelas as sk')
+            ->join('siswa as s', 'sk.siswa_id', '=', 's.id_siswa')
+            ->leftJoin('detail_absensi as da', function($join) use ($pertemuanId) {
+                $join->on('s.id_siswa', '=', 'da.siswa_id')
+                     ->where('da.pertemuan_id', '=', $pertemuanId);
             })
-            ->where('siswa.kelas_id', $pertemuan->jadwal->kelas_id)
+            ->where('sk.kelas_id', $pertemuan->jadwal->kelas_id)
+            ->where('sk.tahun_ajaran_id', $pertemuan->jadwal->tahun_ajaran_id)
+            ->where('sk.status', 'Aktif')
             ->select(
-                'siswa.id_siswa',
-                'siswa.nis',
-                'siswa.nama_lengkap',
-                'detail_absensi.id_detail_absensi',
-                'detail_absensi.status_kehadiran',
-                'detail_absensi.keterangan',
-                'detail_absensi.dicatat_pada',
-                'detail_absensi.latitude',
-                'detail_absensi.longitude',
-                'detail_absensi.alamat_lengkap'
+                's.id_siswa',
+                's.nisn',
+                's.nama_lengkap',
+                'da.id_detail_absensi',
+                'da.status_kehadiran',
+                'da.keterangan',
+                'da.dicatat_pada',
+                'da.latitude',
+                'da.longitude',
+                'da.alamat_lengkap'
             )
-            ->orderBy('siswa.nama_lengkap')
+            ->orderBy('s.nama_lengkap')
             ->get();
 
         return view('guru.detailpresensi', compact('pertemuan', 'siswaList', 'guru'));
