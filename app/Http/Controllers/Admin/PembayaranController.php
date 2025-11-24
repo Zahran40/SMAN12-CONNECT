@@ -85,12 +85,15 @@ class PembayaranController extends Controller
     }
 
     /**
-     * Form buat tagihan baru
+     * Form buat tagihan baru dengan bulk selection
      */
     public function create(Request $request)
     {
         $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
         $tahunAjaranId = $request->get('tahun_ajaran');
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
+        $statusFilter = $request->get('status_filter'); // 'sudah' atau 'belum'
         
         if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
             $tahunAjaran = TahunAjaran::where('status', 'Aktif')->first();
@@ -102,61 +105,99 @@ class PembayaranController extends Controller
             ->orderBy('nama_kelas')
             ->get();
 
-        return view('Admin.buatPembayaran', compact('tahunAjaranList', 'tahunAjaranId', 'kelasList'));
+        // Get siswa list untuk bulk selection
+        $siswaList = collect();
+        if ($bulan && $tahun) {
+            $query = Siswa::with(['kelas'])
+                ->whereHas('kelas', function($q) use ($tahunAjaranId) {
+                    $q->where('tahun_ajaran_id', $tahunAjaranId);
+                });
+
+            // Filter berdasarkan status pembayaran
+            if ($statusFilter === 'sudah') {
+                $query->whereHas('pembayaranSpp', function($q) use ($bulan, $tahun, $tahunAjaranId) {
+                    $q->where('bulan', $bulan)
+                      ->where('tahun', $tahun)
+                      ->where('tahun_ajaran_id', $tahunAjaranId)
+                      ->where('status', 'Lunas');
+                });
+            } elseif ($statusFilter === 'belum') {
+                $query->where(function($q) use ($bulan, $tahun, $tahunAjaranId) {
+                    // Belum ada tagihan ATAU tagihan belum lunas
+                    $q->whereDoesntHave('pembayaranSpp', function($subQ) use ($bulan, $tahun, $tahunAjaranId) {
+                        $subQ->where('bulan', $bulan)
+                             ->where('tahun', $tahun)
+                             ->where('tahun_ajaran_id', $tahunAjaranId);
+                    })
+                    ->orWhereHas('pembayaranSpp', function($subQ) use ($bulan, $tahun, $tahunAjaranId) {
+                        $subQ->where('bulan', $bulan)
+                             ->where('tahun', $tahun)
+                             ->where('tahun_ajaran_id', $tahunAjaranId)
+                             ->where('status', 'Belum Lunas');
+                    });
+                });
+            }
+
+            $siswaList = $query->orderBy('nama_lengkap')->get();
+        }
+
+        return view('Admin.buatPembayaran', compact(
+            'tahunAjaranList', 
+            'tahunAjaranId', 
+            'kelasList',
+            'siswaList',
+            'bulan',
+            'tahun',
+            'statusFilter'
+        ));
     }
 
     /**
-     * Simpan tagihan baru (bulk create)
+     * Simpan tagihan baru (bulk create with ACID transaction)
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
-            'kelas_id' => 'nullable|exists:kelas,id_kelas',
             'nama_tagihan' => 'required|string|max:250',
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|min:2020|max:2100',
             'jumlah_bayar' => 'required|numeric|min:0',
-            'target_siswa' => 'required|in:semua,kelas_tertentu',
+            'siswa_ids' => 'required|array|min:1',
+            'siswa_ids.*' => 'exists:siswa,id_siswa',
+            'deskripsi_batch' => 'nullable|string|max:500',
         ], [
             'tahun_ajaran_id.required' => 'Tahun ajaran wajib dipilih',
             'nama_tagihan.required' => 'Nama tagihan wajib diisi',
             'bulan.required' => 'Bulan wajib dipilih',
             'tahun.required' => 'Tahun wajib diisi',
             'jumlah_bayar.required' => 'Jumlah bayar wajib diisi',
+            'siswa_ids.required' => 'Minimal pilih 1 siswa',
+            'siswa_ids.min' => 'Minimal pilih 1 siswa',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Get siswa berdasarkan target
-            if ($validated['target_siswa'] === 'semua') {
-                // Ambil SEMUA siswa aktif, termasuk yang belum punya kelas
-                $siswaList = Siswa::where(function($q) use ($validated) {
-                    // Siswa yang punya kelas di tahun ajaran ini
-                    $q->whereHas('kelas', function($subQ) use ($validated) {
-                        $subQ->where('tahun_ajaran_id', $validated['tahun_ajaran_id']);
-                    })
-                    // ATAU siswa yang belum punya kelas sama sekali
-                    ->orWhereNull('kelas_id');
-                })->get();
-            } else {
-                if (empty($validated['kelas_id'])) {
-                    return back()->with('error', 'Kelas harus dipilih untuk target kelas tertentu')->withInput();
-                }
-                $siswaList = Siswa::where('kelas_id', $validated['kelas_id'])->get();
-            }
-
-            if ($siswaList->isEmpty()) {
-                return back()->with('error', 'Tidak ada siswa yang ditemukan')->withInput();
-            }
+            // Create batch record untuk audit trail
+            $batch = DB::table('tagihan_batch')->insertGetId([
+                'admin_id' => auth()->id(),
+                'tahun_ajaran_id' => $validated['tahun_ajaran_id'],
+                'bulan' => $validated['bulan'],
+                'tahun' => $validated['tahun'],
+                'jumlah_siswa' => count($validated['siswa_ids']),
+                'total_nominal' => $validated['jumlah_bayar'] * count($validated['siswa_ids']),
+                'deskripsi' => $validated['deskripsi_batch'] ?? $validated['nama_tagihan'],
+                'created_at' => now(),
+            ]);
 
             $created = 0;
             $skipped = 0;
+            $skippedSiswa = []; // Track nama siswa yang dilewati
 
-            foreach ($siswaList as $siswa) {
+            foreach ($validated['siswa_ids'] as $siswaId) {
                 // Check if tagihan already exists
-                $exists = PembayaranSpp::where('siswa_id', $siswa->id_siswa)
+                $exists = PembayaranSpp::where('siswa_id', $siswaId)
                     ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
                     ->where('bulan', $validated['bulan'])
                     ->where('tahun', $validated['tahun'])
@@ -164,7 +205,8 @@ class PembayaranController extends Controller
 
                 if (!$exists) {
                     PembayaranSpp::create([
-                        'siswa_id' => $siswa->id_siswa,
+                        'batch_id' => $batch,
+                        'siswa_id' => $siswaId,
                         'tahun_ajaran_id' => $validated['tahun_ajaran_id'],
                         'nama_tagihan' => $validated['nama_tagihan'],
                         'bulan' => $validated['bulan'],
@@ -175,17 +217,35 @@ class PembayaranController extends Controller
                     $created++;
                 } else {
                     $skipped++;
+                    $siswa = Siswa::find($siswaId);
+                    if ($siswa) {
+                        $skippedSiswa[] = $siswa->nama_lengkap . ' (' . $siswa->nisn . ')';
+                    }
                 }
+            }
+
+            // Jika semua tagihan sudah ada, rollback
+            if ($created === 0) {
+                DB::rollBack();
+                $bulanText = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                $periode = $bulanText[$validated['bulan']] . ' ' . $validated['tahun'];
+                
+                return back()
+                    ->with('error', 'Semua siswa yang dipilih sudah memiliki tagihan untuk periode ' . $periode)
+                    ->with('skipped_siswa', $skippedSiswa)
+                    ->withInput();
             }
 
             DB::commit();
 
-            $message = "Berhasil membuat {$created} tagihan";
+            $message = "Berhasil membuat {$created} tagihan (Batch #{$batch})";
             if ($skipped > 0) {
-                $message .= " ({$skipped} tagihan sudah ada sebelumnya)";
+                $message .= " • {$skipped} tagihan dilewati (sudah ada)";
             }
 
-            return redirect()->route('admin.pembayaran.index')->with('success', $message);
+            return redirect()->route('admin.pembayaran.index')
+                ->with('success', $message)
+                ->with('skipped_siswa', $skippedSiswa);
 
         } catch (\Exception $e) {
             DB::rollBack();
