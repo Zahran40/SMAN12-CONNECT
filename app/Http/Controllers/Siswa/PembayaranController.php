@@ -249,8 +249,8 @@ class PembayaranController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'transaction_status' => $status->transaction_status,
-                    'payment_type' => $status->payment_type,
+                    'transaction_status' => $status->transaction_status ?? 'unknown',
+                    'payment_type' => $status->payment_type ?? 'unknown',
                     'status_tagihan' => $tagihan->fresh()->status,
                 ]
             ]);
