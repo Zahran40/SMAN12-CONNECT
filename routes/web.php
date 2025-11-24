@@ -59,6 +59,8 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/detail-raport', [App\Http\Controllers\Siswa\RaportController::class, 'detailAll'])->name('detail_raport');
     Route::get('/detail-raport/{mapel_id}', [App\Http\Controllers\Siswa\RaportController::class, 'detail'])->name('detail_raport_mapel');
 
+    Route::get('/pengumuman', [App\Http\Controllers\Siswa\MateriController::class, 'pengumuman'])->name('pengumuman');
+
     // TAGIHAN & PEMBAYARAN ROUTES
     Route::get('/tagihan', [App\Http\Controllers\Siswa\PembayaranController::class, 'index'])->name('tagihan');
     Route::get('/tagihan/sudah-dibayar', [App\Http\Controllers\Siswa\PembayaranController::class, 'tagihanSudahDibayar'])->name('tagihan_sudah_dibayar');
@@ -68,8 +70,7 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/tagihan/{id}/check-status', [App\Http\Controllers\Siswa\PembayaranController::class, 'checkStatus'])->name('tagihan.check_status');
     Route::get('/tagihan/callback', [App\Http\Controllers\Siswa\PembayaranController::class, 'callback'])->name('tagihan.callback');
 
-    Route::get('/pengumuman', [App\Http\Controllers\Siswa\MateriController::class, 'pengumuman'])->name('pengumuman');
-
+    // PROFIL ROUTES
     Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
 });
 

@@ -11,12 +11,32 @@
         <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r mb-4 sm:mb-6 shadow-sm">
             <p class="font-bold">Berhasil</p>
             <p>{{ session('success') }}</p>
+            @if(session('skipped_siswa') && count(session('skipped_siswa')) > 0)
+                <div class="mt-3 pt-3 border-t border-green-300">
+                    <p class="font-semibold text-sm mb-2">Siswa yang dilewati (tagihan sudah ada):</p>
+                    <ul class="text-sm list-disc list-inside space-y-1 ml-2">
+                        @foreach(session('skipped_siswa') as $siswa)
+                            <li>{{ $siswa }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     @endif
     @if(session('error'))
         <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r mb-4 sm:mb-6 shadow-sm">
             <p class="font-bold">Error</p>
             <p>{{ session('error') }}</p>
+            @if(session('skipped_siswa') && count(session('skipped_siswa')) > 0)
+                <div class="mt-3 pt-3 border-t border-red-300">
+                    <p class="font-semibold text-sm mb-2">Daftar siswa yang sudah memiliki tagihan:</p>
+                    <ul class="text-sm list-disc list-inside space-y-1 ml-2">
+                        @foreach(session('skipped_siswa') as $siswa)
+                            <li>{{ $siswa }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     @endif
 
