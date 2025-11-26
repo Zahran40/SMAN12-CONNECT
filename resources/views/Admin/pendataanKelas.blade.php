@@ -35,7 +35,7 @@
     </div>
 
     {{-- Tahun Ajaran Cards --}}
-    @if($tahunAjaranList->count() > 0)
+    @if(count($tahunAjaranList) > 0)
         @foreach($tahunAjaranList as $tahunAjaran)
             <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
                 <div class="flex items-center justify-between mb-4">
@@ -48,7 +48,7 @@
                         </span>
                     </div>
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-                        <span class="text-sm text-slate-500">{{ $tahunAjaran->kelas->count() }} kelas</span>
+                        <span class="text-sm text-slate-500">{{ $tahunAjaran->kelas_list->count() }} kelas</span>
                         <a href="{{ route('admin.kelas.index', $tahunAjaran->id_tahun_ajaran) }}" 
                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors shadow-sm w-full sm:w-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -60,9 +60,9 @@
                     </div>
                 </div>
 
-                @if($tahunAjaran->kelas->count() > 0)
+                @if($tahunAjaran->kelas_list->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach($tahunAjaran->kelas as $kelas)
+                        @foreach($tahunAjaran->kelas_list as $kelas)
                         <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-blue-200">
                             <div class="flex items-start space-x-4 mb-3">
                                 {{-- Logo Kelas --}}

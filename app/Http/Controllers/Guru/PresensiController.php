@@ -32,10 +32,25 @@ class PresensiController extends Controller
         // Ambil tahun ajaran aktif
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
         
+        // Tentukan tahun ajaran mana yang digunakan untuk query jadwal
+        // Jika yang aktif adalah Genap, cari jadwal dari Ganjil (karena jadwal dibuat di Ganjil)
+        $tahunAjaranForQuery = $tahunAjaranAktif->id_tahun_ajaran;
+        
+        if ($tahunAjaranAktif->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranAktif->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranAktif->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->first();
+            
+            if ($semesterGanjil) {
+                $tahunAjaranForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+        
         // Get jadwal guru untuk tahun ajaran aktif
         $query = JadwalPelajaran::with(['mataPelajaran', 'kelas', 'pertemuan'])
             ->where('guru_id', $guru->id_guru)
-            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran);
+            ->where('tahun_ajaran_id', $tahunAjaranForQuery);
         
         // Terapkan filter hari jika ada
         if ($hariFilter) {

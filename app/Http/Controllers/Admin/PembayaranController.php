@@ -19,7 +19,7 @@ class PembayaranController extends Controller
      */
     public function index(Request $request)
     {
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
         $tahunAjaranId = $request->get('tahun_ajaran');
         $semester = $request->get('semester', 'Ganjil');
         $kelasId = $request->get('kelas');
@@ -27,7 +27,7 @@ class PembayaranController extends Controller
 
         // Default tahun ajaran aktif
         if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
-            $tahunAjaran = TahunAjaran::where('status', 'Aktif')->first();
+            $tahunAjaran = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
             if ($tahunAjaran) {
                 $tahunAjaranId = $tahunAjaran->id_tahun_ajaran;
             } else {
@@ -90,14 +90,14 @@ class PembayaranController extends Controller
      */
     public function create(Request $request)
     {
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
         $tahunAjaranId = $request->get('tahun_ajaran');
         $bulan = $request->get('bulan');
         $tahun = $request->get('tahun');
         $statusFilter = $request->get('status_filter'); // 'sudah' atau 'belum'
         
         if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
-            $tahunAjaran = TahunAjaran::where('status', 'Aktif')->first();
+            $tahunAjaran = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
             $tahunAjaranId = $tahunAjaran ? $tahunAjaran->id_tahun_ajaran : $tahunAjaranList->first()->id_tahun_ajaran;
         }
 

@@ -33,4 +33,24 @@ class TahunAjaran extends Model
     {
         return $this->hasMany(Kelas::class, 'tahun_ajaran_id', 'id_tahun_ajaran');
     }
+
+    /**
+     * Scope untuk hanya mengambil tahun ajaran yang tidak diarsipkan
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    /**
+     * Helper: Dapatkan semua tahun ajaran yang tidak diarsipkan
+     */
+    public static function getActive()
+    {
+        return static::where('is_archived', false)
+            ->orderBy('tahun_mulai', 'desc')
+            ->orderBy('semester', 'asc')
+            ->get();
+    }
 }
+

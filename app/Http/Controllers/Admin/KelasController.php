@@ -18,26 +18,98 @@ class KelasController extends Controller
     /**
      * Halaman pendataan semua kelas (tidak terikat tahun ajaran)
      * Tampilkan semua tahun ajaran dengan info kelas
+     * PENTING: Kelas dibuat HANYA untuk semester Ganjil dan di-share ke Genap
      */
     public function all(Request $request)
     {
-        // Ambil semua tahun ajaran
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')
-            ->with(['kelas.waliKelas', 'kelas.siswa'])
+        // Ambil semua tahun ajaran yang tidak di-archive
+        $tahunAjaranRaw = TahunAjaran::where('is_archived', false)
+            ->orderBy('tahun_mulai', 'desc')
+            ->orderBy('semester', 'asc')
             ->get();
+        
+        // Group by tahun ajaran dan format data
+        $tahunAjaranList = [];
+        $tahunAjaranGrouped = $tahunAjaranRaw->groupBy(function($ta) {
+            return $ta->tahun_mulai . '/' . $ta->tahun_selesai;
+        });
+        
+        foreach ($tahunAjaranGrouped as $key => $group) {
+            $ganjil = $group->firstWhere('semester', 'Ganjil');
+            $genap = $group->firstWhere('semester', 'Genap');
+            
+            // Tambahkan Ganjil jika ada
+            if ($ganjil) {
+                $ganjilData = clone $ganjil;
+                $ganjilData->kelas_list = Kelas::where('tahun_ajaran_id', $ganjil->id_tahun_ajaran)
+                    ->with(['waliKelas', 'siswa'])
+                    ->orderBy('tingkat')
+                    ->orderBy('nama_kelas')
+                    ->get();
+                $tahunAjaranList[] = $ganjilData;
+            }
+            
+            // Tambahkan Genap jika ada (gunakan kelas dari Ganjil)
+            if ($genap) {
+                $genapData = clone $genap;
+                if ($ganjil) {
+                    // Gunakan kelas dari semester Ganjil
+                    $genapData->kelas_list = Kelas::where('tahun_ajaran_id', $ganjil->id_tahun_ajaran)
+                        ->with(['waliKelas', 'siswa'])
+                        ->orderBy('tingkat')
+                        ->orderBy('nama_kelas')
+                        ->get();
+                } else {
+                    // Jika tidak ada Ganjil, collection kosong
+                    $genapData->kelas_list = collect([]);
+                }
+                $tahunAjaranList[] = $genapData;
+            }
+        }
         
         return view('Admin.pendataanKelas', compact('tahunAjaranList'));
     }
 
     /**
      * Halaman kelola kelas untuk tahun ajaran tertentu
+     * PENTING: Kelas dibuat HANYA untuk semester Ganjil dan di-share untuk Genap
      */
     public function index($tahunAjaranId)
     {
         $tahunAjaran = TahunAjaran::findOrFail($tahunAjaranId);
-        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
+        
+        // Jika semester Genap, ambil kelas dari semester Ganjil yang sama tahunnya
+        if ($tahunAjaran->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaran->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaran->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->where('is_archived', false)
+                ->first();
+            
+            if ($semesterGanjil) {
+                $kelasAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+            } else {
+                // Fallback jika semester Ganjil tidak ada
+                $kelasAjaranIdForQuery = $tahunAjaranId;
+            }
+        } else {
+            $kelasAjaranIdForQuery = $tahunAjaranId;
+        }
+        
+        $kelasList = Kelas::where('tahun_ajaran_id', $kelasAjaranIdForQuery)
             ->with(['waliKelas', 'siswa'])
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
             ->get();
+        
+        // Debug info (bisa dihapus nanti)
+        \Log::info('Kelola Kelas Debug:', [
+            'tahun_ajaran_id_input' => $tahunAjaranId,
+            'semester' => $tahunAjaran->semester,
+            'tahun' => $tahunAjaran->tahun_mulai . '/' . $tahunAjaran->tahun_selesai,
+            'kelas_query_id' => $kelasAjaranIdForQuery,
+            'jumlah_kelas' => $kelasList->count(),
+        ]);
         
         return view('Admin.kelolaKelas', compact('tahunAjaran', 'kelasList'));
     }
@@ -306,5 +378,103 @@ class KelasController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus kelas: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Generate 30 kelas standar secara otomatis
+     */
+    public function generate($tahunAjaranId)
+    {
+        try {
+            $tahunAjaran = TahunAjaran::findOrFail($tahunAjaranId);
+            
+            // Hanya generate untuk semester Ganjil
+            // Jika semester Genap, arahkan untuk menggunakan kelas dari Ganjil
+            if ($tahunAjaran->semester === 'Genap') {
+                return back()->with('error', 'Kelas tidak perlu di-generate untuk semester Genap. Kelas dari semester Ganjil akan digunakan bersama.');
+            }
+            
+            // Cek apakah sudah ada kelas
+            $existingKelas = Kelas::where('tahun_ajaran_id', $tahunAjaranId)->count();
+            if ($existingKelas > 0) {
+                return back()->with('error', "Sudah ada {$existingKelas} kelas untuk tahun ajaran ini.");
+            }
+            
+            $kelasTemplate = $this->getKelasTemplate();
+            $createdCount = 0;
+            
+            foreach ($kelasTemplate as $template) {
+                Kelas::create([
+                    'nama_kelas' => $template['nama_kelas'],
+                    'tingkat' => $template['tingkat'],
+                    'jurusan' => $template['jurusan'],
+                    'tahun_ajaran_id' => $tahunAjaranId,
+                    'wali_kelas_id' => null,
+                ]);
+                $createdCount++;
+            }
+            
+            return back()->with('success', "Berhasil generate {$createdCount} kelas standar!");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal generate kelas: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Template 30 kelas standar untuk SMA
+     */
+    private function getKelasTemplate(): array
+    {
+        $template = [];
+        
+        // Tingkat 10 (Kelas X): 5 MIPA + 5 IPS
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "X-MIPA-{$i}",
+                'tingkat' => '10',
+                'jurusan' => 'MIPA',
+            ];
+        }
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "X-IPS-{$i}",
+                'tingkat' => '10',
+                'jurusan' => 'IPS',
+            ];
+        }
+        
+        // Tingkat 11 (Kelas XI): 5 MIPA + 5 IPS
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "XI-MIPA-{$i}",
+                'tingkat' => '11',
+                'jurusan' => 'MIPA',
+            ];
+        }
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "XI-IPS-{$i}",
+                'tingkat' => '11',
+                'jurusan' => 'IPS',
+            ];
+        }
+        
+        // Tingkat 12 (Kelas XII): 5 MIPA + 5 IPS
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "XII-MIPA-{$i}",
+                'tingkat' => '12',
+                'jurusan' => 'MIPA',
+            ];
+        }
+        for ($i = 1; $i <= 5; $i++) {
+            $template[] = [
+                'nama_kelas' => "XII-IPS-{$i}",
+                'tingkat' => '12',
+                'jurusan' => 'IPS',
+            ];
+        }
+        
+        return $template;
     }
 }

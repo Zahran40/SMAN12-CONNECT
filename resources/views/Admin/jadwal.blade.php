@@ -18,7 +18,7 @@
 
     <!-- Filter -->
     <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-        <form method="GET" action="{{ route('admin.akademik.jadwal') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form method="GET" action="{{ route('admin.akademik.jadwal.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Tahun Ajaran -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Ajaran</label>
@@ -47,7 +47,7 @@
 
             <!-- Button Reset -->
             <div class="flex items-end">
-                <a href="{{ route('admin.akademik.jadwal') }}" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                <a href="{{ route('admin.akademik.jadwal.index') }}" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
                     Reset
                 </a>
             </div>

@@ -17,14 +17,14 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
         <h1 class="text-xl font-bold text-blue-700">Tahun Ajaran</h1>
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-            {{-- Filter Status --}}
-            <form method="GET" action="{{ route('admin.tahun-ajaran.index') }}" class="w-full sm:w-auto">
-                <select name="status" onchange="this.form.submit()" class="w-full border-2 border-blue-300 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500">
-                    <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>Semua Status</option>
-                    <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                    <option value="Tidak Aktif" {{ request('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
-                </select>
-            </form>
+            {{-- Link ke Arsip --}}
+            <a href="{{ route('admin.tahun-ajaran.archived') }}" class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
+                    <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd" />
+                </svg>
+                <span>Arsip</span>
+            </a>
             
             {{-- Tombol Tambah --}}
             <a href="{{ route('admin.tahun-ajaran.create') }}" class="w-full sm:w-auto bg-blue-400 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors">
@@ -130,6 +130,73 @@
         </div>
 
         <h3 class="font-semibold text-blue-700 mb-4">Data Tahun Ajaran (Kedua Semester)</h3>
+        <p class="text-xs text-gray-600 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+            Kelas dibuat untuk Semester Ganjil dan digunakan bersama untuk Semester Genap dalam tahun ajaran yang sama
+        </p>
+
+        @php
+            // Cek apakah ada semester aktif
+            $hasActiveSemester = ($ta->ganjil && $ta->ganjil->status === 'Aktif') || ($ta->genap && $ta->genap->status === 'Aktif');
+            
+            // Tentukan ID tahun ajaran mana yang digunakan untuk generate/kelola kelas
+            // Prioritas: Ganjil (karena kelas dibuat di Ganjil), baru Genap
+            $semesterForAction = $ta->ganjil ?? $ta->genap;
+        @endphp
+
+        @if(!$hasActiveSemester)
+            {{-- Pesan jika tidak ada semester yang aktif --}}
+            <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 mb-4">
+                <div class="flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-yellow-800 mb-1">Semester Belum Diaktifkan</h4>
+                        <p class="text-sm text-yellow-700">Aktifkan salah satu semester (Ganjil atau Genap) untuk mengelola kelas, siswa, dan jadwal pelajaran.</p>
+                    </div>
+                </div>
+            </div>
+        @elseif($ta->jumlah_kelas == 0 && $semesterForAction)
+            {{-- Pesan jika belum ada kelas --}}
+            <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 mb-4">
+                <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <h4 class="font-semibold text-blue-800 mb-2">Belum Ada Kelas</h4>
+                    <p class="text-sm text-blue-700 mb-4">
+                        @if($ta->ganjil)
+                            Generate 30 kelas standar secara otomatis atau buat kelas secara manual
+                        @else
+                            Semester Ganjil belum dibuat. Buat semester Ganjil terlebih dahulu untuk membuat kelas.
+                        @endif
+                    </p>
+                    <div class="flex gap-3 justify-center flex-wrap">
+                        @if($ta->ganjil)
+                        <form action="{{ route('admin.kelas.generate', $ta->ganjil->id_tahun_ajaran) }}" method="POST" onsubmit="return confirm('Generate 30 kelas standar?\n\nKelas yang akan dibuat:\n• X-MIPA 1-5, X-IPS 1-5\n• XI-MIPA 1-5, XI-IPS 1-5\n• XII-MIPA 1-5, XII-IPS 1-5\n\nTotal: 30 kelas')" class="inline-block">
+                            @csrf
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-bold transition-colors shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                                </svg>
+                                Generate 30 Kelas Otomatis
+                            </button>
+                        </form>
+                        <a href="{{ route('admin.kelas.index', $ta->ganjil->id_tahun_ajaran) }}" class="bg-blue-400 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-bold transition-colors shadow-sm inline-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            Kelola Kelas
+                        </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
 
             <div class="border rounded-xl shadow-sm text-center p-4">

@@ -40,11 +40,13 @@ class TahunAjaranController extends Controller
             $genap = $group->firstWhere('semester', 'Genap');
             
             // Hitung statistik untuk tahun ajaran ini
-            // Kelas: hitung dari kedua semester jika ada
-            $allSemesterIds = $group->pluck('id_tahun_ajaran');
-            $jumlahKelas = Kelas::whereIn('tahun_ajaran_id', $allSemesterIds)->count();
+            // PENTING: Kelas dibuat HANYA untuk semester Ganjil dan di-share ke Genap
+            // Jadi kita hitung kelas dari semester Ganjil saja (bukan dari kedua semester)
+            $ganjilId = $ganjil ? $ganjil->id_tahun_ajaran : null;
+            $jumlahKelas = $ganjilId ? Kelas::where('tahun_ajaran_id', $ganjilId)->count() : 0;
 
-            // Hitung siswa unik dari kedua semester
+            // Hitung siswa unik dari KEDUA semester (siswa bisa pindah kelas antar semester)
+            $allSemesterIds = $group->pluck('id_tahun_ajaran');
             $jumlahSiswa = \App\Models\SiswaKelas::whereIn('tahun_ajaran_id', $allSemesterIds)
                 ->where('status', 'Aktif')
                 ->distinct('siswa_id')
@@ -345,4 +347,83 @@ class TahunAjaranController extends Controller
             return back()->with('error', 'Gagal mengarsipkan tahun ajaran: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Unarsipkan tahun ajaran (restore dari arsip)
+     */
+    public function unarchiveYear($tahunMulai, $tahunSelesai)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tas = TahunAjaran::where('tahun_mulai', $tahunMulai)
+                ->where('tahun_selesai', $tahunSelesai)
+                ->where('is_archived', true)
+                ->get();
+
+            if ($tas->isEmpty()) {
+                return back()->with('error', 'Tahun ajaran tidak ditemukan di arsip');
+            }
+
+            // Set is_archived = false untuk menampilkan kembali
+            foreach ($tas as $ta) {
+                $ta->update(['is_archived' => false]);
+            }
+
+            DB::commit();
+            return back()->with('success', "Tahun ajaran {$tahunMulai}/{$tahunSelesai} berhasil dipulihkan dari arsip.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memulihkan tahun ajaran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Halaman arsip tahun ajaran
+     */
+    public function archived()
+    {
+        // Ambil semua tahun ajaran yang di-archive
+        $tahunAjaranRaw = TahunAjaran::where('is_archived', true)
+            ->orderBy('tahun_mulai', 'desc')
+            ->orderBy('semester', 'asc')
+            ->get();
+        
+        // Group by tahun ajaran (2024/2025)
+        $tahunAjaranGrouped = $tahunAjaranRaw->groupBy(function($ta) {
+            return $ta->tahun_mulai . '/' . $ta->tahun_selesai;
+        });
+        
+        // Format data untuk view
+        $tahunAjaranArsip = [];
+        foreach ($tahunAjaranGrouped as $key => $group) {
+            [$tahunMulai, $tahunSelesai] = explode('/', $key);
+            
+            $ganjil = $group->firstWhere('semester', 'Ganjil');
+            $genap = $group->firstWhere('semester', 'Genap');
+            
+            $ganjilId = $ganjil ? $ganjil->id_tahun_ajaran : null;
+            $jumlahKelas = $ganjilId ? Kelas::where('tahun_ajaran_id', $ganjilId)->count() : 0;
+            
+            $allSemesterIds = $group->pluck('id_tahun_ajaran');
+            $jumlahSiswa = \App\Models\SiswaKelas::whereIn('tahun_ajaran_id', $allSemesterIds)
+                ->where('status', 'Aktif')
+                ->distinct('siswa_id')
+                ->count('siswa_id');
+            
+            $tahunAjaranArsip[] = (object)[
+                'tahun_mulai' => $tahunMulai,
+                'tahun_selesai' => $tahunSelesai,
+                'ganjil' => $ganjil,
+                'genap' => $genap,
+                'jumlah_kelas' => $jumlahKelas,
+                'jumlah_siswa' => $jumlahSiswa,
+                'jumlah_guru' => Guru::count(),
+                'jumlah_mapel' => MataPelajaran::count(),
+            ];
+        }
+        
+        return view('Admin.tahunAjaranArsip', compact('tahunAjaranArsip'));
+    }
 }
+

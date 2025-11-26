@@ -27,9 +27,24 @@ class MateriController extends Controller
         // Ambil tahun ajaran aktif
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
         
-        // Ambil semua jadwal mengajar guru di tahun ajaran aktif dengan relasi mata pelajaran dan kelas
+        // Tentukan tahun ajaran mana yang digunakan untuk query jadwal
+        // Jika yang aktif adalah Genap, cari jadwal dari Ganjil (karena jadwal dibuat di Ganjil)
+        $tahunAjaranForQuery = $tahunAjaranAktif->id_tahun_ajaran;
+        
+        if ($tahunAjaranAktif->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranAktif->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranAktif->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->first();
+            
+            if ($semesterGanjil) {
+                $tahunAjaranForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+        
+        // Ambil semua jadwal mengajar guru dengan relasi mata pelajaran dan kelas
         $jadwalMengajar = JadwalPelajaran::where('guru_id', $guru->id_guru)
-            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
+            ->where('tahun_ajaran_id', $tahunAjaranForQuery)
             ->with(['mataPelajaran', 'kelas', 'tahunAjaran'])
             ->get()
             ->groupBy(function($item) {
