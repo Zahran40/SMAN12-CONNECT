@@ -23,13 +23,28 @@ class RaportController extends Controller
         // Ambil tahun ajaran aktif
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
         
-        // Ambil semua jadwal mengajar guru di tahun ajaran aktif (unique per mapel dan kelas)
+        // Tentukan tahun ajaran mana yang digunakan untuk query jadwal
+        // Jika yang aktif adalah Genap, cari jadwal dari Ganjil (karena jadwal dibuat di Ganjil)
+        $tahunAjaranForQuery = $tahunAjaranAktif->id_tahun_ajaran;
+        
+        if ($tahunAjaranAktif->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranAktif->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranAktif->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->first();
+            
+            if ($semesterGanjil) {
+                $tahunAjaranForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+        
+        // Ambil semua jadwal mengajar guru (unique per mapel dan kelas)
         $jadwalList = JadwalPelajaran::where('guru_id', $guru->id_guru)
-            ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
+            ->where('tahun_ajaran_id', $tahunAjaranForQuery)
             ->with(['mataPelajaran', 'kelas'])
             ->get()
             ->unique(function ($item) {
-                return $item->id_mapel . '-' . $item->kelas_id;
+                return $item->mapel_id . '-' . $item->kelas_id;
             });
         
         return view('Guru.raport', compact('jadwalList', 'tahunAjaranAktif'));
@@ -44,9 +59,11 @@ class RaportController extends Controller
         
         // Ambil tahun ajaran aktif
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
-        $tahunAjaran = $tahunAjaranAktif->id_tahun_ajaran;
         $tahunAjaranLabel = $tahunAjaranAktif->tahun_mulai . '/' . $tahunAjaranAktif->tahun_selesai;
         $semesterAktif = $tahunAjaranAktif->semester;
+        
+        // Gunakan tahun_ajaran_id dari jadwal (bukan yang aktif) karena siswa_kelas mengikuti jadwal
+        $tahunAjaran = $jadwal->tahun_ajaran_id;
         
         // Ambil semua siswa di kelas ini dengan nilai raport menggunakan siswa_kelas
         $siswaList = Siswa::whereHas('siswaKelas', function($query) use ($jadwal, $tahunAjaran) {

@@ -65,8 +65,8 @@
                     <span class="col-span-2 text-slate-600 font-medium">{{ $mapel->nama_mapel }}</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 pb-3">
-                    <span class="font-bold text-slate-800">Deskripsi</span>
-                    <span class="col-span-2 text-slate-600 font-medium">{{ $mapel->deskripsi ?? '-' }}</span>
+                    <span class="font-bold text-slate-800">Kategori</span>
+                    <span class="col-span-2 text-slate-600 font-medium">{{ $mapel->kategori ?? '-' }}</span>
                 </div>
             </div>
         </div>

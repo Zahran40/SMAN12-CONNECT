@@ -12,7 +12,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                 @foreach($jadwalList as $jadwal)
                     @php
-                        // Hitung jumlah siswa dari siswa_kelas dengan filter tahun ajaran aktif
+                        // Hitung jumlah siswa dari siswa_kelas
+                        // Gunakan tahun_ajaran_id dari jadwal (bukan yang aktif) karena siswa_kelas mengikuti jadwal
                         $jumlahSiswa = DB::table('siswa_kelas')
                             ->where('kelas_id', $jadwal->kelas_id)
                             ->where('tahun_ajaran_id', $jadwal->tahun_ajaran_id)

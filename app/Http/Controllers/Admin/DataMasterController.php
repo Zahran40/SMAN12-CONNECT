@@ -42,9 +42,9 @@ class DataMasterController extends Controller
     {
         $tahunAjaranId = $request->get('tahun_ajaran');
 
-        // Ambil tahun ajaran
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        // Ambil tahun ajaran yang tidak diarsipkan
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
         
         if (!$tahunAjaranId && $tahunAjaranAktif) {
             $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran;
@@ -70,7 +70,7 @@ class DataMasterController extends Controller
      */
     public function createSiswa()
     {
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
         
         // Ambil kelas dari tahun ajaran aktif saja
         $kelasList = Kelas::with('tahunAjaran')
@@ -89,7 +89,7 @@ class DataMasterController extends Controller
     public function editSiswa($id)
     {
         $siswa = Siswa::with('kelas', 'user')->findOrFail($id);
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
         
         // Ambil kelas dari tahun ajaran aktif saja
         $kelasList = Kelas::with('tahunAjaran')
@@ -364,7 +364,7 @@ class DataMasterController extends Controller
         }, 'user'])->findOrFail($id);
         
         // Get all tahun ajaran for dropdown
-        $tahunAjaranList = \App\Models\TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranList = \App\Models\TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
         
         // Get all kelas for dropdown
         $kelasList = \App\Models\Kelas::orderBy('nama_kelas')->get();
@@ -467,8 +467,8 @@ class DataMasterController extends Controller
         $tahunAjaranId = $request->get('tahun_ajaran');
         $kelasId = $request->get('kelas');
 
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
 
         // Default ke tahun ajaran aktif
         if (!$tahunAjaranId) {
@@ -508,8 +508,8 @@ class DataMasterController extends Controller
         $tahunAjaranId = $request->get('tahun_ajaran');
         $kelasId = $request->get('kelas');
 
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
 
         // Default ke tahun ajaran aktif
         if (!$tahunAjaranId) {
@@ -535,8 +535,8 @@ class DataMasterController extends Controller
      */
     public function listMapel()
     {
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
         $tahunAjaranId = request('tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran ?? $tahunAjaranList->first()->id_tahun_ajaran ?? null);
         $kelasId = request('kelas', '');
 

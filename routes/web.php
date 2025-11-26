@@ -142,17 +142,21 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     
     // TAHUN AJARAN ROUTES
     Route::get('/tahun-ajaran', [TahunAjaranController::class, 'index'])->name('tahun-ajaran.index');
+    Route::get('/tahun-ajaran/archived', [TahunAjaranController::class, 'archived'])->name('tahun-ajaran.archived');
     Route::get('/tahun-ajaran/create', [TahunAjaranController::class, 'create'])->name('tahun-ajaran.create');
     Route::post('/tahun-ajaran', [TahunAjaranController::class, 'store'])->name('tahun-ajaran.store');
     Route::get('/tahun-ajaran/{id}', [TahunAjaranController::class, 'show'])->name('tahun-ajaran.show');
     Route::put('/tahun-ajaran/{id}/status', [TahunAjaranController::class, 'updateStatus'])->name('tahun-ajaran.update-status');
     Route::delete('/tahun-ajaran/{id}', [TahunAjaranController::class, 'destroy'])->name('tahun-ajaran.destroy');
-    // Hapus seluruh tahun ajaran (kedua semester) berdasarkan tahun mulai/selesai
+    // Hapus/Arsipkan seluruh tahun ajaran (kedua semester) berdasarkan tahun mulai/selesai
     Route::delete('/tahun-ajaran/{tahunMulai}/{tahunSelesai}', [TahunAjaranController::class, 'destroyYear'])->name('tahun-ajaran.destroy-year');
+    // Unarsipkan tahun ajaran (restore dari arsip)
+    Route::post('/tahun-ajaran/{tahunMulai}/{tahunSelesai}/unarchive', [TahunAjaranController::class, 'unarchiveYear'])->name('tahun-ajaran.unarchive-year');
 
     // KELAS ROUTES
     Route::get('/kelas', [App\Http\Controllers\Admin\KelasController::class, 'all'])->name('kelas.all');
     Route::get('/tahun-ajaran/{tahunAjaranId}/kelas', [App\Http\Controllers\Admin\KelasController::class, 'index'])->name('kelas.index');
+    Route::post('/tahun-ajaran/{tahunAjaranId}/kelas/generate', [App\Http\Controllers\Admin\KelasController::class, 'generate'])->name('kelas.generate');
     Route::get('/tahun-ajaran/{tahunAjaranId}/kelas/create', [App\Http\Controllers\Admin\KelasController::class, 'create'])->name('kelas.create');
     Route::post('/tahun-ajaran/{tahunAjaranId}/kelas', [App\Http\Controllers\Admin\KelasController::class, 'store'])->name('kelas.store');
     Route::get('/tahun-ajaran/{tahunAjaranId}/kelas/{kelasId}', [App\Http\Controllers\Admin\KelasController::class, 'show'])->name('kelas.show');

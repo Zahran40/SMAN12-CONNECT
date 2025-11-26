@@ -42,12 +42,11 @@ class AkademikController extends Controller
     public function storeMapel(Request $request)
     {
         $validated = $request->validate([
-            'nama_mapel' => 'required|string|max:255|unique:mata_pelajaran,nama_mapel',
+            'nama_mapel' => 'required|string|max:255',
             'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel',
             'kategori' => 'required|in:Umum,Kelas X,MIPA,IPS,Bahasa,Mulok',
         ], [
             'nama_mapel.required' => 'Nama mata pelajaran wajib diisi',
-            'nama_mapel.unique' => 'Mata pelajaran sudah terdaftar',
             'kode_mapel.required' => 'Kode mata pelajaran wajib diisi',
             'kode_mapel.unique' => 'Kode mata pelajaran sudah digunakan',
             'kategori.required' => 'Kategori wajib dipilih',
@@ -96,7 +95,7 @@ class AkademikController extends Controller
         $mapel = MataPelajaran::findOrFail($id);
 
         $validated = $request->validate([
-            'nama_mapel' => 'required|string|max:255|unique:mata_pelajaran,nama_mapel,' . $id . ',id_mapel',
+            'nama_mapel' => 'required|string|max:255',
             'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel,' . $id . ',id_mapel',
             'kategori' => 'required|in:Umum,Kelas X,MIPA,IPS,Bahasa,Mulok',
         ]);
@@ -147,7 +146,7 @@ class AkademikController extends Controller
         $tahunAjaranId = $request->get('tahun_ajaran');
         $kelasId = $request->get('kelas');
         
-        $tahunAjaranList = TahunAjaran::orderBy('tahun_mulai', 'desc')->get();
+        $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
         
         if (!$tahunAjaranId && $tahunAjaranAktif) {
