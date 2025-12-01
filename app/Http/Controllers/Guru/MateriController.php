@@ -263,13 +263,11 @@ class MateriController extends Controller
                 'pertemuan_id' => $validated['id_pertemuan'],
                 'semester' => $validated['semester'],
                 'judul_tugas' => $validated['judul'],
-                'deskripsi_tugas' => $validated['deskripsi'],
+                'deskripsi' => $validated['deskripsi'],
                 'file_path' => $filePath,
-                'tanggal_dibuka' => $tanggalDibuka,
-                'tanggal_ditutup' => $tanggalDitutup,
-                'deadline' => $tanggalDitutup, // deadline sama dengan tanggal ditutup
-                'jam_buka' => $validated['jam_buka'],
-                'jam_tutup' => $validated['jam_tutup'],
+                'waktu_dibuka' => $tanggalDibuka . ' ' . $validated['jam_buka'],
+                'waktu_ditutup' => $tanggalDitutup . ' ' . $validated['jam_tutup'],
+                'deadline' => $tanggalDitutup . ' ' . $validated['jam_tutup'],
             ]);
             
             Log::info("Tugas created - ID: {$tugas->id_tugas}, file_path: {$filePath}");
@@ -616,12 +614,10 @@ class MateriController extends Controller
             // Update semua field
             $tugas->pertemuan_id = $validated['id_pertemuan'];
             $tugas->judul_tugas = $validated['judul'];
-            $tugas->deskripsi_tugas = $validated['deskripsi'];
-            $tugas->tanggal_dibuka = $validated['tanggal_dibuka'];
-            $tugas->tanggal_ditutup = $validated['tanggal_ditutup'];
-            $tugas->deadline = $validated['tanggal_ditutup']; // deadline sama dengan tanggal ditutup
-            $tugas->jam_buka = $validated['jam_buka'];
-            $tugas->jam_tutup = $validated['jam_tutup'];
+            $tugas->deskripsi = $validated['deskripsi'];
+            $tugas->waktu_dibuka = $validated['tanggal_dibuka'] . ' ' . $validated['jam_buka'];
+            $tugas->waktu_ditutup = $validated['tanggal_ditutup'] . ' ' . $validated['jam_tutup'];
+            $tugas->deadline = $validated['tanggal_ditutup'] . ' ' . $validated['jam_tutup'];
             
             $tugas->save();
             

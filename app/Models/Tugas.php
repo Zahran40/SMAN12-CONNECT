@@ -15,19 +15,17 @@ class Tugas extends Model
         'pertemuan_id',
         'semester',
         'judul_tugas',
-        'deskripsi_tugas',
+        'deskripsi',
         'file_path',
-        'tanggal_dibuka',
-        'tanggal_ditutup',
+        'waktu_dibuka',
+        'waktu_ditutup',
         'deadline',
-        'jam_buka',
-        'jam_tutup',
     ];
 
     protected $casts = [
-        'tanggal_dibuka' => 'date',
-        'tanggal_ditutup' => 'date',
-        'deadline' => 'date',
+        'waktu_dibuka' => 'datetime',
+        'waktu_ditutup' => 'datetime',
+        'deadline' => 'datetime',
     ];
 
     /**
@@ -63,48 +61,42 @@ class Tugas extends Model
     }
 
     /**
-     * Accessor untuk waktu_ditutup (tanggal_ditutup + jam_tutup)
+     * Accessor untuk waktu_ditutup
      */
-    public function getWaktuDitutupAttribute()
+    public function getWaktuDitutupAttribute($value)
     {
-        if (!$this->tanggal_ditutup) {
+        if (!$value) {
             return null;
         }
         
-        $tanggalDitutup = \Carbon\Carbon::parse($this->tanggal_ditutup);
-        
-        if ($this->jam_tutup) {
-            $jamTutupParts = explode(':', $this->jam_tutup);
-            $tanggalDitutup->setTime(
-                (int)$jamTutupParts[0], 
-                (int)$jamTutupParts[1], 
-                isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0
-            );
-        }
-        
-        return $tanggalDitutup;
+        return \Carbon\Carbon::parse($value);
     }
 
     /**
-     * Accessor untuk waktu_dibuka (tanggal_dibuka + jam_buka)
+     * Accessor untuk waktu_dibuka
      */
-    public function getWaktuDibukaAttribute()
+    public function getWaktuDibukaAttribute($value)
     {
-        if (!$this->tanggal_dibuka) {
+        if (!$value) {
             return null;
         }
         
-        $tanggalDibuka = \Carbon\Carbon::parse($this->tanggal_dibuka);
-        
-        if ($this->jam_buka) {
-            $jamBukaParts = explode(':', $this->jam_buka);
-            $tanggalDibuka->setTime(
-                (int)$jamBukaParts[0], 
-                (int)$jamBukaParts[1], 
-                isset($jamBukaParts[2]) ? (int)$jamBukaParts[2] : 0
-            );
-        }
-        
-        return $tanggalDibuka;
+        return \Carbon\Carbon::parse($value);
+    }
+    
+    /**
+     * Accessor untuk deskripsi_tugas (backward compatibility)
+     */
+    public function getDeskripsiTugasAttribute()
+    {
+        return $this->attributes['deskripsi'] ?? null;
+    }
+    
+    /**
+     * Mutator untuk deskripsi_tugas (backward compatibility)
+     */
+    public function setDeskripsiTugasAttribute($value)
+    {
+        $this->attributes['deskripsi'] = $value;
     }
 }
