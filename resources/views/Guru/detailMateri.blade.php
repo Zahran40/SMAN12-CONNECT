@@ -103,15 +103,15 @@
                     <div class="border-2 border-blue-200 rounded-xl p-4 space-y-2">
                         <div>
                             <p class="text-sm font-medium text-slate-600 mb-1">Deskripsi Tugas :</p>
-                            <p class="text-sm text-slate-500 leading-relaxed">{{ $t->deskripsi_tugas }}</p>
+                            <p class="text-sm text-slate-500 leading-relaxed">{{ $t->deskripsi }}</p>
                         </div>
                         @if($t->deadline)
                         <div>
                             <p class="text-xs font-medium text-slate-600">Deadline:</p>
-                            <p class="text-xs text-red-600 font-semibold">{{ \Carbon\Carbon::parse($t->deadline)->translatedFormat('l, d F Y') }} - {{ \Carbon\Carbon::parse($t->jam_tutup)->format('H:i') }}</p>
+                            <p class="text-xs text-red-600 font-semibold">{{ \Carbon\Carbon::parse($t->deadline)->translatedFormat('l, d F Y') }} - {{ \Carbon\Carbon::parse($t->waktu_ditutup)->format('H:i') }}</p>
                         </div>
                         @else
-                        <p class="text-xs text-slate-400">Waktu: {{ \Carbon\Carbon::parse($t->jam_buka)->format('H:i') }} - {{ \Carbon\Carbon::parse($t->jam_tutup)->format('H:i') }}</p>
+                        <p class="text-xs text-slate-400">Waktu: {{ \Carbon\Carbon::parse($t->waktu_dibuka)->format('H:i') }} - {{ \Carbon\Carbon::parse($t->waktu_ditutup)->format('H:i') }}</p>
                         @endif
                     </div>
                 </div>

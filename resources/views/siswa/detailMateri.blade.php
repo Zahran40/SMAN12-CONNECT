@@ -103,22 +103,9 @@
                     @php
                         $now = now();
                         
-                        // Parse tanggal dari database (already in date format)
-                        $tanggalDibuka = $t->tanggal_dibuka ? \Carbon\Carbon::parse($t->tanggal_dibuka)->startOfDay() : now();
-                        $tanggalDitutup = $t->tanggal_ditutup ? \Carbon\Carbon::parse($t->tanggal_ditutup)->startOfDay() : now();
-                        
-                        // Create full datetime by setting time on the date
-                        $waktuBuka = clone $tanggalDibuka;
-                        if ($t->jam_buka) {
-                            $jamBukaParts = explode(':', $t->jam_buka);
-                            $waktuBuka->setTime((int)$jamBukaParts[0], (int)$jamBukaParts[1], isset($jamBukaParts[2]) ? (int)$jamBukaParts[2] : 0);
-                        }
-                        
-                        $waktuTutup = clone $tanggalDitutup;
-                        if ($t->jam_tutup) {
-                            $jamTutupParts = explode(':', $t->jam_tutup);
-                            $waktuTutup->setTime((int)$jamTutupParts[0], (int)$jamTutupParts[1], isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0);
-                        }
+                        // Parse datetime langsung dari kolom waktu_dibuka dan waktu_ditutup
+                        $waktuBuka = $t->waktu_dibuka ? \Carbon\Carbon::parse($t->waktu_dibuka) : now();
+                        $waktuTutup = $t->waktu_ditutup ? \Carbon\Carbon::parse($t->waktu_ditutup) : now();
                         
                         // Tugas terbuka jika: sekarang >= waktu buka DAN sekarang <= waktu tutup
                         $isOpen = $now->greaterThanOrEqualTo($waktuBuka) && $now->lessThanOrEqualTo($waktuTutup);
@@ -170,20 +157,20 @@
                         <div class="mt-3 border-t border-blue-100 pt-3 space-y-2">
                             <div>
                                 <p class="text-sm font-medium text-slate-600">Deskripsi Tugas :</p>
-                                <p class="text-sm text-slate-500">{{ $t->deskripsi_tugas ?? '-' }}</p>
+                                <p class="text-sm text-slate-500">{{ $t->deskripsi ?? '-' }}</p>
                             </div>
                             <div class="bg-blue-50 rounded-lg p-3 space-y-1.5">
                                 <div class="flex items-center space-x-2 text-xs text-slate-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-green-600">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span><strong>Dibuka:</strong> {{ $tanggalDibuka->translatedFormat('l, d F Y') }} - {{ substr($t->jam_buka, 0, 5) }}</span>
+                                    <span><strong>Dibuka:</strong> {{ $waktuBuka->translatedFormat('l, d F Y') }} - {{ $waktuBuka->format('H:i') }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2 text-xs text-slate-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-red-600">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span><strong>Ditutup:</strong> {{ $tanggalDitutup->translatedFormat('l, d F Y') }} - {{ substr($t->jam_tutup, 0, 5) }}</span>
+                                    <span><strong>Ditutup:</strong> {{ $waktuTutup->translatedFormat('l, d F Y') }} - {{ $waktuTutup->format('H:i') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -222,12 +209,8 @@
                                             @php
                                                 $tglKumpul = \Carbon\Carbon::parse($detailTugas->tgl_kumpul);
                                                 
-                                                // Create batas waktu from tanggal_ditutup + jam_tutup
-                                                $batasWaktu = clone $tanggalDitutup;
-                                                if ($t->jam_tutup) {
-                                                    $jamTutupParts = explode(':', $t->jam_tutup);
-                                                    $batasWaktu->setTime((int)$jamTutupParts[0], (int)$jamTutupParts[1], isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0);
-                                                }
+                                                // Batas waktu adalah waktu_ditutup
+                                                $batasWaktu = \Carbon\Carbon::parse($t->waktu_ditutup);
                                                 
                                                 $isLate = $tglKumpul->greaterThan($batasWaktu);
                                                 // Calculate total minutes difference

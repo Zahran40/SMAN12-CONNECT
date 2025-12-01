@@ -182,21 +182,9 @@ class MateriController extends Controller
         // Cek apakah masih dalam waktu pengumpulan
         $now = now();
         
-        // Combine tanggal and jam for waktu buka and tutup
-        $tanggalDibuka = $tugas->tanggal_dibuka ? \Carbon\Carbon::parse($tugas->tanggal_dibuka)->startOfDay() : now();
-        $tanggalDitutup = $tugas->tanggal_ditutup ? \Carbon\Carbon::parse($tugas->tanggal_ditutup)->startOfDay() : now();
-        
-        $waktuBuka = clone $tanggalDibuka;
-        if ($tugas->jam_buka) {
-            $jamBukaParts = explode(':', $tugas->jam_buka);
-            $waktuBuka->setTime((int)$jamBukaParts[0], (int)$jamBukaParts[1], isset($jamBukaParts[2]) ? (int)$jamBukaParts[2] : 0);
-        }
-        
-        $waktuTutup = clone $tanggalDitutup;
-        if ($tugas->jam_tutup) {
-            $jamTutupParts = explode(':', $tugas->jam_tutup);
-            $waktuTutup->setTime((int)$jamTutupParts[0], (int)$jamTutupParts[1], isset($jamTutupParts[2]) ? (int)$jamTutupParts[2] : 0);
-        }
+        // Parse waktu_dibuka dan waktu_ditutup langsung dari database
+        $waktuBuka = $tugas->waktu_dibuka ? \Carbon\Carbon::parse($tugas->waktu_dibuka) : now();
+        $waktuTutup = $tugas->waktu_ditutup ? \Carbon\Carbon::parse($tugas->waktu_ditutup) : now();
 
         if ($now->lt($waktuBuka)) {
             return back()->with('error', 'Tugas belum dibuka untuk pengumpulan');
