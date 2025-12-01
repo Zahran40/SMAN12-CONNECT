@@ -99,7 +99,7 @@
                     @method('PUT')
                     <input type="hidden" name="status" value="{{ $ta->ganjil->status == 'Aktif' ? 'Tidak Aktif' : 'Aktif' }}">
                     <button type="submit" class="{{ $ta->ganjil->status == 'Aktif' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' }} text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full">
-                        {{ $ta->ganjil->status == 'Aktif' ? '❌ Nonaktifkan' : '✅ Aktifkan' }}
+                        {{ $ta->ganjil->status == 'Aktif' ? ' Nonaktifkan' : ' Aktifkan' }}
                     </button>
                 </form>
             </div>
@@ -122,7 +122,7 @@
                     @method('PUT')
                     <input type="hidden" name="status" value="{{ $ta->genap->status == 'Aktif' ? 'Tidak Aktif' : 'Aktif' }}">
                     <button type="submit" class="{{ $ta->genap->status == 'Aktif' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' }} text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full">
-                        {{ $ta->genap->status == 'Aktif' ? '❌ Nonaktifkan' : '✅ Aktifkan' }}
+                        {{ $ta->genap->status == 'Aktif' ? ' Nonaktifkan' : ' Aktifkan' }}
                     </button>
                 </form>
             </div>

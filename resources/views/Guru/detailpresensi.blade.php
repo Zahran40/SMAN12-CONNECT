@@ -126,7 +126,7 @@
                     @foreach($siswaList as $index => $siswa)
                         <tr class="border-b border-slate-100 hover:bg-slate-50">
                             <td class="py-4 px-4 text-slate-600">{{ $index + 1 }}</td>
-                            <td class="py-4 px-4 text-slate-600">{{ $siswa->nis }}</td>
+                            <td class="py-4 px-4 text-slate-600">{{ $siswa->nisn }}</td>
                             <td class="py-4 px-4">
                                 <span class="font-medium text-slate-800">{{ $siswa->nama_lengkap }}</span>
                             </td>
