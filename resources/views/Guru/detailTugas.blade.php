@@ -55,10 +55,10 @@
         </div>
         @endif
 
-        @if($tugas->deskripsi_tugas)
+        @if($tugas->deskripsi)
         <div class="border border-slate-200 rounded-lg p-4">
             <h4 class="text-sm font-medium text-slate-700 mb-1">Deskripsi Tugas:</h4>
-            <p class="text-sm text-slate-500 whitespace-pre-wrap">{{ $tugas->deskripsi_tugas }}</p>
+            <p class="text-sm text-slate-500 whitespace-pre-wrap">{{ $tugas->deskripsi }}</p>
         </div>
         @endif
     </div>

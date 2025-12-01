@@ -104,14 +104,18 @@
 
             <div>
                 <label for="deskripsi" class="block text-lg font-bold text-slate-900 mb-2">Deskripsi Tugas</label>
-                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-lg sm:xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Deskripsi tugas (opsional)">{{ old('deskripsi', $tugas->deskripsi_tugas) }}</textarea>
+                <textarea id="deskripsi" name="deskripsi" rows="5" class="w-full max-w-lg border-2 border-blue-300 rounded-lg sm:xl py-3 px-4 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" placeholder="Deskripsi tugas (opsional)">{{ old('deskripsi', $tugas->deskripsi) }}</textarea>
             </div>
 
             @php
-                $tanggalDibuka = $tugas->tanggal_dibuka ? \Carbon\Carbon::parse($tugas->tanggal_dibuka)->format('Y-m-d') : date('Y-m-d');
-                $tanggalDitutup = $tugas->tanggal_ditutup ? \Carbon\Carbon::parse($tugas->tanggal_ditutup)->format('Y-m-d') : date('Y-m-d');
-                $jamBuka = $tugas->jam_buka ?? '08:00';
-                $jamTutup = $tugas->jam_tutup ?? '23:59';
+                // Parse waktu_dibuka dan waktu_ditutup dari database
+                $waktuDibuka = $tugas->waktu_dibuka ? \Carbon\Carbon::parse($tugas->waktu_dibuka) : now();
+                $waktuDitutup = $tugas->waktu_ditutup ? \Carbon\Carbon::parse($tugas->waktu_ditutup) : now();
+                
+                $tanggalDibuka = $waktuDibuka->format('Y-m-d');
+                $tanggalDitutup = $waktuDitutup->format('Y-m-d');
+                $jamBuka = $waktuDibuka->format('H:i');
+                $jamTutup = $waktuDitutup->format('H:i');
                 
                 list($jamBukaHour, $jamBukaMinute) = explode(':', $jamBuka);
                 list($jamTutupHour, $jamTutupMinute) = explode(':', $jamTutup);
