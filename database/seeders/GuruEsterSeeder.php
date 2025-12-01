@@ -24,11 +24,14 @@ class GuruEsterSeeder extends Seeder
             $kelas = DB::table('kelas')->where('nama_kelas', 'X-E1')->first();
             
             if (!$kelas) {
+                // Ambil tahun ajaran aktif untuk kelas
+                $tahunAjaranAktif = DB::table('tahun_ajaran')->where('status', 'Aktif')->first();
+                
                 $kelasId = DB::table('kelas')->insertGetId([
                     'nama_kelas' => 'X-E1',
                     'tingkat' => '10',
                     'jurusan' => 'IPA',
-                    'kapasitas' => 36,
+                    'tahun_ajaran_id' => $tahunAjaranAktif->id_tahun_ajaran ?? null,
                     'wali_kelas_id' => null, // akan di-update setelah guru dibuat
                 ]);
                 $this->command->info("✓ Kelas X-E1 berhasil dibuat (ID: {$kelasId})");
