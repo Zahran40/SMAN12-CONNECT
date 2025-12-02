@@ -11,7 +11,16 @@
         <h2 class="text-3xl font-bold text-blue-500">Detail Tugas</h2>
     </div>
 
-   
+    @if(session('success'))
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 shadow">
+        <div class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <p class="font-medium">{{ session('success') }}</p>
+        </div>
+    </div>
+    @endif
 
     <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
         
@@ -119,18 +128,20 @@
                         </td>
                         <td class="px-6 py-4">
                             @if($item['detail_tugas'] && $item['detail_tugas']->file_path)
-                                <a href="{{ asset('storage/' . $item['detail_tugas']->file_path) }}" target="_blank" class="flex items-center space-x-2 bg-white border-2 border-blue-200 rounded-lg py-2 px-3 hover:bg-blue-50 group max-w-xs">
-                                    <div class="flex items-center space-x-2 min-w-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-600 flex-shrink-0">
-                                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.343a1 1 0 0 0-.293-.707l-3.414-3.414A1 1 0 0 0 13.657 4H4Zm6 6a1 1 0 1 0-2 0v3.5a.5.5 0 0 1-1 0V8a1 1 0 1 0-2 0v3.5a.5.5 0 0 1-1 0V8a1 1 0 0 0-1 1v1.5a1.5 1.5 0 0 0 1.5 1.5h1.5a.5.5 0 0 1 1 0V8a1 1 0 0 0-1-1H4.5a.5.5 0 0 1 0-1h3.5a1 1 0 0 1 1 1v1.5a.5.5 0 0 1-1 0V8a1 1 0 1 0-2 0v3.5A2.5 2.5 0 0 0 7.5 14h1A2.5 2.5 0 0 0 11 11.5V8a1 1 0 0 0-1-1Z" clip-rule="evenodd" />
+                                <div class="flex items-center space-x-2">
+                                    <a href="{{ asset('storage/' . $item['detail_tugas']->file_path) }}" download class="flex items-center space-x-2 bg-white border-2 border-blue-200 rounded-lg py-2 px-3 hover:bg-blue-50 group max-w-xs">
+                                        <div class="flex items-center space-x-2 min-w-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-600 flex-shrink-0">
+                                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.343a1 1 0 0 0-.293-.707l-3.414-3.414A1 1 0 0 0 13.657 4H4Zm6 6a1 1 0 1 0-2 0v3.5a.5.5 0 0 1-1 0V8a1 1 0 1 0-2 0v3.5a.5.5 0 0 1-1 0V8a1 1 0 0 0-1 1v1.5a1.5 1.5 0 0 0 1.5 1.5h1.5a.5.5 0 0 1 1 0V8a1 1 0 0 0-1-1H4.5a.5.5 0 0 1 0-1h3.5a1 1 0 0 1 1 1v1.5a.5.5 0 0 1-1 0V8a1 1 0 1 0-2 0v3.5A2.5 2.5 0 0 0 7.5 14h1A2.5 2.5 0 0 0 11 11.5V8a1 1 0 0 0-1-1Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm font-medium text-slate-700 truncate" title="{{ basename($item['detail_tugas']->file_path) }}">{{ basename($item['detail_tugas']->file_path) }}</span>
+                                        </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-500 flex-shrink-0">
+                                            <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
+                                            <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
                                         </svg>
-                                        <span class="text-sm font-medium text-slate-700 truncate" title="{{ basename($item['detail_tugas']->file_path) }}">{{ basename($item['detail_tugas']->file_path) }}</span>
-                                    </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-500 flex-shrink-0">
-                                        <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                                        <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                    </svg>
-                                </a>
+                                    </a>
+                                </div>
                             @else
                                 <span class="text-sm text-slate-400 italic">Belum mengumpulkan</span>
                             @endif

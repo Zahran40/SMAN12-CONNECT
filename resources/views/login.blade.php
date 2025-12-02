@@ -108,12 +108,8 @@
     @enderror
 </div>
 
-                {{-- Remember Me --}}
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input type="checkbox" name="remember" id="remember" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
-                        <label for="remember" class="ml-2 text-sm text-gray-700">Ingat Saya</label>
-                    </div>
+                {{-- Lupa Password Link --}}
+                <div class="flex items-center justify-end">
                     <a href="{{ route('password.request') }}" class="text-sm text-[#4eaaff] hover:underline font-medium">Lupa Password?</a>
                 </div>
 
