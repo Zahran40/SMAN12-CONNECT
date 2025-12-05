@@ -21,6 +21,7 @@ class Raport extends Model
         'nilai_uas',
         'nilai_akhir',
         'nilai_huruf',
+        'is_locked',
         'deskripsi'
     ];
 
@@ -29,6 +30,7 @@ class Raport extends Model
         'nilai_uts' => 'decimal:2',
         'nilai_uas' => 'decimal:2',
         'nilai_akhir' => 'decimal:2',
+        'is_locked' => 'boolean',
     ];
 
     /**
@@ -84,7 +86,8 @@ class Raport extends Model
     public function hitungNilaiAkhir()
     {
         if ($this->nilai_tugas !== null && $this->nilai_uts !== null && $this->nilai_uas !== null) {
-            $this->nilai_akhir = ($this->nilai_tugas * 0.3) + ($this->nilai_uts * 0.3) + ($this->nilai_uas * 0.4);
+            $nilaiAkhir = ($this->nilai_tugas * 0.3) + ($this->nilai_uts * 0.3) + ($this->nilai_uas * 0.4);
+            $this->nilai_akhir = $nilaiAkhir;
             
             // Auto-calculate nilai huruf menggunakan function
             $this->nilai_huruf = DB::select('SELECT fn_convert_grade_letter(?) as grade', [

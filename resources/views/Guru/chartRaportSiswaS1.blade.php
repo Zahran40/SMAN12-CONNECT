@@ -51,6 +51,18 @@
             @csrf
             <input type="hidden" name="semester" value="Ganjil">
             
+            <!-- Lock Status Alert -->
+            @if($raport && $raport->is_locked)
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm font-medium text-red-800">🔒 Nilai sudah di-LOCK PERMANEN dan tidak dapat diubah lagi.</span>
+                    </div>
+                </div>
+            @endif
+            
             <div class="space-y-6">
                 
                 <div class="flex justify-between items-center">
@@ -66,20 +78,22 @@
                 <div class="flex justify-between items-center">
                     <h4 class="text-base font-medium text-slate-800">Nilai Ujian Tengah Semester</h4>
                     <input type="number" min="1" max="100" step="1" inputmode="numeric" pattern="[0-9]*" name="nilai_uts" value="{{ $raport->nilai_uts ?? '' }}"
-                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none"
-                           placeholder="1-100">
+                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none {{ $raport && $raport->is_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                           placeholder="1-100" {{ $raport && $raport->is_locked ? 'disabled' : '' }}>
                 </div>
 
                 <div class="flex justify-between items-center">
                     <h4 class="text-base font-medium text-slate-800">Nilai Ujian Akhir Semester</h4>
                     <input type="number" min="1" max="100" step="1" inputmode="numeric" pattern="[0-9]*" name="nilai_uas" value="{{ $raport->nilai_uas ?? '' }}"
-                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none"
-                           placeholder="1-100">
+                           class="w-32 border-2 border-slate-300 rounded-lg px-4 py-2 text-center font-semibold focus:border-blue-500 focus:outline-none {{ $raport && $raport->is_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                           placeholder="1-100" {{ $raport && $raport->is_locked ? 'disabled' : '' }}>
                 </div>
 
                 <div class="flex justify-between items-center">
                     <h4 class="text-base font-medium text-slate-800">Deskripsi/Catatan</h4>
-                    <textarea name="deskripsi" rows="2" maxlength="250" class="w-2/3 border-2 border-slate-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none" placeholder="Catatan untuk siswa... (maks 250 karakter)">{{ $raport->deskripsi ?? '' }}</textarea>
+                    <textarea name="deskripsi" rows="2" maxlength="250" 
+                              class="w-2/3 border-2 border-slate-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none {{ $raport && $raport->is_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
+                              placeholder="Catatan untuk siswa... (maks 250 karakter)" {{ $raport && $raport->is_locked ? 'disabled' : '' }}>{{ $raport->deskripsi ?? '' }}</textarea>
                 </div>
 
                 <div class="pt-6 mt-10 border-t-[3px] border-black"> 
@@ -94,13 +108,41 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-end gap-3">
-                    <button type="submit" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-colors w-full sm:w-auto">
-                        Simpan Nilai
-                    </button>
+                    @if($raport && $raport->is_locked)
+                        <!-- Nilai sudah di-lock permanen -->
+                        <div class="px-6 sm:px-8 py-2.5 sm:py-3 bg-red-100 text-red-700 font-bold rounded-lg shadow-md w-full sm:w-auto flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                            </svg>
+                            Nilai Terkunci Permanen
+                        </div>
+                    @else
+                        <!-- Tombol Simpan -->
+                        <button type="submit" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-colors w-full sm:w-auto">
+                            Simpan Nilai
+                        </button>
+                        <!-- Tombol Lock (hanya muncul jika nilai sudah ada) -->
+                        @if($raport && ($raport->nilai_uts || $raport->nilai_uas))
+                        <button type="button" onclick="if(confirm('⚠️ PERHATIAN!\n\nSetelah di-lock, nilai TIDAK DAPAT diubah lagi (PERMANEN).\n\nApakah Anda yakin ingin mengunci nilai ini?')) document.getElementById('lockForm').submit()" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition-colors w-full sm:w-auto flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                            </svg>
+                            Lock Nilai (Permanen)
+                        </button>
+                        @endif
+                    @endif
                 </div>
 
             </div>
         </form>
+
+        <!-- Form Lock (hidden) -->
+        @if($raport && !$raport->is_locked && ($raport->nilai_uts || $raport->nilai_uas))
+        <form id="lockForm" action="{{ route('guru.lock_nilai', [$jadwal->id_jadwal, $siswa->id_siswa]) }}" method="POST" style="display: none;">
+            @csrf
+            <input type="hidden" name="semester" value="Ganjil">
+        </form>
+        @endif
 
     </div>
 

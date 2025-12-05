@@ -87,6 +87,8 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     // PRESENSI ROUTES - Using Controller
     Route::get('/presensi', [App\Http\Controllers\Guru\PresensiController::class, 'index'])->name('presensi');
     Route::get('/presensi/list/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'listPertemuan'])->name('list_pertemuan');
+    Route::get('/presensi/rekap/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'rekapAbsensiKelas'])->name('rekap_absensi');
+    Route::get('/presensi/rekap/{jadwal_id}/export', [App\Http\Controllers\Guru\PresensiController::class, 'exportRekapAbsensi'])->name('rekap_absensi.export');
     Route::get('/presensi/slot-tersedia/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'getSlotTersedia'])->name('slot_tersedia');
     Route::get('/presensi/{pertemuan_id}', [App\Http\Controllers\Guru\PresensiController::class, 'detail'])->name('detail_presensi');
     Route::post('/presensi/{pertemuan_id}/update', [App\Http\Controllers\Guru\PresensiController::class, 'updateStatus'])->name('update_status_presensi');
@@ -121,6 +123,7 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/detail', [App\Http\Controllers\Guru\RaportController::class, 'detailNilai'])->name('detail_raport_siswa');
     Route::get('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/semester-2', [App\Http\Controllers\Guru\RaportController::class, 'detailNilaiS2'])->name('chart_raport_siswa_s2');
     Route::post('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/simpan', [App\Http\Controllers\Guru\RaportController::class, 'simpanNilai'])->name('simpan_nilai');
+    Route::post('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/lock', [App\Http\Controllers\Guru\RaportController::class, 'lockNilai'])->name('lock_nilai');
 
     Route::get('/pengumuman', [App\Http\Controllers\Guru\MateriController::class, 'pengumuman'])->name('pengumuman');
 
