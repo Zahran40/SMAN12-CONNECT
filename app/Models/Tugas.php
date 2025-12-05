@@ -15,7 +15,7 @@ class Tugas extends Model
         'pertemuan_id',
         'semester',
         'judul_tugas',
-        'deskripsi',
+        'deskripsi_tugas',
         'file_path',
         'waktu_dibuka',
         'waktu_ditutup',
@@ -87,16 +87,32 @@ class Tugas extends Model
     /**
      * Accessor untuk deskripsi_tugas (backward compatibility)
      */
-    public function getDeskripsiTugasAttribute()
+    public function getDeskripsiAttribute()
     {
-        return $this->attributes['deskripsi'] ?? null;
+        return $this->attributes['deskripsi_tugas'] ?? null;
     }
     
     /**
-     * Mutator untuk deskripsi_tugas (backward compatibility)
+     * Mutator untuk deskripsi (backward compatibility)
+     */
+    public function setDeskripsiAttribute($value)
+    {
+        $this->attributes['deskripsi_tugas'] = $value;
+    }
+    
+    /**
+     * Accessor untuk deskripsi_tugas
+     */
+    public function getDeskripsiTugasAttribute()
+    {
+        return $this->attributes['deskripsi_tugas'] ?? null;
+    }
+    
+    /**
+     * Mutator untuk deskripsi_tugas
      */
     public function setDeskripsiTugasAttribute($value)
     {
-        $this->attributes['deskripsi'] = $value;
+        $this->attributes['deskripsi_tugas'] = $value;
     }
 }

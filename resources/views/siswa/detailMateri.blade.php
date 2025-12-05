@@ -104,13 +104,15 @@
                         $now = now();
                         
                         // Parse datetime langsung dari kolom waktu_dibuka dan waktu_ditutup
-                        $waktuBuka = $t->waktu_dibuka ? \Carbon\Carbon::parse($t->waktu_dibuka) : now();
-                        $waktuTutup = $t->waktu_ditutup ? \Carbon\Carbon::parse($t->waktu_ditutup) : now();
+                        $waktuBuka = $t->waktu_dibuka ? \Carbon\Carbon::parse($t->waktu_dibuka) : null;
+                        $waktuTutup = $t->waktu_ditutup ? \Carbon\Carbon::parse($t->waktu_ditutup) : null;
                         
-                        // Tugas terbuka jika: sekarang >= waktu buka DAN sekarang <= waktu tutup
-                        $isOpen = $now->greaterThanOrEqualTo($waktuBuka) && $now->lessThanOrEqualTo($waktuTutup);
-                        $isBelumBuka = $now->lessThan($waktuBuka);
-                        $isSudahTutup = $now->greaterThan($waktuTutup);
+                        // Tugas terbuka jika:
+                        // 1. Sudah lewat waktu buka (atau tidak ada waktu buka)
+                        // 2. Belum lewat waktu tutup (atau tidak ada waktu tutup = selalu terbuka)
+                        $isBelumBuka = $waktuBuka && $now->lessThan($waktuBuka);
+                        $isSudahTutup = $waktuTutup && $now->greaterThan($waktuTutup);
+                        $isOpen = !$isBelumBuka && !$isSudahTutup;
                         
                         $detailTugas = $t->detailTugas->where('siswa_id', auth()->user()->siswa->id_siswa)->first();
                     @endphp
@@ -164,13 +166,13 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-green-600">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span><strong>Dibuka:</strong> {{ $waktuBuka->translatedFormat('l, d F Y') }} - {{ $waktuBuka->format('H:i') }}</span>
+                                    <span><strong>Dibuka:</strong> {{ $waktuBuka ? $waktuBuka->translatedFormat('l, d F Y') . ' - ' . $waktuBuka->format('H:i') : 'Tidak ditentukan' }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2 text-xs text-slate-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-red-600">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span><strong>Ditutup:</strong> {{ $waktuTutup->translatedFormat('l, d F Y') }} - {{ $waktuTutup->format('H:i') }}</span>
+                                    <span><strong>Ditutup:</strong> {{ $waktuTutup ? $waktuTutup->translatedFormat('l, d F Y') . ' - ' . $waktuTutup->format('H:i') : 'Tidak dibatasi' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -474,7 +476,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-red-500">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
-                                <span class="font-medium text-red-600">Ditutup: {{ \Carbon\Carbon::parse($tugas->waktu_ditutup)->translatedFormat('d F Y, H:i') }}</span>
+                                <span class="font-medium text-red-600">Ditutup: {{ $tugas->waktu_ditutup ? \Carbon\Carbon::parse($tugas->waktu_ditutup)->translatedFormat('d F Y, H:i') : 'Tidak dibatasi' }}</span>
                             </div>
                             @if($tugas->tgl_kumpul)
                             <div class="flex items-center space-x-2 text-sm text-green-600">

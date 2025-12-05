@@ -590,7 +590,7 @@ class DataMasterController extends Controller
 
         try {
             // Cek apakah siswa sudah ada di kelas untuk tahun ajaran ini
-            $existing = \DB::table('siswa_kelas')
+            $existing = DB::table('siswa_kelas')
                 ->where('siswa_id', $siswa_id)
                 ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
                 ->where('status', 'Aktif')
@@ -600,7 +600,7 @@ class DataMasterController extends Controller
                 return back()->with('error', 'Siswa sudah terdaftar di kelas lain untuk tahun ajaran ini. Edit data yang ada atau ubah status menjadi tidak aktif.');
             }
 
-            \DB::table('siswa_kelas')->insert([
+            DB::table('siswa_kelas')->insert([
                 'siswa_id' => $siswa_id,
                 'kelas_id' => $validated['kelas_id'],
                 'tahun_ajaran_id' => $validated['tahun_ajaran_id'],
@@ -625,7 +625,7 @@ class DataMasterController extends Controller
         ]);
 
         try {
-            \DB::table('siswa_kelas')
+            DB::table('siswa_kelas')
                 ->where('id', $id)
                 ->update([
                     'kelas_id' => $validated['kelas_id'],
@@ -644,7 +644,7 @@ class DataMasterController extends Controller
     public function deleteSiswaKelas($id)
     {
         try {
-            \DB::table('siswa_kelas')->where('id', $id)->delete();
+            DB::table('siswa_kelas')->where('id', $id)->delete();
             return back()->with('success', 'Data kelas siswa berhasil dihapus');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());

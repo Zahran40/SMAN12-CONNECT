@@ -12,6 +12,7 @@ use App\Models\MataPelajaran;
 use App\Models\JadwalPelajaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class KelasController extends Controller
 {
@@ -103,7 +104,7 @@ class KelasController extends Controller
             ->get();
         
         // Debug info (bisa dihapus nanti)
-        \Log::info('Kelola Kelas Debug:', [
+        Log::info('Kelola Kelas Debug:', [
             'tahun_ajaran_id_input' => $tahunAjaranId,
             'semester' => $tahunAjaran->semester,
             'tahun' => $tahunAjaran->tahun_mulai . '/' . $tahunAjaran->tahun_selesai,
