@@ -65,7 +65,7 @@
                             <option value="{{ $ta->id_tahun_ajaran }}" 
                                     data-semester="{{ $ta->semester }}"
                                     {{ $tahunAjaranId == $ta->id_tahun_ajaran ? 'selected' : '' }}>
-                                {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} - {{ $ta->semester }}
+                                {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} - {{ $ta->semester }}{{ $ta->status === 'Aktif' ? '  (Aktif)' : '' }}
                             </option>
                         @endforeach
                     </select>
