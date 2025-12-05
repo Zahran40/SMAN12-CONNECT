@@ -70,7 +70,6 @@ class KelasXE1CompleteSeeder extends Seeder
 
             // 4. Buat/ambil semua mata pelajaran yang diperlukan
             $mataPelajaranData = [
-                'Upacara' => 'Upacara Bendera',
                 'Geografi' => 'Geografi',
                 'Penjaskes' => 'Pendidikan Jasmani dan Kesehatan',
                 'Ekonomi' => 'Ekonomi',
@@ -100,62 +99,41 @@ class KelasXE1CompleteSeeder extends Seeder
                 $mapelIds[$kode] = $mapel->id_mapel;
             }
 
-            // 5. Buat jadwal pelajaran untuk kelas X-E1
+            // 5. Hapus jadwal lama untuk kelas ini (jika ada)
+            JadwalPelajaran::where('kelas_id', $kelas->id_kelas)
+                ->where('tahun_ajaran_id', $tahunAjaran->id_tahun_ajaran)
+                ->delete();
+
+            // 6. Buat jadwal pelajaran untuk kelas X-E1 (GABUNG per hari)
             $jadwalData = [
-                // SENIN
-                ['hari' => 'Senin', 'jam_mulai' => '07:15:00', 'jam_selesai' => '08:00:00', 'mapel' => 'Upacara'],
-                ['hari' => 'Senin', 'jam_mulai' => '08:00:00', 'jam_selesai' => '08:45:00', 'mapel' => 'Geografi'],
-                ['hari' => 'Senin', 'jam_mulai' => '08:45:00', 'jam_selesai' => '09:30:00', 'mapel' => 'Geografi'],
-                ['hari' => 'Senin', 'jam_mulai' => '09:30:00', 'jam_selesai' => '10:15:00', 'mapel' => 'Geografi'],
-                ['hari' => 'Senin', 'jam_mulai' => '10:30:00', 'jam_selesai' => '11:15:00', 'mapel' => 'Penjaskes'],
-                ['hari' => 'Senin', 'jam_mulai' => '11:15:00', 'jam_selesai' => '12:00:00', 'mapel' => 'Penjaskes'],
-                ['hari' => 'Senin', 'jam_mulai' => '12:00:00', 'jam_selesai' => '12:45:00', 'mapel' => 'Penjaskes'],
-                ['hari' => 'Senin', 'jam_mulai' => '13:45:00', 'jam_selesai' => '14:30:00', 'mapel' => 'Ekonomi'],
-                ['hari' => 'Senin', 'jam_mulai' => '14:30:00', 'jam_selesai' => '15:15:00', 'mapel' => 'Fisika'],
-                ['hari' => 'Senin', 'jam_mulai' => '15:15:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Fisika'],
+                // SENIN - Jam digabung untuk mapel yang sama
+                ['hari' => 'Senin', 'jam_mulai' => '07:15:00', 'jam_selesai' => '10:15:00', 'mapel' => 'Geografi'],       // 3 JP digabung
+                ['hari' => 'Senin', 'jam_mulai' => '10:30:00', 'jam_selesai' => '12:45:00', 'mapel' => 'Penjaskes'],      // 3 JP digabung
+                ['hari' => 'Senin', 'jam_mulai' => '13:45:00', 'jam_selesai' => '14:30:00', 'mapel' => 'Ekonomi'],        // 1 JP
+                ['hari' => 'Senin', 'jam_mulai' => '14:30:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Fisika'],         // 2 JP digabung
                 
-                // SELASA
-                ['hari' => 'Selasa', 'jam_mulai' => '07:15:00', 'jam_selesai' => '08:00:00', 'mapel' => 'B. Indonesia'],
-                ['hari' => 'Selasa', 'jam_mulai' => '08:00:00', 'jam_selesai' => '08:45:00', 'mapel' => 'B. Indonesia'],
-                ['hari' => 'Selasa', 'jam_mulai' => '08:45:00', 'jam_selesai' => '09:30:00', 'mapel' => 'PKN'],
-                ['hari' => 'Selasa', 'jam_mulai' => '09:30:00', 'jam_selesai' => '10:15:00', 'mapel' => 'PKN'],
-                ['hari' => 'Selasa', 'jam_mulai' => '10:30:00', 'jam_selesai' => '11:15:00', 'mapel' => 'B. Inggris'],
-                ['hari' => 'Selasa', 'jam_mulai' => '11:15:00', 'jam_selesai' => '12:00:00', 'mapel' => 'B. Inggris'],
-                ['hari' => 'Selasa', 'jam_mulai' => '12:00:00', 'jam_selesai' => '12:45:00', 'mapel' => 'B. Inggris'],
-                ['hari' => 'Selasa', 'jam_mulai' => '13:45:00', 'jam_selesai' => '14:30:00', 'mapel' => 'Sejarah'],
-                ['hari' => 'Selasa', 'jam_mulai' => '14:30:00', 'jam_selesai' => '15:15:00', 'mapel' => 'Sejarah'],
-                ['hari' => 'Selasa', 'jam_mulai' => '15:15:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Sejarah'],
+                // SELASA - Jam digabung untuk mapel yang sama
+                ['hari' => 'Selasa', 'jam_mulai' => '07:15:00', 'jam_selesai' => '08:45:00', 'mapel' => 'B. Indonesia'],  // 2 JP digabung
+                ['hari' => 'Selasa', 'jam_mulai' => '08:45:00', 'jam_selesai' => '10:15:00', 'mapel' => 'PKN'],           // 2 JP digabung
+                ['hari' => 'Selasa', 'jam_mulai' => '10:30:00', 'jam_selesai' => '12:45:00', 'mapel' => 'B. Inggris'],    // 3 JP digabung
+                ['hari' => 'Selasa', 'jam_mulai' => '13:45:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Sejarah'],       // 3 JP digabung
                 
-                // RABU
-                ['hari' => 'Rabu', 'jam_mulai' => '07:15:00', 'jam_selesai' => '08:00:00', 'mapel' => 'Kimia'],
-                ['hari' => 'Rabu', 'jam_mulai' => '08:00:00', 'jam_selesai' => '08:45:00', 'mapel' => 'Kimia'],
-                ['hari' => 'Rabu', 'jam_mulai' => '08:45:00', 'jam_selesai' => '09:30:00', 'mapel' => 'Kimia'],
-                ['hari' => 'Rabu', 'jam_mulai' => '09:30:00', 'jam_selesai' => '10:15:00', 'mapel' => 'B. Indonesia'],
-                ['hari' => 'Rabu', 'jam_mulai' => '10:30:00', 'jam_selesai' => '11:15:00', 'mapel' => 'B. Indonesia'],
-                ['hari' => 'Rabu', 'jam_mulai' => '11:15:00', 'jam_selesai' => '12:00:00', 'mapel' => 'Matematika'],
-                ['hari' => 'Rabu', 'jam_mulai' => '12:00:00', 'jam_selesai' => '12:45:00', 'mapel' => 'Matematika'],
-                ['hari' => 'Rabu', 'jam_mulai' => '13:45:00', 'jam_selesai' => '14:30:00', 'mapel' => 'Sosiologi'],
-                ['hari' => 'Rabu', 'jam_mulai' => '14:30:00', 'jam_selesai' => '15:15:00', 'mapel' => 'Sosiologi'],
-                ['hari' => 'Rabu', 'jam_mulai' => '15:15:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Sosiologi'],
+                // RABU - Jam digabung untuk mapel yang sama
+                ['hari' => 'Rabu', 'jam_mulai' => '07:15:00', 'jam_selesai' => '09:30:00', 'mapel' => 'Kimia'],           // 3 JP digabung
+                ['hari' => 'Rabu', 'jam_mulai' => '09:30:00', 'jam_selesai' => '11:15:00', 'mapel' => 'B. Indonesia'],    // 2 JP digabung
+                ['hari' => 'Rabu', 'jam_mulai' => '11:15:00', 'jam_selesai' => '12:45:00', 'mapel' => 'Matematika'],      // 2 JP digabung
+                ['hari' => 'Rabu', 'jam_mulai' => '13:45:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Sosiologi'],       // 3 JP digabung
                 
-                // KAMIS
-                ['hari' => 'Kamis', 'jam_mulai' => '07:15:00', 'jam_selesai' => '08:00:00', 'mapel' => 'Agama'],
-                ['hari' => 'Kamis', 'jam_mulai' => '08:00:00', 'jam_selesai' => '08:45:00', 'mapel' => 'Agama'],
-                ['hari' => 'Kamis', 'jam_mulai' => '08:45:00', 'jam_selesai' => '09:30:00', 'mapel' => 'Agama'],
-                ['hari' => 'Kamis', 'jam_mulai' => '09:30:00', 'jam_selesai' => '10:15:00', 'mapel' => 'Biologi'],
-                ['hari' => 'Kamis', 'jam_mulai' => '10:30:00', 'jam_selesai' => '11:15:00', 'mapel' => 'Biologi'],
-                ['hari' => 'Kamis', 'jam_mulai' => '11:15:00', 'jam_selesai' => '12:00:00', 'mapel' => 'Biologi'],
-                ['hari' => 'Kamis', 'jam_mulai' => '12:00:00', 'jam_selesai' => '12:45:00', 'mapel' => 'Matematika'],
-                ['hari' => 'Kamis', 'jam_mulai' => '13:45:00', 'jam_selesai' => '14:30:00', 'mapel' => 'Matematika'],
-                ['hari' => 'Kamis', 'jam_mulai' => '14:30:00', 'jam_selesai' => '15:15:00', 'mapel' => 'Seni Budaya'],
-                ['hari' => 'Kamis', 'jam_mulai' => '15:15:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Seni Budaya'],
+                // KAMIS - Jam digabung untuk mapel yang sama
+                ['hari' => 'Kamis', 'jam_mulai' => '07:15:00', 'jam_selesai' => '09:30:00', 'mapel' => 'Agama'],          // 3 JP digabung
+                ['hari' => 'Kamis', 'jam_mulai' => '09:30:00', 'jam_selesai' => '12:00:00', 'mapel' => 'Biologi'],        // 3 JP digabung
+                ['hari' => 'Kamis', 'jam_mulai' => '12:00:00', 'jam_selesai' => '14:30:00', 'mapel' => 'Matematika'],     // 2 JP digabung (skip istirahat siang)
+                ['hari' => 'Kamis', 'jam_mulai' => '14:30:00', 'jam_selesai' => '16:00:00', 'mapel' => 'Seni Budaya'],    // 2 JP digabung
                 
-                // JUMAT
-                ['hari' => 'Jumat', 'jam_mulai' => '07:15:00', 'jam_selesai' => '08:00:00', 'mapel' => 'Informatika'],
-                ['hari' => 'Jumat', 'jam_mulai' => '08:00:00', 'jam_selesai' => '08:45:00', 'mapel' => 'Informatika'],
-                ['hari' => 'Jumat', 'jam_mulai' => '08:45:00', 'jam_selesai' => '09:30:00', 'mapel' => 'Fisika'],
-                ['hari' => 'Jumat', 'jam_mulai' => '09:30:00', 'jam_selesai' => '10:15:00', 'mapel' => 'Ekonomi'],
-                ['hari' => 'Jumat', 'jam_mulai' => '10:30:00', 'jam_selesai' => '11:15:00', 'mapel' => 'Ekonomi'],
+                // JUMAT - Jam digabung untuk mapel yang sama
+                ['hari' => 'Jumat', 'jam_mulai' => '07:15:00', 'jam_selesai' => '08:45:00', 'mapel' => 'Informatika'],    // 2 JP digabung
+                ['hari' => 'Jumat', 'jam_mulai' => '08:45:00', 'jam_selesai' => '09:30:00', 'mapel' => 'Fisika'],         // 1 JP
+                ['hari' => 'Jumat', 'jam_mulai' => '09:30:00', 'jam_selesai' => '11:15:00', 'mapel' => 'Ekonomi'],        // 2 JP digabung
             ];
 
             foreach ($jadwalData as $jadwal) {
@@ -173,7 +151,7 @@ class KelasXE1CompleteSeeder extends Seeder
                 ]);
             }
 
-            // 6. Ambil semua siswa yang sudah ada dari seeder sebelumnya
+            // 7. Ambil semua siswa yang sudah ada dari seeder sebelumnya
             $namaSiswa = [
                 'Abidah Safrida Aini',
                 'Cahaya Qiara Deva',
@@ -213,7 +191,7 @@ class KelasXE1CompleteSeeder extends Seeder
                 'Verlita Evelyne Siahaan',
             ];
 
-            // 7. Masukkan siswa ke kelas X-E1
+            // 8. Masukkan siswa ke kelas X-E1
             foreach ($namaSiswa as $nama) {
                 $siswa = Siswa::whereHas('user', function($query) use ($nama) {
                     $query->where('name', $nama);
