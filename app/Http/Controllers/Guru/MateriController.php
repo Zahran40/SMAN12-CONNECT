@@ -124,10 +124,20 @@ class MateriController extends Controller
             ->orderBy('nomor_pertemuan', 'asc')
             ->get();
 
-        // Ambil materi yang sudah ada untuk ditampilkan
-        $existingMateri = Materi::whereHas('pertemuan', function($q) use ($jadwal_id) {
-            $q->where('jadwal_id', $jadwal_id);
-        })->with('pertemuan')->get();
+        // Ambil materi yang sudah ada menggunakan view_materi_guru untuk efisiensi
+        $existingMateri = DB::table('view_materi_guru')
+            ->where('id_jadwal', $jadwal_id)
+            ->orderBy('nomor_pertemuan', 'asc')
+            ->get()
+            ->map(function($item) {
+                // Convert to object format yang compatible dengan view
+                $item->pertemuan = (object)[
+                    'id_pertemuan' => $item->id_pertemuan,
+                    'nomor_pertemuan' => $item->nomor_pertemuan,
+                    'topik_bahasan' => $item->topik_bahasan
+                ];
+                return $item;
+            });
 
         $existingTugas = Tugas::whereHas('pertemuan', function($q) use ($jadwal_id) {
             $q->where('jadwal_id', $jadwal_id);
@@ -454,12 +464,13 @@ class MateriController extends Controller
 
     /**
      * Tampilkan detail tugas dengan daftar siswa
+     * Menggunakan view_tugas_siswa untuk efisiensi query
      */
     public function detailTugas($tugas_id)
     {
         $guru = Auth::user()->guru;
         
-        $tugas = Tugas::with(['pertemuan', 'jadwalPelajaran.kelas.siswa'])
+        $tugas = Tugas::with(['pertemuan', 'jadwalPelajaran'])
             ->findOrFail($tugas_id);
         
         // Pastikan tugas ini milik guru yang login
@@ -467,15 +478,30 @@ class MateriController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Ambil semua siswa dari kelas dan detail tugas mereka
-        $siswaList = $tugas->jadwalPelajaran->kelas->siswa->map(function($siswa) use ($tugas) {
-            $detailTugas = $tugas->detailTugas->where('siswa_id', $siswa->id_siswa)->first();
-            
-            return [
-                'siswa' => $siswa,
-                'detail_tugas' => $detailTugas,
-            ];
-        });
+        // Gunakan view_tugas_siswa untuk mengambil data siswa + detail tugas sekaligus
+        $siswaList = DB::table('view_tugas_siswa')
+            ->where('id_tugas', $tugas_id)
+            ->orderBy('nama_siswa', 'asc')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'siswa' => (object)[
+                        'id_siswa' => $item->siswa_id,
+                        'nis' => $item->nis,
+                        'nisn' => $item->nisn,
+                        'nama_lengkap' => $item->nama_siswa
+                    ],
+                    'detail_tugas' => $item->id_detail_tugas ? (object)[
+                        'id_detail_tugas' => $item->id_detail_tugas,
+                        'file_path' => $item->file_jawaban,
+                        'teks_jawaban' => $item->teks_jawaban,
+                        'tgl_kumpul' => $item->tgl_kumpul,
+                        'nilai' => $item->nilai,
+                        'komentar_guru' => $item->komentar_guru,
+                        'status_pengumpulan' => $item->status_pengumpulan
+                    ] : null
+                ];
+            });
 
         return view('Guru.detailTugas', compact('tugas', 'siswaList'));
     }

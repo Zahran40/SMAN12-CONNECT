@@ -182,7 +182,7 @@
                             </td>
                             <td class="px-4 py-3 text-sm font-mono">{{ $siswa->nisn }}</td>
                             <td class="px-4 py-3 text-sm font-semibold">{{ $siswa->nama_lengkap }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $siswa->kelas->nama_kelas ?? '-' }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $siswa->kelasHistory->first()->nama_kelas ?? '-' }}</td>
                         </tr>
                         @endforeach
                     </tbody>

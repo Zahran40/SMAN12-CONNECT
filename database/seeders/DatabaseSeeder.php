@@ -27,6 +27,18 @@ class DatabaseSeeder extends Seeder
         $this->command->info("\n1️⃣ Seeding Tahun Ajaran & Kelas...");
         $this->call(TahunAjaranSeeder::class);
 
+        // ============================================
+        // 1.5️⃣ SISWA (36 siswa untuk X-E1)
+        // ============================================
+        $this->command->info("\n1.5️⃣ Seeding Siswa...");
+        $this->call(SiswaSeeder::class);
+
+        // ============================================
+        // 2️⃣ KELAS X-E1 COMPLETE (Guru Ester + 36 Siswa)
+        // ============================================
+        $this->command->info("\n2️⃣ Seeding Kelas X-E1 Complete...");
+        $this->call(KelasXE1CompleteSeeder::class);
+
         // Ambil tahun ajaran aktif untuk digunakan di seeder selanjutnya
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
         
@@ -50,9 +62,9 @@ class DatabaseSeeder extends Seeder
         }
 
         // ============================================
-        // 2️⃣ USERS: ADMIN, GURU, SISWA
+        // 3️⃣ USERS TAMBAHAN (ADMIN & TESTING)
         // ============================================
-        $this->command->info("\n2️⃣ Seeding Users...");
+        $this->command->info("\n3️⃣ Seeding Users Tambahan...");
 
         // 1. ADMIN (admin2)
         $admin = User::firstOrCreate(
@@ -162,9 +174,9 @@ class DatabaseSeeder extends Seeder
         $this->command->info("✅ Siswa: {$siswa->email} (NIS: 12345, Kelas: X-1 IPA)");
 
         // ============================================
-        // 3️⃣ MATA PELAJARAN, JADWAL & PERTEMUAN
+        // 4️⃣ MATA PELAJARAN, JADWAL & PERTEMUAN
         // ============================================
-        $this->command->info("\n3️⃣ Seeding Mata Pelajaran, Jadwal & Pertemuan...");
+        $this->command->info("\n4️⃣ Seeding Mata Pelajaran, Jadwal & Pertemuan...");
         
         // Buat Mata Pelajaran
         $mapelMatExists = DB::table('mata_pelajaran')->where('kode_mapel', 'MAT001')->first();
@@ -240,7 +252,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info("ℹ️ Pertemuan untuk absensi TIDAK di-seed (guru yang buat sendiri)");
 
         // ============================================
-        // 4️⃣ SUMMARY
+        // 5️⃣ SUMMARY
         // ============================================
         $this->command->info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         $this->command->info("🎉 SEEDING SELESAI!");

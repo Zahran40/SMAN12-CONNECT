@@ -18,12 +18,37 @@ class SiswaController extends Controller
         $user = Auth::user();
         $siswa = Siswa::where('user_id', $user->id)->first();
         
-        // Get kelas siswa dari relasi siswa_kelas untuk tahun ajaran aktif
+        // Get tahun ajaran aktif
+        $tahunAjaranAktif = DB::table('tahun_ajaran')
+            ->where('status', 'Aktif')
+            ->where('is_archived', false)
+            ->first();
+        
+        if (!$tahunAjaranAktif) {
+            return redirect()->back()->with('error', 'Tidak ada tahun ajaran aktif');
+        }
+        
+        // Cari kelas siswa - jika tahun ajaran aktif adalah Genap, cari dari semester Ganjil yang sama tahunnya
+        $tahunAjaranIdForQuery = $tahunAjaranAktif->id_tahun_ajaran;
+        
+        if ($tahunAjaranAktif->semester === 'Genap') {
+            $semesterGanjil = DB::table('tahun_ajaran')
+                ->where('tahun_mulai', $tahunAjaranAktif->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranAktif->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->where('is_archived', false)
+                ->first();
+            
+            if ($semesterGanjil) {
+                $tahunAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+        
+        // Get kelas siswa dari relasi siswa_kelas
         $siswaKelas = DB::table('siswa_kelas as sk')
             ->join('kelas as k', 'sk.kelas_id', '=', 'k.id_kelas')
-            ->join('tahun_ajaran as ta', 'k.tahun_ajaran_id', '=', 'ta.id_tahun_ajaran')
             ->where('sk.siswa_id', $siswa->id_siswa)
-            ->where('ta.status', 'Aktif')
+            ->where('sk.tahun_ajaran_id', $tahunAjaranIdForQuery)
             ->where('sk.status', 'Aktif')
             ->select('sk.kelas_id', 'k.nama_kelas')
             ->first();
@@ -81,7 +106,23 @@ class SiswaController extends Controller
         // Get nama kelas
         $kelasNama = $siswaKelas->nama_kelas;
         
-        return view('siswa.beranda', compact('siswa', 'kelasNama', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari'));
+        // Get statistik dashboard menggunakan view_dashboard_siswa
+        $dashboardStats = DB::table('view_dashboard_siswa')
+            ->where('id_siswa', $siswa->id_siswa)
+            ->first();
+        
+        // Hitung total SPP yang sudah dibayar tahun ini menggunakan fn_total_spp_siswa
+        $totalSppDibayar = 0;
+        $result = DB::select('SELECT fn_total_spp_siswa(?, ?) as total', [
+            $siswa->id_siswa,
+            date('Y')
+        ]);
+        $totalSppDibayar = $result[0]->total ?? 0;
+        
+        // Ambil pengumuman aktif menggunakan sp_get_pengumuman_aktif
+        $pengumuman = DB::select('CALL sp_get_pengumuman_aktif(?)', ['siswa']);
+        
+        return view('siswa.beranda', compact('siswa', 'kelasNama', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari', 'dashboardStats', 'totalSppDibayar', 'pengumuman'));
     }
     
     public function profil()
@@ -89,17 +130,42 @@ class SiswaController extends Controller
         $user = Auth::user();
         $siswa = Siswa::where('user_id', $user->id)->first();
         
-        // Get kelas siswa dari relasi siswa_kelas untuk tahun ajaran aktif
-        $siswaKelas = DB::table('siswa_kelas as sk')
-            ->join('kelas as k', 'sk.kelas_id', '=', 'k.id_kelas')
-            ->join('tahun_ajaran as ta', 'k.tahun_ajaran_id', '=', 'ta.id_tahun_ajaran')
-            ->where('sk.siswa_id', $siswa->id_siswa)
-            ->where('ta.status', 'Aktif')
-            ->where('sk.status', 'Aktif')
-            ->select('k.nama_kelas')
+        // Get tahun ajaran aktif
+        $tahunAjaranAktif = DB::table('tahun_ajaran')
+            ->where('status', 'Aktif')
+            ->where('is_archived', false)
             ->first();
         
-        $kelasNama = $siswaKelas ? $siswaKelas->nama_kelas : null;
+        if (!$tahunAjaranAktif) {
+            $kelasNama = null;
+        } else {
+            // Cari kelas siswa - jika tahun ajaran aktif adalah Genap, cari dari semester Ganjil yang sama tahunnya
+            $tahunAjaranIdForQuery = $tahunAjaranAktif->id_tahun_ajaran;
+            
+            if ($tahunAjaranAktif->semester === 'Genap') {
+                $semesterGanjil = DB::table('tahun_ajaran')
+                    ->where('tahun_mulai', $tahunAjaranAktif->tahun_mulai)
+                    ->where('tahun_selesai', $tahunAjaranAktif->tahun_selesai)
+                    ->where('semester', 'Ganjil')
+                    ->where('is_archived', false)
+                    ->first();
+                
+                if ($semesterGanjil) {
+                    $tahunAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+                }
+            }
+            
+            // Get kelas siswa dari relasi siswa_kelas
+            $siswaKelas = DB::table('siswa_kelas as sk')
+                ->join('kelas as k', 'sk.kelas_id', '=', 'k.id_kelas')
+                ->where('sk.siswa_id', $siswa->id_siswa)
+                ->where('sk.tahun_ajaran_id', $tahunAjaranIdForQuery)
+                ->where('sk.status', 'Aktif')
+                ->select('k.nama_kelas')
+                ->first();
+            
+            $kelasNama = $siswaKelas->nama_kelas ?? null;
+        }
         
         return view('siswa.profil', compact('siswa', 'kelasNama'));
     }
