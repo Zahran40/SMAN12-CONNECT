@@ -45,9 +45,10 @@ class KelasXE1CompleteSeeder extends Seeder
                     'nama_lengkap' => 'Ester Donna Simanjuntak S.Pd.M.Pd',
                     'jenis_kelamin' => 'Perempuan',
                     'tempat_lahir' => 'Medan',
-                    'tanggal_lahir' => '1985-01-15',
+                    'tgl_lahir' => '1985-01-15',
                     'alamat' => 'Jl. Pendidikan No. 12, Medan',
                     'no_telepon' => '081234567890',
+                    'email' => 'ester.simanjuntak@guru.sman12.sch.id',
                 ]);
             }
 

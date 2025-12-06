@@ -72,6 +72,34 @@
         </div>
     </div>
 
+    <!-- Pengumuman Aktif -->
+    @if(isset($pengumuman) && count($pengumuman) > 0)
+    <section class="mb-6 sm:mb-8">
+        <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">📢 Pengumuman Terbaru</h3>
+        <div class="space-y-3">
+            @foreach($pengumuman as $item)
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h4 class="text-sm font-bold text-yellow-800">{{ $item->judul }}</h4>
+                            <p class="text-sm text-yellow-700 mt-1">{{ $item->isi }}</p>
+                            <p class="text-xs text-yellow-600 mt-2">
+                                <span class="font-medium">Target:</span> {{ $item->target_role }} • 
+                                <span class="font-medium">Tanggal:</span> {{ \Carbon\Carbon::parse($item->tanggal_publikasi)->format('d M Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
     <section class="mb-6 sm:mb-8">
         <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">Jadwal Mata Pelajaran</h3>
         <div class="flex overflow-x-auto space-x-2 mb-4 pb-2 scrollbar-hide">

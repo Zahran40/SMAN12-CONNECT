@@ -230,6 +230,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/create', [App\Http\Controllers\Admin\PembayaranController::class, 'create'])->name('pembayaran.create');
     Route::post('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'store'])->name('pembayaran.store');
+    Route::get('/pembayaran/rekap/{tahunAjaranId}', [App\Http\Controllers\Admin\PembayaranController::class, 'rekapPerTahunAjaran'])->name('pembayaran.rekap');
+    Route::get('/pembayaran/cetak-siswa/{tahunAjaranId}/{siswaId}', [App\Http\Controllers\Admin\PembayaranController::class, 'cetakPerSiswa'])->name('pembayaran.cetak-siswa');
     Route::get('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::put('/pembayaran/{id}/status', [App\Http\Controllers\Admin\PembayaranController::class, 'updateStatus'])->name('pembayaran.update_status');
     Route::delete('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'destroy'])->name('pembayaran.destroy');

@@ -191,9 +191,24 @@ class KelasController extends Controller
         $mapelDiKelas = $jadwalMapel->pluck('mapel_id')->toArray();
         
         // Ambil jadwal yang mata pelajarannya belum ada di kelas ini
-        $jadwalAvailable = JadwalPelajaran::with(['mataPelajaran', 'guru'])
-            ->whereNotIn('mapel_id', $mapelDiKelas)  // Mapel yang belum ada di kelas ini
-            ->get();
+        // Menggunakan view_jadwal_guru untuk efisiensi
+        $jadwalAvailable = DB::table('view_jadwal_guru')
+            ->whereNotIn('id_mapel', $mapelDiKelas)
+            ->get()
+            ->map(function($item) {
+                // Convert to format yang compatible dengan view
+                $item->mataPelajaran = (object)[
+                    'id_mapel' => $item->id_mapel,
+                    'nama_mapel' => $item->nama_mapel,
+                    'kode_mapel' => $item->kode_mapel
+                ];
+                $item->guru = (object)[
+                    'id_guru' => $item->id_guru,
+                    'nip' => $item->nip,
+                    'nama_lengkap' => $item->nama_guru
+                ];
+                return $item;
+            });
         
         // Ambil semua guru untuk dropdown wali kelas
         $guruList = Guru::orderBy('nama_lengkap')->get();
