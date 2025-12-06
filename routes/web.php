@@ -87,6 +87,8 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     // PRESENSI ROUTES - Using Controller
     Route::get('/presensi', [App\Http\Controllers\Guru\PresensiController::class, 'index'])->name('presensi');
     Route::get('/presensi/list/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'listPertemuan'])->name('list_pertemuan');
+    Route::get('/presensi/rekap/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'rekapAbsensiKelas'])->name('rekap_absensi');
+    Route::get('/presensi/rekap/{jadwal_id}/export', [App\Http\Controllers\Guru\PresensiController::class, 'exportRekapAbsensi'])->name('rekap_absensi.export');
     Route::get('/presensi/slot-tersedia/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'getSlotTersedia'])->name('slot_tersedia');
     Route::get('/presensi/{pertemuan_id}', [App\Http\Controllers\Guru\PresensiController::class, 'detail'])->name('detail_presensi');
     Route::post('/presensi/{pertemuan_id}/update', [App\Http\Controllers\Guru\PresensiController::class, 'updateStatus'])->name('update_status_presensi');
@@ -121,6 +123,7 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/detail', [App\Http\Controllers\Guru\RaportController::class, 'detailNilai'])->name('detail_raport_siswa');
     Route::get('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/semester-2', [App\Http\Controllers\Guru\RaportController::class, 'detailNilaiS2'])->name('chart_raport_siswa_s2');
     Route::post('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/simpan', [App\Http\Controllers\Guru\RaportController::class, 'simpanNilai'])->name('simpan_nilai');
+    Route::post('/raport-siswa/{jadwal_id}/siswa/{siswa_id}/lock', [App\Http\Controllers\Guru\RaportController::class, 'lockNilai'])->name('lock_nilai');
 
     Route::get('/pengumuman', [App\Http\Controllers\Guru\MateriController::class, 'pengumuman'])->name('pengumuman');
 
@@ -227,6 +230,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/create', [App\Http\Controllers\Admin\PembayaranController::class, 'create'])->name('pembayaran.create');
     Route::post('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'store'])->name('pembayaran.store');
+    Route::get('/pembayaran/rekap/{tahunAjaranId}', [App\Http\Controllers\Admin\PembayaranController::class, 'rekapPerTahunAjaran'])->name('pembayaran.rekap');
+    Route::get('/pembayaran/cetak-siswa/{tahunAjaranId}/{siswaId}', [App\Http\Controllers\Admin\PembayaranController::class, 'cetakPerSiswa'])->name('pembayaran.cetak-siswa');
     Route::get('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::put('/pembayaran/{id}/status', [App\Http\Controllers\Admin\PembayaranController::class, 'updateStatus'])->name('pembayaran.update_status');
     Route::delete('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'destroy'])->name('pembayaran.destroy');

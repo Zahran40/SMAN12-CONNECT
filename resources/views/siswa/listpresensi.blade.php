@@ -2,6 +2,10 @@
 
 @section('title', 'Presensi ' . $jadwal->nama_mapel)
 
+@push('scripts')
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places"></script>
+@endpush
+
 @section('content')
 
 <div class="flex items-center space-x-4 mb-6 sm:mb-8">
@@ -304,45 +308,31 @@ function detectLocation() {
             if (locationCoords) locationCoords.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             if (locationStatus) locationStatus.textContent = '';
             
-            // Reverse geocoding menggunakan Google Maps Geocoding API
-            const googleApiKey = '{{ env("GOOGLE_MAPS_API_KEY") }}';
-            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}&language=id`;
+            // Reverse geocoding menggunakan Google Maps JavaScript API Geocoder
+            const geocoder = new google.maps.Geocoder();
+            const latlng = { lat: lat, lng: lng };
             
-            console.log('Geocoding URL:', geocodeUrl);
+            console.log('Geocoding position:', latlng);
             
-            fetch(geocodeUrl)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Google Maps Response:', data);
-                    
-                    if (data.status === 'OK' && data.results && data.results.length > 0) {
-                        locationData.alamat_lengkap = data.results[0].formatted_address;
-                        if (locationAddress) locationAddress.textContent = data.results[0].formatted_address;
-                    } else {
-                        console.warn('Geocoding failed. Status:', data.status, 'Error:', data.error_message);
-                        locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                        if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
-                    }
-                    
-                    // Enable button
-                    if (btnSubmit) {
-                        btnSubmit.disabled = false;
-                        btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
-                    }
-                    if (btnText) btnText.textContent = 'Hadir';
-                })
-                .catch(error => {
-                    console.error('Geocoding fetch error:', error);
+            geocoder.geocode({ location: latlng, language: 'id' }, (results, status) => {
+                console.log('Google Maps Geocoder Response:', { status, results });
+                
+                if (status === 'OK' && results && results.length > 0) {
+                    locationData.alamat_lengkap = results[0].formatted_address;
+                    if (locationAddress) locationAddress.textContent = results[0].formatted_address;
+                } else {
+                    console.warn('Geocoding failed. Status:', status);
                     locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                    if (locationAddress) locationAddress.textContent = 'Error koneksi ke Google Maps';
-                    
-                    // Enable button meski geocoding gagal
-                    if (btnSubmit) {
-                        btnSubmit.disabled = false;
-                        btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
-                    }
-                    if (btnText) btnText.textContent = 'Hadir';
-                });
+                    if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
+                }
+                
+                // Enable button
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
+                }
+                if (btnText) btnText.textContent = 'Hadir';
+            });
         },
         function(error) {
             let errorMsg = '';

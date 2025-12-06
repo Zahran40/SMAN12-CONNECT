@@ -2,9 +2,19 @@
 
 @section('content')
 
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-blue-600">Manajemen Pembayaran SPP</h1>
-        <p class="text-slate-500 text-sm mt-1">(Manajemen untuk pembayaran per siswa)</p>
+    <div class="mb-8 flex justify-between items-start">
+        <div>
+            <h1 class="text-3xl font-bold text-blue-600">Manajemen Pembayaran SPP</h1>
+            <p class="text-slate-500 text-sm mt-1">(Manajemen untuk pembayaran per siswa)</p>
+        </div>
+        @if(isset($tahunAjaranAktif))
+        <a href="{{ route('admin.pembayaran.rekap', $tahunAjaranAktif->id_tahun_ajaran) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition-all flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Rekap SPP Tahun Ajaran</span>
+        </a>
+        @endif
     </div>
 
     @if(session('success'))
@@ -164,6 +174,7 @@
                         <th class="px-6 py-4 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">No</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">Siswa</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">Kelas</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">Total SPP {{ date('Y') }}</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">Tagihan</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">Periode</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">Nominal</th>
@@ -186,7 +197,25 @@
                         </td>
 
                         <td class="px-6 py-4 text-sm text-slate-600">
-                            {{ $pembayaran->siswa->kelas->nama_kelas ?? '-' }}
+                            {{ $pembayaran->siswa->nama_kelas ?? '-' }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            @php
+                                try {
+                                    $totalSppSiswa = DB::select('SELECT fn_total_spp_siswa(?, ?) as total', [
+                                        $pembayaran->siswa->id_siswa,
+                                        date('Y')
+                                    ]);
+                                    $totalSpp = $totalSppSiswa[0]->total ?? 0;
+                                } catch (\Exception $e) {
+                                    $totalSpp = 0;
+                                }
+                            @endphp
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-green-600">Rp {{ number_format($totalSpp, 0, ',', '.') }}</span>
+                                <span class="text-xs text-slate-500">Periode {{ date('Y') }}</span>
+                            </div>
                         </td>
 
                         <td class="px-6 py-4 text-sm font-medium text-slate-900">
@@ -230,7 +259,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center">
+                        <td colspan="9" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

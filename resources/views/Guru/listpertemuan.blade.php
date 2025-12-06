@@ -4,18 +4,29 @@
 
 @section('content')
 
-    <div class="flex items-center space-x-4 mb-4 sm:mb-6">
-        <a href="{{ route('guru.presensi') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-        </a>
-        <div>
-            <h2 class="text-3xl font-bold text-blue-500">Daftar Semua Pertemuan (1-16)</h2>
-            <p class="text-sm text-slate-500 mt-1">
-                {{ $jadwal->mataPelajaran->nama_mapel }} - {{ $jadwal->kelas->nama_kelas }}
-            </p>
+    <div class="flex items-center justify-between mb-4 sm:mb-6">
+        <div class="flex items-center space-x-4">
+            <a href="{{ route('guru.presensi') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+            </a>
+            <div>
+                <h2 class="text-3xl font-bold text-blue-500">Daftar Semua Pertemuan (1-16)</h2>
+                <p class="text-sm text-slate-500 mt-1">
+                    {{ $jadwal->mataPelajaran->nama_mapel }} - {{ $jadwal->kelas->nama_kelas }}
+                </p>
+            </div>
         </div>
+        
+        <!-- Tombol Rekap Absensi -->
+        <a href="{{ route('guru.rekap_absensi', $jadwal->id_jadwal) }}" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+            </svg>
+            <span>Rekap Absensi</span>
+        </a>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">

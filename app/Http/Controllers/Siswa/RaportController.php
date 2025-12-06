@@ -51,27 +51,27 @@ class RaportController extends Controller
         
         // Ambil data kelas untuk setiap tahun ajaran dari siswa_kelas
         $tahunAjaranWithKelas = $tahunAjaranSiswa->map(function($ta) use ($siswa) {
+            // Gunakan semester logic: Genap semester query pakai data Ganjil semester
+            $tahunAjaranIdForQuery = $ta->id_tahun_ajaran;
+            if ($ta->semester === 'Genap') {
+                // Cari tahun ajaran Ganjil dengan tahun_mulai yang sama
+                $tahunAjaranGanjil = TahunAjaran::where('tahun_mulai', $ta->tahun_mulai)
+                    ->where('semester', 'Ganjil')
+                    ->first();
+                
+                if ($tahunAjaranGanjil) {
+                    $tahunAjaranIdForQuery = $tahunAjaranGanjil->id_tahun_ajaran;
+                }
+            }
+            
             // Ambil kelas siswa untuk tahun ajaran ini dari tabel siswa_kelas
-            // Ini akan mengambil kelas history sesuai tahun ajaran yang pernah diikuti
             $kelas = DB::table('siswa_kelas')
                 ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.id_kelas')
                 ->where('siswa_kelas.siswa_id', $siswa->id_siswa)
-                ->where('siswa_kelas.tahun_ajaran_id', $ta->id_tahun_ajaran)
+                ->where('siswa_kelas.tahun_ajaran_id', $tahunAjaranIdForQuery)
+                ->where('siswa_kelas.status', 'Aktif')
                 ->select('kelas.*')
                 ->first();
-            
-            // Jika tidak ada di siswa_kelas, coba ambil dari kelas langsung
-            if (!$kelas) {
-                $kelas = DB::table('kelas')
-                    ->where('tahun_ajaran_id', $ta->id_tahun_ajaran)
-                    ->whereExists(function($query) use ($siswa, $ta) {
-                        $query->select(DB::raw(1))
-                              ->from('siswa_kelas')
-                              ->whereColumn('siswa_kelas.kelas_id', 'kelas.id_kelas')
-                              ->where('siswa_kelas.siswa_id', $siswa->id_siswa);
-                    })
-                    ->first();
-            }
             
             $ta->kelas = $kelas;
             return $ta;
@@ -142,35 +142,102 @@ class RaportController extends Controller
             ->orderBy('semester', 'asc')
             ->get();
         
-        // Ambil semua nilai siswa untuk tahun ajaran dan semester ini
-        $raports = DB::table('nilai')
-            ->join('mata_pelajaran', 'nilai.mapel_id', '=', 'mata_pelajaran.id_mapel')
-            ->join('tahun_ajaran', 'nilai.tahun_ajaran_id', '=', 'tahun_ajaran.id_tahun_ajaran')
-            ->where('nilai.siswa_id', $siswa->id_siswa)
-            ->where('nilai.tahun_ajaran_id', $tahunAjaranId)
-            ->where('nilai.semester', $semester)
-            ->select(
-                'nilai.*',
-                'mata_pelajaran.nama_mapel',
-                'mata_pelajaran.id_mapel',
-                'tahun_ajaran.tahun_mulai',
-                'tahun_ajaran.tahun_selesai'
-            )
-            ->get()
-            ->map(function($item) {
+        // Ambil nilai menggunakan Stored Procedure sp_rekap_nilai_siswa (alternatif dari view)
+        try {
+            $rekapNilai = DB::select('CALL sp_rekap_nilai_siswa(?, ?, ?)', [
+                $siswa->id_siswa,
+                $tahunAjaranId,
+                $semester
+            ]);
+            
+            // Convert hasil SP ke format yang sama dengan view
+            $raports = collect($rekapNilai)->map(function($item) use ($siswa) {
+                // Get grade dari function fn_convert_grade_letter
+                $gradeResult = DB::select('SELECT fn_convert_grade_letter(?) as grade', [$item->nilai_akhir]);
+                $grade = $gradeResult[0]->grade ?? '-';
+                
                 return (object)[
-                    'id_nilai' => $item->id_nilai,
                     'nilai_akhir' => $item->nilai_akhir,
-                    'nilai_huruf' => $item->nilai_huruf,
-                    'grade' => $item->nilai_huruf,
-                    'mataPelajaran' => (object)['nama_mapel' => $item->nama_mapel, 'id_mapel' => $item->id_mapel]
+                    'nilai_huruf' => $grade,
+                    'grade' => $grade,
+                    'nilai_tugas' => $item->nilai_tugas,
+                    'nilai_uts' => $item->nilai_uts,
+                    'nilai_uas' => $item->nilai_uas,
+                    'semester' => $item->semester,
+                    'mataPelajaran' => (object)['nama_mapel' => $item->nama_mapel]
                 ];
             });
+        } catch (\Exception $e) {
+            // Fallback ke view jika SP gagal
+            $raports = DB::table('view_nilai_siswa')
+                ->where('id_siswa', $siswa->id_siswa)
+                ->where('id_tahun_ajaran', $tahunAjaranId)
+                ->where('semester', $semester)
+                ->select(
+                    'id_nilai',
+                    'nilai_tugas',
+                    'nilai_uts',
+                    'nilai_uas',
+                    'nilai_akhir',
+                    'grade',
+                    'nama_mapel',
+                    'id_mapel',
+                    'semester'
+                )
+                ->get()
+                ->map(function($item) {
+                    return (object)[
+                        'id_nilai' => $item->id_nilai,
+                        'nilai_akhir' => $item->nilai_akhir,
+                        'nilai_huruf' => $item->grade,
+                        'grade' => $item->grade,
+                        'nilai_tugas' => $item->nilai_tugas,
+                        'nilai_uts' => $item->nilai_uts,
+                        'nilai_uas' => $item->nilai_uas,
+                        'semester' => $item->semester,
+                        'mataPelajaran' => (object)['nama_mapel' => $item->nama_mapel, 'id_mapel' => $item->id_mapel]
+                    ];
+                });
+        }
         
-        // Hitung rata-rata
-        $rataRata = $raports->avg('nilai_akhir') ?? 0;
+        // Hitung rata-rata semester menggunakan fn_rata_nilai (lebih efisien dari PHP avg)
+        try {
+            $result = DB::select('SELECT fn_rata_nilai(?, ?, ?) as rata', [
+                $siswa->id_siswa,
+                $tahunAjaranId,
+                $semester
+            ]);
+            $rataRata = $result[0]->rata ?? 0;
+        } catch (\Exception $e) {
+            // Fallback ke PHP avg jika function gagal
+            $rataRata = $raports->avg('nilai_akhir') ?? 0;
+        }
         
-        return view('Siswa.detailRaport', compact('raports', 'rataRata', 'tahunAjaranLabel', 'semester', 'tahunAjaranList', 'tahunAjaranId'));
+        // Ambil data kelas siswa untuk tahun ajaran ini
+        // Gunakan semester logic: Genap semester query pakai data Ganjil semester
+        $kelasAjaranIdForQuery = $tahunAjaranId;
+        if ($semester === 'Genap' && $selectedTahunAjaran) {
+            // Cari tahun ajaran Ganjil dengan tahun_mulai yang sama
+            $tahunAjaranGanjil = TahunAjaran::where('tahun_mulai', $selectedTahunAjaran->tahun_mulai)
+                ->where('semester', 'Ganjil')
+                ->first();
+            
+            if ($tahunAjaranGanjil) {
+                $kelasAjaranIdForQuery = $tahunAjaranGanjil->id_tahun_ajaran;
+            }
+        }
+        
+        $kelasData = DB::table('siswa_kelas')
+            ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.id_kelas')
+            ->where('siswa_kelas.siswa_id', $siswa->id_siswa)
+            ->where('siswa_kelas.tahun_ajaran_id', $kelasAjaranIdForQuery)
+            ->where('siswa_kelas.status', 'Aktif')
+            ->select('kelas.nama_kelas')
+            ->first();
+        
+        $namaKelas = $kelasData->nama_kelas ?? null;
+        
+        return view('Siswa.detailRaport', compact('raports', 'rataRata', 'tahunAjaranLabel', 'semester', 'tahunAjaranList', 'tahunAjaranId', 'namaKelas'));
     }
     
     /**

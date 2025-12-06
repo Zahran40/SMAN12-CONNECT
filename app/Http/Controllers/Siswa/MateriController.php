@@ -73,10 +73,10 @@ class MateriController extends Controller
                 
                 // Tentukan status pengumpulan
                 if (!$detailTugas) {
-                    $statusPengumpulan = $now->greaterThan($waktuTutup) ? 'Belum Dikumpulkan' : 'Belum Dikumpulkan';
+                    $statusPengumpulan = ($waktuTutup && $now->greaterThan($waktuTutup)) ? 'Belum Dikumpulkan' : 'Belum Dikumpulkan';
                 } else {
                     $tglKumpul = \Carbon\Carbon::parse($detailTugas->tgl_kumpul);
-                    $statusPengumpulan = $tglKumpul->lessThanOrEqualTo($waktuTutup) ? 'Tepat Waktu' : 'Terlambat';
+                    $statusPengumpulan = ($waktuTutup && $tglKumpul->lessThanOrEqualTo($waktuTutup)) ? 'Tepat Waktu' : 'Terlambat';
                 }
                 
                 return (object)[

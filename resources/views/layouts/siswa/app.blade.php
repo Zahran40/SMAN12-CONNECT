@@ -11,6 +11,7 @@
     
     html, body, * { font-family: 'Poppins', sans-serif !important; }
   </style>
+  @stack('styles')
 </head>
 <body class="bg-slate-100">
 
@@ -148,7 +149,7 @@
         });
     </script>
 
+    @stack('scripts')
 </body>
 </html>
-
 

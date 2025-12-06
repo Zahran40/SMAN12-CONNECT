@@ -11,7 +11,9 @@ use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+
 
 class PresensiController extends Controller
 {
@@ -328,5 +330,220 @@ class PresensiController extends Controller
             'totalKosong' => count($slotKosong),
             'totalTerisi' => count($pertemuanTerisi)
         ]);
+    }
+
+    /**
+     * Rekap Absensi Kelas menggunakan Stored Procedure (MSBD)
+     */
+    public function rekapAbsensiKelas($jadwalId)
+    {
+        $jadwal = JadwalPelajaran::with(['mataPelajaran', 'kelas', 'guru'])->findOrFail($jadwalId);
+        
+        // Ambil tahun ajaran aktif
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        
+        // Tanggal awal dan akhir (periode 1 semester)
+        $tanggalAwal = $tahunAjaranAktif->tanggal_mulai;
+        $tanggalAkhir = $tahunAjaranAktif->tanggal_selesai;
+        
+        // Panggil Stored Procedure sp_rekap_absensi_kelas (MSBD)
+        try {
+            $rekapAbsensi = DB::select('CALL sp_rekap_absensi_kelas(?)', [$jadwal->id_jadwal]);
+            
+            // Tambahkan persentase kehadiran menggunakan Function fn_hadir_persen (MSBD)
+            foreach ($rekapAbsensi as $rekap) {
+                try {
+                    $persentase = DB::select('SELECT fn_hadir_persen(?, ?) as persen', [
+                        $rekap->id_siswa,
+                        $tahunAjaranAktif->id_tahun_ajaran
+                    ]);
+                    $rekap->persen_hadir = $persentase[0]->persen ?? 0;
+                } catch (\Exception $e) {
+                    // Fallback: hitung manual
+                    $rekap->persen_hadir = $rekap->total_pertemuan > 0 
+                        ? ($rekap->hadir / $rekap->total_pertemuan) * 100 
+                        : 0;
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback jika SP error
+            Log::warning("SP sp_rekap_absensi_kelas error: " . $e->getMessage());
+            
+            $siswaList = DB::table('siswa')
+                ->where('kelas_id', $jadwal->kelas_id)
+                ->select('id_siswa', 'nis', 'nama_lengkap')
+                ->get();
+            
+            $rekapAbsensi = [];
+            foreach ($siswaList as $siswa) {
+                $totalPertemuan = DB::table('pertemuan')
+                    ->where('jadwal_id', $jadwal->id_jadwal)
+                    ->where('is_submitted', 1)
+                    ->count();
+                
+                $statusAbsensi = DB::table('detail_absensi as da')
+                    ->join('pertemuan as p', 'da.pertemuan_id', '=', 'p.id_pertemuan')
+                    ->where('da.siswa_id', $siswa->id_siswa)
+                    ->where('p.jadwal_id', $jadwal->id_jadwal)
+                    ->where('p.is_submitted', 1)
+                    ->select(
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Hadir" THEN 1 ELSE 0 END) as hadir'),
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Izin" THEN 1 ELSE 0 END) as izin'),
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Sakit" THEN 1 ELSE 0 END) as sakit'),
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Alfa" THEN 1 ELSE 0 END) as alfa')
+                    )
+                    ->first();
+                
+                $hadir = $statusAbsensi->hadir ?? 0;
+                $persenHadir = $totalPertemuan > 0 ? ($hadir / $totalPertemuan) * 100 : 0;
+                
+                $rekapAbsensi[] = (object)[
+                    'id_siswa' => $siswa->id_siswa,
+                    'nis' => $siswa->nis,
+                    'nama_lengkap' => $siswa->nama_lengkap,
+                    'total_pertemuan' => $totalPertemuan,
+                    'hadir' => $statusAbsensi->hadir ?? 0,
+                    'izin' => $statusAbsensi->izin ?? 0,
+                    'sakit' => $statusAbsensi->sakit ?? 0,
+                    'alfa' => $statusAbsensi->alfa ?? 0,
+                    'persen_hadir' => $persenHadir
+                ];
+            }
+        }
+        
+        return view('Guru.rekapAbsensi', compact('jadwal', 'rekapAbsensi', 'tahunAjaranAktif', 'tanggalAwal', 'tanggalAkhir'));
+    }
+    
+    /**
+     * Export Rekap Absensi ke Excel
+     */
+    public function exportRekapAbsensi($jadwalId)
+    {
+        $jadwal = JadwalPelajaran::with(['mataPelajaran', 'kelas', 'guru'])->findOrFail($jadwalId);
+        
+        // Ambil tahun ajaran aktif
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')->first();
+        
+        // Tanggal awal dan akhir
+        $tanggalAwal = $tahunAjaranAktif->tanggal_mulai;
+        $tanggalAkhir = $tahunAjaranAktif->tanggal_selesai;
+        
+        // Panggil Stored Procedure sp_rekap_absensi_kelas (MSBD)
+        try {
+            $rekapAbsensi = DB::select('CALL sp_rekap_absensi_kelas(?)', [$jadwal->id_jadwal]);
+            
+            // Tambahkan persentase kehadiran menggunakan Function fn_hadir_persen (MSBD)
+            foreach ($rekapAbsensi as $rekap) {
+                try {
+                    $persentase = DB::select('SELECT fn_hadir_persen(?, ?) as persen', [
+                        $rekap->id_siswa,
+                        $tahunAjaranAktif->id_tahun_ajaran
+                    ]);
+                    $rekap->persen_hadir = $persentase[0]->persen ?? 0;
+                } catch (\Exception $e) {
+                    $rekap->persen_hadir = $rekap->total_pertemuan > 0 
+                        ? ($rekap->hadir / $rekap->total_pertemuan) * 100 
+                        : 0;
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback jika SP error
+            $siswaList = DB::table('siswa')
+                ->where('kelas_id', $jadwal->kelas_id)
+                ->select('id_siswa', 'nis', 'nama_lengkap')
+                ->get();
+            
+            $rekapAbsensi = [];
+            foreach ($siswaList as $siswa) {
+                $totalPertemuan = DB::table('pertemuan')
+                    ->where('jadwal_id', $jadwal->id_jadwal)
+                    ->where('is_submitted', 1)
+                    ->count();
+                
+                $statusAbsensi = DB::table('detail_absensi as da')
+                    ->join('pertemuan as p', 'da.pertemuan_id', '=', 'p.id_pertemuan')
+                    ->where('da.siswa_id', $siswa->id_siswa)
+                    ->where('p.jadwal_id', $jadwal->id_jadwal)
+                    ->where('p.is_submitted', 1)
+                    ->select(
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Hadir" THEN 1 ELSE 0 END) as hadir'),
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Izin" THEN 1 ELSE 0 END) as izin'),
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Sakit" THEN 1 ELSE 0 END) as sakit'),
+                        DB::raw('SUM(CASE WHEN da.status_kehadiran = "Alfa" THEN 1 ELSE 0 END) as alfa')
+                    )
+                    ->first();
+                
+                $hadir = $statusAbsensi->hadir ?? 0;
+                $persenHadir = $totalPertemuan > 0 ? ($hadir / $totalPertemuan) * 100 : 0;
+                
+                $rekapAbsensi[] = (object)[
+                    'id_siswa' => $siswa->id_siswa,
+                    'nis' => $siswa->nis,
+                    'nama_lengkap' => $siswa->nama_lengkap,
+                    'total_pertemuan' => $totalPertemuan,
+                    'hadir' => $statusAbsensi->hadir ?? 0,
+                    'izin' => $statusAbsensi->izin ?? 0,
+                    'sakit' => $statusAbsensi->sakit ?? 0,
+                    'alfa' => $statusAbsensi->alfa ?? 0,
+                    'persen_hadir' => $persenHadir
+                ];
+            }
+        }
+        
+        // Buat CSV file
+        $filename = 'Rekap_Absensi_' . $jadwal->mataPelajaran->nama_mapel . '_' . $jadwal->kelas->nama_kelas . '_' . date('YmdHis') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ];
+        
+        $callback = function() use ($rekapAbsensi, $jadwal, $tanggalAwal, $tanggalAkhir) {
+            $file = fopen('php://output', 'w');
+            
+            // BOM untuk UTF-8
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Header Info
+            fputcsv($file, ['REKAP ABSENSI SISWA']);
+            fputcsv($file, ['Mata Pelajaran', $jadwal->mataPelajaran->nama_mapel]);
+            fputcsv($file, ['Kelas', $jadwal->kelas->nama_kelas]);
+            fputcsv($file, ['Guru Pengampu', $jadwal->guru->nama_lengkap]);
+            fputcsv($file, ['Periode', \Carbon\Carbon::parse($tanggalAwal)->format('d M Y') . ' - ' . \Carbon\Carbon::parse($tanggalAkhir)->format('d M Y')]);
+            fputcsv($file, ['']);
+            
+            // Header Tabel
+            fputcsv($file, ['No', 'NIS', 'Nama Siswa', 'Total Pertemuan', 'Hadir', 'Izin', 'Sakit', 'Alfa', 'Persentase Kehadiran']);
+            
+            // Data
+            foreach ($rekapAbsensi as $index => $rekap) {
+                fputcsv($file, [
+                    $index + 1,
+                    $rekap->nis,
+                    $rekap->nama_lengkap,
+                    $rekap->total_pertemuan ?? 0,
+                    $rekap->hadir ?? 0,
+                    $rekap->izin ?? 0,
+                    $rekap->sakit ?? 0,
+                    $rekap->alfa ?? 0,
+                    number_format($rekap->persen_hadir ?? 0, 2) . '%'
+                ]);
+            }
+            
+            // Footer
+            fputcsv($file, ['']);
+            fputcsv($file, ['Keterangan:']);
+            fputcsv($file, ['Rumus Persentase Kehadiran', '(Total Hadir / Total Pertemuan) x 100']);
+            fputcsv($file, ['Kategori Sangat Baik', '>= 80%']);
+            fputcsv($file, ['Kategori Cukup', '60-79%']);
+            fputcsv($file, ['Kategori Perlu Perhatian', '< 60%']);
+            
+            fclose($file);
+        };
+        
+        return response()->stream($callback, 200, $headers);
     }
 }

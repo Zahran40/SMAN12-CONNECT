@@ -2,6 +2,23 @@
 
 @section('title', 'Beranda')
 
+@push('styles')
+<style>
+    #map {
+        height: 250px;
+        border-radius: 12px;
+        margin-top: 12px;
+    }
+    .location-info {
+        background: #f1f5f9;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 8px;
+        font-size: 13px;
+    }
+</style>
+@endpush
+
 @section('content')
 
     <!-- ALERT TUNGGAKAN SPP -->
@@ -54,6 +71,34 @@
             @endif
         </div>
     </div>
+
+    <!-- Pengumuman Aktif -->
+    @if(isset($pengumuman) && count($pengumuman) > 0)
+    <section class="mb-6 sm:mb-8">
+        <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">📢 Pengumuman Terbaru</h3>
+        <div class="space-y-3">
+            @foreach($pengumuman as $item)
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h4 class="text-sm font-bold text-yellow-800">{{ $item->judul }}</h4>
+                            <p class="text-sm text-yellow-700 mt-1">{{ $item->isi }}</p>
+                            <p class="text-xs text-yellow-600 mt-2">
+                                <span class="font-medium">Target:</span> {{ $item->target_role }} • 
+                                <span class="font-medium">Tanggal:</span> {{ \Carbon\Carbon::parse($item->tanggal_publikasi)->format('d M Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
 
     <section class="mb-6 sm:mb-8">
         <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">Jadwal Mata Pelajaran</h3>
@@ -144,9 +189,9 @@
                                         ✓ Sudah Absen
                                     </span>
                                 @else
-                                    <a href="{{ route('siswa.detail_presensi', $pertemuan->id_pertemuan) }}" class="inline-block w-full sm:w-auto bg-blue-400 text-white text-xs sm:text-sm font-medium px-4 sm:px-5 py-2 rounded-full hover:bg-blue-500 transition-colors text-center">
+                                    <button type="button" onclick="openAbsenModal({{ $pertemuan->id_pertemuan }}, '{{ $pertemuan->nama_mapel }}')" class="w-full sm:w-auto bg-blue-400 text-white text-xs sm:text-sm font-medium px-4 sm:px-5 py-2 rounded-full hover:bg-blue-500 transition-colors">
                                         Presensi Sekarang
-                                    </a>
+                                    </button>
                                 @endif
                             </div>
                         </div>
@@ -167,4 +212,356 @@
         </div>
     </section>
 
+    <!-- Modal Absensi dengan Google Maps -->
+    <div id="absenModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Konfirmasi Presensi</h3>
+                    <button onclick="closeAbsenModal()" class="text-slate-400 hover:text-slate-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="locationStatus" class="mb-4 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                    <div class="flex items-center gap-2">
+                        <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Mendeteksi lokasi Anda...</span>
+                    </div>
+                </div>
+
+                <button type="button" id="retryLocationBtn" onclick="retryGetLocation()" class="hidden w-full mb-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium">
+                    🔄 Coba Deteksi Lokasi Lagi
+                </button>
+
+                <div id="map"></div>
+
+                <div id="locationInfo" class="location-info hidden">
+                    <p class="text-slate-700 font-medium mb-1">Lokasi Anda:</p>
+                    <p id="addressText" class="text-slate-600"></p>
+                    <p class="text-slate-500 text-xs mt-1">
+                        <span id="coordsText"></span>
+                    </p>
+                </div>
+
+                <form id="absenForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="latitude" id="latitude">
+                    <input type="hidden" name="longitude" id="longitude">
+                    <input type="hidden" name="alamat_lengkap" id="alamat_lengkap">
+
+                    <div class="mt-6 flex gap-3">
+                        <button type="button" onclick="closeAbsenModal()" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-lg font-medium hover:bg-slate-300 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" id="submitBtn" disabled class="flex-1 bg-blue-400 text-white py-3 rounded-lg font-medium hover:bg-blue-500 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed">
+                            Konfirmasi Presensi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
+
+@push('scripts')
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places"></script>
+<script>
+let map;
+let marker;
+let geocoder;
+let isMapInitialized = false;
+
+function openAbsenModal(pertemuanId, namaMapel) {
+    console.log('Opening modal for pertemuan:', pertemuanId);
+    
+    document.getElementById('modalTitle').textContent = 'Presensi: ' + namaMapel;
+    document.getElementById('absenForm').action = '/siswa/absen/' + pertemuanId;
+    document.getElementById('absenModal').classList.remove('hidden');
+    document.getElementById('absenModal').classList.add('flex');
+    
+    // Reset status
+    document.getElementById('locationStatus').innerHTML = `
+        <div class="flex items-center gap-2">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Mendeteksi lokasi Anda...</span>
+        </div>
+    `;
+    
+    // Reset form
+    document.getElementById('latitude').value = '';
+    document.getElementById('longitude').value = '';
+    document.getElementById('alamat_lengkap').value = '';
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('locationInfo').classList.add('hidden');
+    
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+        initMap();
+        getUserLocation();
+    }, 100);
+}
+
+function closeAbsenModal() {
+    document.getElementById('absenModal').classList.add('hidden');
+    document.getElementById('absenModal').classList.remove('flex');
+    isMapInitialized = false;
+}
+
+function initMap() {
+    try {
+        console.log('Initializing map...');
+        
+        // Default to Jakarta if geolocation fails
+        const defaultLocation = { lat: -6.2088, lng: 106.8456 };
+        
+        const mapElement = document.getElementById('map');
+        if (!mapElement) {
+            console.error('Map element not found!');
+            return;
+        }
+        
+        map = new google.maps.Map(mapElement, {
+            center: defaultLocation,
+            zoom: 15,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+        });
+        
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: false,
+            animation: google.maps.Animation.DROP,
+        });
+        
+        geocoder = new google.maps.Geocoder();
+        isMapInitialized = true;
+        
+        console.log('Map initialized successfully');
+    } catch (error) {
+        console.error('Error initializing map:', error);
+        showError('Gagal menginisialisasi peta: ' + error.message);
+    }
+}
+
+function getUserLocation() {
+    console.log('Getting user location...');
+    
+    if (!navigator.geolocation) {
+        console.error('Geolocation not supported');
+        showError('Browser Anda tidak mendukung deteksi lokasi.');
+        return;
+    }
+    
+    console.log('Requesting geolocation with high accuracy...');
+    
+    navigator.geolocation.getCurrentPosition(
+        // Success callback
+        (position) => {
+            console.log('Location received:', position);
+            
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            
+            console.log(`Lat: ${lat}, Lng: ${lng}, Accuracy: ${accuracy}m`);
+            
+            // Update map
+            const userLocation = { lat: lat, lng: lng };
+            
+            if (map && marker) {
+                map.setCenter(userLocation);
+                marker.setPosition(userLocation);
+                marker.setVisible(true);
+                
+                // Add accuracy circle
+                new google.maps.Circle({
+                    strokeColor: '#4285F4',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#4285F4',
+                    fillOpacity: 0.15,
+                    map: map,
+                    center: userLocation,
+                    radius: accuracy
+                });
+            }
+            
+            // Store coordinates
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            
+            // Determine accuracy quality
+            let accuracyQuality = '';
+            let accuracyColor = '';
+            
+            if (accuracy <= 20) {
+                accuracyQuality = 'Sangat Baik';
+                accuracyColor = 'text-green-700 bg-green-50';
+            } else if (accuracy <= 50) {
+                accuracyQuality = 'Baik';
+                accuracyColor = 'text-blue-700 bg-blue-50';
+            } else if (accuracy <= 100) {
+                accuracyQuality = 'Cukup';
+                accuracyColor = 'text-yellow-700 bg-yellow-50';
+            } else {
+                accuracyQuality = 'Kurang Akurat';
+                accuracyColor = 'text-orange-700 bg-orange-50';
+            }
+            
+            // Show success with accuracy info
+            document.getElementById('locationStatus').innerHTML = `
+                <div class="flex items-center gap-2 ${accuracyColor} p-3 rounded-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="flex-1">
+                        <span class="font-medium">Lokasi berhasil dideteksi!</span>
+                        <p class="text-xs mt-1">Akurasi: ±${Math.round(accuracy)}m (${accuracyQuality})</p>
+                    </div>
+                </div>
+            `;
+            
+            // Enable submit button
+            document.getElementById('submitBtn').disabled = false;
+            
+            // Get address from coordinates
+            getAddressFromCoordinates(lat, lng, accuracy);
+        },
+        // Error callback
+        (error) => {
+            console.error('Geolocation error:', error);
+            
+            let errorMessage = 'Gagal mendapatkan lokasi. ';
+            let troubleshoot = '';
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage += 'Akses lokasi ditolak.';
+                    troubleshoot = 'Klik ikon kunci di address bar, lalu izinkan akses lokasi.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage += 'Informasi lokasi tidak tersedia.';
+                    troubleshoot = 'Pastikan GPS/Location Services aktif di perangkat Anda.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage += 'Waktu permintaan habis.';
+                    troubleshoot = 'Coba lagi atau periksa koneksi internet Anda.';
+                    break;
+                default:
+                    errorMessage += 'Error tidak diketahui.';
+                    troubleshoot = 'Silakan refresh halaman dan coba lagi.';
+            }
+            
+            showError(errorMessage, troubleshoot);
+        },
+        // Options - balanced between speed and accuracy
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+    );
+}
+
+function processLocation(position) {
+    // This function is no longer needed but kept for compatibility
+    console.log('processLocation called (legacy)');
+}
+
+function showError(message, troubleshoot = '') {
+    const troubleshootHTML = troubleshoot ? `<p class="text-xs mt-2">${troubleshoot}</p>` : '';
+    
+    document.getElementById('locationStatus').innerHTML = `
+        <div class="flex items-start gap-2 text-red-700 bg-red-50 p-3 rounded-lg">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+                <span>${message}</span>
+                ${troubleshootHTML}
+            </div>
+        </div>
+    `;
+    
+    // Show retry button
+    document.getElementById('retryLocationBtn').classList.remove('hidden');
+}
+
+function retryGetLocation() {
+    console.log('Retrying location detection...');
+    
+    // Hide retry button
+    document.getElementById('retryLocationBtn').classList.add('hidden');
+    
+    // Show loading again
+    document.getElementById('locationStatus').innerHTML = `
+        <div class="flex items-center gap-2">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Mendeteksi lokasi Anda...</span>
+        </div>
+    `;
+    
+    getUserLocation();
+}
+
+function getAddressFromCoordinates(lat, lng, accuracy) {
+    console.log('Getting address for coordinates...');
+    
+    if (!geocoder) {
+        console.error('Geocoder not initialized');
+        // Still allow submission without address
+        document.getElementById('alamat_lengkap').value = `Lat: ${lat}, Lng: ${lng}`;
+        document.getElementById('addressText').textContent = 'Alamat tidak dapat dideteksi';
+        document.getElementById('coordsText').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)} (Akurasi: ±${Math.round(accuracy)}m)`;
+        document.getElementById('locationInfo').classList.remove('hidden');
+        return;
+    }
+    
+    const latlng = { lat: lat, lng: lng };
+    
+    geocoder.geocode({ location: latlng }, (results, status) => {
+        console.log('Geocoding status:', status);
+        
+        if (status === 'OK' && results && results[0]) {
+            const address = results[0].formatted_address;
+            console.log('Address found:', address);
+            
+            document.getElementById('alamat_lengkap').value = address;
+            document.getElementById('addressText').textContent = address;
+            document.getElementById('coordsText').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)} (Akurasi: ±${Math.round(accuracy)}m)`;
+            document.getElementById('locationInfo').classList.remove('hidden');
+        } else {
+            console.warn('Geocoding failed:', status);
+            
+            // If geocoding fails, still show coordinates
+            document.getElementById('alamat_lengkap').value = `Lat: ${lat}, Lng: ${lng}`;
+            document.getElementById('addressText').textContent = 'Alamat tidak dapat dideteksi';
+            document.getElementById('coordsText').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)} (Akurasi: ±${Math.round(accuracy)}m)`;
+            document.getElementById('locationInfo').classList.remove('hidden');
+        }
+    });
+}
+
+// Check if HTTPS
+if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+    console.warn('Geolocation requires HTTPS!');
+}
+
+// Log Google Maps API load
+console.log('Google Maps API loaded');
+</script>
+@endpush

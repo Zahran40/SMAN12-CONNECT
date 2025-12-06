@@ -35,7 +35,6 @@ return new class extends Migration
             JOIN kelas k ON jp.kelas_id = k.id_kelas
             JOIN guru g ON jp.guru_id = g.id_guru
             JOIN tahun_ajaran ta ON jp.tahun_ajaran_id = ta.id_tahun_ajaran
-            WHERE ta.status = 'Aktif'
             ORDER BY m.tgl_upload DESC
         ");
     }
