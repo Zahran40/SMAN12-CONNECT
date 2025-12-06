@@ -1,5 +1,9 @@
 @extends('layouts.siswa.app')
 
+@push('scripts')
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}"></script>
+@endpush
+
 @section('content')
 
 <div class="min-h-screen flex items-center justify-center py-10 px-4 bg-slate-50">
@@ -196,43 +200,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function untuk reverse geocoding menggunakan Google Maps Geocoding API
     function reverseGeocode(lat, lng) {
-        const googleApiKey = '{{ env("GOOGLE_MAPS_API_KEY") }}';
-        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApiKey}&language=id`;
+        console.log('🗺️ Reverse geocoding:', lat, lng);
         
-        console.log('Geocoding URL:', geocodeUrl);
+        // Gunakan Google Maps JavaScript API Geocoder (sama seperti di beranda)
+        const geocoder = new google.maps.Geocoder();
+        const latlng = { lat: lat, lng: lng };
         
-        fetch(geocodeUrl)
-            .then(response => response.json())
-            .then(data => {
-                console.log('Google Maps Response:', data);
-                
-                if (data.status === 'OK' && data.results && data.results.length > 0) {
-                    const address = data.results[0].formatted_address;
-                    addressInput.value = address;
-                    locationAddress.textContent = address;
-                } else {
-                    console.warn('Geocoding failed. Status:', data.status, 'Error:', data.error_message);
-                    // Fallback: koordinat saja
-                    addressInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-                    locationAddress.textContent = 'Alamat tidak tersedia';
-                }
-                
-                // Enable tombol absen - STYLE BUTTON UPDATE DISINI
-                btnAbsen.disabled = false;
-                // Ubah warna tombol jadi Biru Tua (hover lebih gelap) saat aktif
-                btnAbsen.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 hover:shadow-lg transition-all transform active:scale-95';
-                btnText.textContent = 'Hadir'; // Text simpel sesuai screenshot
-            })
-            .catch(error => {
-                console.error('Geocoding fetch error:', error);
-                // Tetap enable tombol meski geocoding gagal
-                addressInput.value = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                locationAddress.textContent = 'Error koneksi ke Google Maps';
-                
-                btnAbsen.disabled = false;
-                btnAbsen.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
-                btnText.textContent = 'Hadir';
-            });
+        geocoder.geocode({ location: latlng }, (results, status) => {
+            console.log('Geocoder status:', status);
+            
+            if (status === 'OK' && results && results[0]) {
+                const address = results[0].formatted_address;
+                addressInput.value = address;
+                locationAddress.textContent = address;
+                locationAddress.className = 'text-slate-700 font-medium';
+                console.log('✅ Address:', address);
+            } else {
+                console.warn('⚠️ Geocoding failed:', status);
+                addressInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                locationAddress.textContent = 'Alamat tidak tersedia';
+                locationAddress.className = 'text-slate-500 italic';
+            }
+            
+            // Enable tombol absen
+            btnAbsen.disabled = false;
+            btnAbsen.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 hover:shadow-lg transition-all transform active:scale-95';
+            btnText.textContent = 'Hadir';
+        });
     }
     
     // Request lokasi pengguna

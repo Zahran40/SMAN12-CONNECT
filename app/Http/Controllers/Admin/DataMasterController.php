@@ -50,17 +50,43 @@ class DataMasterController extends Controller
             $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran;
         }
 
+        $tahunAjaranDipilih = TahunAjaran::find($tahunAjaranId);
+        
+        // Jika semester Genap dipilih, ambil kelas dari semester Ganjil yang sama tahunnya
+        $kelasAjaranIdForQuery = $tahunAjaranId;
+        if ($tahunAjaranDipilih && $tahunAjaranDipilih->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranDipilih->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranDipilih->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->where('is_archived', false)
+                ->first();
+            
+            if ($semesterGanjil) {
+                $kelasAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+
         $data = [
             'tab' => 'kelas',
             'tahunAjaranList' => $tahunAjaranList,
             'tahunAjaranId' => $tahunAjaranId,
         ];
 
-        $data['kelasList'] = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
-            ->withCount('siswa')
+        // Menggunakan view_kelas_detail untuk mendapatkan kelas dengan statistik
+        $data['kelasList'] = DB::table('view_kelas_detail')
+            ->where('tahun_ajaran_id', $kelasAjaranIdForQuery)
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
-            ->get();
+            ->get()
+            ->map(function($kelas) {
+                // Convert jumlah_siswa ke format siswa_count untuk backward compatibility
+                $kelas->siswa_count = $kelas->jumlah_siswa;
+                
+                // Ambil data tahun ajaran untuk menampilkan di view
+                $kelas->tahunAjaran = TahunAjaran::find($kelas->tahun_ajaran_id);
+                
+                return $kelas;
+            });
 
         return view('Admin.dataMaster', $data);
     }
@@ -374,10 +400,22 @@ class DataMasterController extends Controller
 
     /**
      * Detail guru (read-only view)
+     * Menggunakan view_guru_mengajar untuk mendapatkan mata pelajaran yang diajar
      */
     public function detailGuru($id)
     {
-        $guru = Guru::with('mataPelajaran', 'user')->findOrFail($id);
+        $guru = Guru::with('user')->findOrFail($id);
+        
+        // Ambil mata pelajaran yang diajar menggunakan view_guru_mengajar
+        $mataPelajaranDiajar = DB::table('view_guru_mengajar')
+            ->where('id_guru', $id)
+            ->select('mapel_id', 'nama_mapel', 'kode_mapel', 'nama_kelas', 'tingkat')
+            ->distinct()
+            ->get();
+        
+        // Convert untuk backward compatibility dengan relasi mataPelajaran
+        $guru->mataPelajaran = $mataPelajaranDiajar;
+        
         return view('Admin.detailGuru', compact('guru'));
     }
 
@@ -475,8 +513,24 @@ class DataMasterController extends Controller
             $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran ?? $tahunAjaranList->first()?->id_tahun_ajaran;
         }
 
-        // Ambil daftar kelas berdasarkan tahun ajaran
-        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
+        $tahunAjaranDipilih = TahunAjaran::find($tahunAjaranId);
+        
+        // Jika semester Genap dipilih, ambil kelas dari semester Ganjil yang sama tahunnya
+        $kelasAjaranIdForQuery = $tahunAjaranId;
+        if ($tahunAjaranDipilih && $tahunAjaranDipilih->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranDipilih->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranDipilih->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->where('is_archived', false)
+                ->first();
+            
+            if ($semesterGanjil) {
+                $kelasAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+
+        // Ambil daftar kelas berdasarkan tahun ajaran (dari Ganjil jika Genap dipilih)
+        $kelasList = Kelas::where('tahun_ajaran_id', $kelasAjaranIdForQuery)
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
             ->get();
@@ -484,9 +538,9 @@ class DataMasterController extends Controller
         // Query menggunakan database view untuk data konsisten
         $query = DB::table('view_siswa_kelas');
         
-        // Filter by tahun ajaran
-        if ($tahunAjaranId) {
-            $query->where('tahun_ajaran_id', $tahunAjaranId);
+        // Filter by tahun ajaran - gunakan kelasAjaranIdForQuery agar siswa dari Ganjil muncul saat Genap dipilih
+        if ($kelasAjaranIdForQuery) {
+            $query->where('tahun_ajaran_id', $kelasAjaranIdForQuery);
         }
 
         // Filter by kelas
@@ -516,15 +570,32 @@ class DataMasterController extends Controller
             $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran ?? $tahunAjaranList->first()?->id_tahun_ajaran;
         }
 
-        // Ambil daftar kelas berdasarkan tahun ajaran
-        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
+        $tahunAjaranDipilih = TahunAjaran::find($tahunAjaranId);
+        
+        // Jika semester Genap dipilih, ambil kelas dari semester Ganjil yang sama tahunnya
+        $kelasAjaranIdForQuery = $tahunAjaranId;
+        if ($tahunAjaranDipilih && $tahunAjaranDipilih->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranDipilih->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranDipilih->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->where('is_archived', false)
+                ->first();
+            
+            if ($semesterGanjil) {
+                $kelasAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+
+        // Ambil daftar kelas berdasarkan tahun ajaran (dari Ganjil jika Genap dipilih)
+        $kelasList = Kelas::where('tahun_ajaran_id', $kelasAjaranIdForQuery)
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
             ->get();
 
-        // Tampilkan semua guru tanpa filter mata pelajaran
-        // Karena 1 guru bisa mengajar banyak mapel, tidak perlu view untuk menghindari duplikasi
-        $guruList = Guru::orderBy('nama_lengkap', 'asc')->get();
+        // Menggunakan view_data_guru untuk efisiensi query (sudah include join users)
+        $guruList = DB::table('view_data_guru')
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
 
         return view('Admin.dataMaster_Guru', compact('guruList', 'tahunAjaranList', 'tahunAjaranId', 'kelasId', 'kelasList'));
     }
@@ -540,12 +611,29 @@ class DataMasterController extends Controller
         $tahunAjaranId = request('tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran ?? $tahunAjaranList->first()->id_tahun_ajaran ?? null);
         $kelasId = request('kelas', '');
 
-        // Query kelas berdasarkan tahun ajaran
-        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)->orderBy('nama_kelas')->get();
+        $tahunAjaranDipilih = TahunAjaran::find($tahunAjaranId);
+        
+        // Jika semester Genap dipilih, ambil kelas dari semester Ganjil yang sama tahunnya
+        $kelasAjaranIdForQuery = $tahunAjaranId;
+        if ($tahunAjaranDipilih && $tahunAjaranDipilih->semester === 'Genap') {
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranDipilih->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranDipilih->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->where('is_archived', false)
+                ->first();
+            
+            if ($semesterGanjil) {
+                $kelasAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+
+        // Query kelas berdasarkan tahun ajaran (dari Ganjil jika Genap dipilih)
+        $kelasList = Kelas::where('tahun_ajaran_id', $kelasAjaranIdForQuery)->orderBy('nama_kelas')->get();
 
         // Query menggunakan database view untuk data konsisten
         if ($kelasId || $tahunAjaranId) {
             // Filter: Mapel yang diajarkan di kelas/tahun ajaran tertentu
+            // Gunakan $kelasAjaranIdForQuery untuk semester Genap mengambil dari Ganjil
             $query = DB::table('view_mapel_diajarkan')
                 ->select(
                     'id_mapel', 
@@ -557,7 +645,8 @@ class DataMasterController extends Controller
                 ->groupBy('id_mapel', 'kode_mapel', 'nama_mapel', 'kategori');
             
             if ($tahunAjaranId) {
-                $query->where('tahun_ajaran_id', $tahunAjaranId);
+                // Gunakan tahun ajaran yang sudah disesuaikan (Ganjil jika Genap dipilih)
+                $query->where('tahun_ajaran_id', $kelasAjaranIdForQuery);
             }
             
             if ($kelasId) {
@@ -590,7 +679,7 @@ class DataMasterController extends Controller
 
         try {
             // Cek apakah siswa sudah ada di kelas untuk tahun ajaran ini
-            $existing = \DB::table('siswa_kelas')
+            $existing = DB::table('siswa_kelas')
                 ->where('siswa_id', $siswa_id)
                 ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
                 ->where('status', 'Aktif')
@@ -600,7 +689,7 @@ class DataMasterController extends Controller
                 return back()->with('error', 'Siswa sudah terdaftar di kelas lain untuk tahun ajaran ini. Edit data yang ada atau ubah status menjadi tidak aktif.');
             }
 
-            \DB::table('siswa_kelas')->insert([
+            DB::table('siswa_kelas')->insert([
                 'siswa_id' => $siswa_id,
                 'kelas_id' => $validated['kelas_id'],
                 'tahun_ajaran_id' => $validated['tahun_ajaran_id'],
@@ -625,7 +714,7 @@ class DataMasterController extends Controller
         ]);
 
         try {
-            \DB::table('siswa_kelas')
+            DB::table('siswa_kelas')
                 ->where('id', $id)
                 ->update([
                     'kelas_id' => $validated['kelas_id'],
@@ -644,7 +733,7 @@ class DataMasterController extends Controller
     public function deleteSiswaKelas($id)
     {
         try {
-            \DB::table('siswa_kelas')->where('id', $id)->delete();
+            DB::table('siswa_kelas')->where('id', $id)->delete();
             return back()->with('success', 'Data kelas siswa berhasil dihapus');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());

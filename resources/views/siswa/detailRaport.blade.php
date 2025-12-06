@@ -55,10 +55,38 @@
 
         </div>
 
-        <div class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
-            <div class="flex justify-between items-center">
-                <h4 class="font-semibold text-slate-800">Rata-rata Nilai:</h4>
-                <p class="text-2xl font-bold text-blue-700">{{ number_format($rataRata, 2) }}</p>
+        <!-- Statistik Nilai -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Kelas Siswa -->
+            <div class="p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="text-sm font-semibold text-green-800 mb-1">Kelas</h4>
+                        <p class="text-2xl font-bold text-green-700">{{ $namaKelas ?? 'Belum ada kelas' }}</p>
+                        <p class="text-xs text-green-700 mt-1">Tahun Ajaran {{ $tahunAjaranLabel }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rata-rata Nilai Semester Ini -->
+            <div class="p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="text-sm font-semibold text-blue-800 mb-1">Rata-rata Raport Semester {{ $semester }}</h4>
+                        <p class="text-3xl font-bold text-blue-700">{{ number_format($rataRata, 2) }}</p>
+                        <p class="text-xs text-blue-700 mt-1">Semua mata pelajaran</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
 

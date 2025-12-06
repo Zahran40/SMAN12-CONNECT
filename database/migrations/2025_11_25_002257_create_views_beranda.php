@@ -29,7 +29,14 @@ return new class extends Migration
             INNER JOIN kelas k ON jp.kelas_id = k.id_kelas
             INNER JOIN guru g ON jp.guru_id = g.id_guru
             INNER JOIN tahun_ajaran ta ON jp.tahun_ajaran_id = ta.id_tahun_ajaran
-            WHERE ta.status = 'Aktif' AND ta.is_archived = 0
+            WHERE ta.is_archived = 0
+            AND EXISTS (
+                SELECT 1 FROM tahun_ajaran ta_aktif
+                WHERE ta_aktif.status = 'Aktif'
+                AND ta_aktif.is_archived = 0
+                AND ta_aktif.tahun_mulai = ta.tahun_mulai
+                AND ta_aktif.tahun_selesai = ta.tahun_selesai
+            )
             ORDER BY 
                 FIELD(jp.hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'),
                 jp.jam_mulai

@@ -37,7 +37,10 @@ class GuruController extends Controller
             ->where('hari', $hariIni)
             ->get();
         
-        return view('Guru.beranda', compact('guru', 'hariIni', 'allDays', 'jadwalPerHari', 'jadwalHariIni'));
+        // Ambil pengumuman aktif menggunakan sp_get_pengumuman_aktif
+        $pengumuman = DB::select('CALL sp_get_pengumuman_aktif(?)', ['guru']);
+        
+        return view('Guru.beranda', compact('guru', 'hariIni', 'allDays', 'jadwalPerHari', 'jadwalHariIni', 'pengumuman'));
     }
     
     public function profil()

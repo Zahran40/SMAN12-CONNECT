@@ -41,14 +41,12 @@ class PembayaranController extends Controller
             ->orderBy('nama_kelas')
             ->get();
 
-        // Query pembayaran
-        $query = PembayaranSpp::with(['siswa.kelas', 'tahunAjaran'])
-            ->where('tahun_ajaran_id', $tahunAjaranId);
+        // Query pembayaran menggunakan view_pembayaran_spp untuk efisiensi
+        $query = DB::table('view_pembayaran_spp')
+            ->where('id_tahun_ajaran', $tahunAjaranId);
 
         if ($kelasId) {
-            $query->whereHas('siswa', function($q) use ($kelasId) {
-                $q->where('kelas_id', $kelasId);
-            });
+            $query->where('id_kelas', $kelasId);
         }
 
         if ($status) {
@@ -57,8 +55,27 @@ class PembayaranController extends Controller
 
         $pembayaranList = $query->orderBy('tahun', 'desc')
             ->orderBy('bulan', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(20)
+            ->through(function($item) {
+                // Convert stdClass dari view menjadi object yang punya struktur seperti Eloquent
+                $pembayaran = new \stdClass();
+                $pembayaran->id_pembayaran = $item->id_pembayaran;
+                $pembayaran->nama_tagihan = $item->nama_tagihan;
+                $pembayaran->bulan = $item->bulan;
+                $pembayaran->tahun = $item->tahun;
+                $pembayaran->jumlah_bayar = $item->jumlah_bayar;
+                $pembayaran->status = $item->status;
+                
+                // Buat object siswa
+                $pembayaran->siswa = new \stdClass();
+                $pembayaran->siswa->id_siswa = $item->id_siswa;
+                $pembayaran->siswa->nama_lengkap = $item->nama_siswa;
+                $pembayaran->siswa->nis = $item->nis;
+                $pembayaran->siswa->nisn = $item->nisn;
+                $pembayaran->siswa->nama_kelas = $item->nama_kelas; // Langsung dari view
+                
+                return $pembayaran;
+            });
 
         // Statistics
         $totalTagihan = PembayaranSpp::where('tahun_ajaran_id', $tahunAjaranId)->count();
@@ -69,6 +86,11 @@ class PembayaranController extends Controller
         $totalNominal = PembayaranSpp::where('tahun_ajaran_id', $tahunAjaranId)
             ->where('status', 'Lunas')
             ->sum('jumlah_bayar');
+        
+        // Get tahun ajaran aktif untuk tombol rekap
+        $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')
+            ->where('is_archived', false)
+            ->first();
 
         return view('Admin.pembayaran', compact(
             'pembayaranList',
@@ -81,7 +103,8 @@ class PembayaranController extends Controller
             'totalTagihan',
             'totalLunas',
             'totalBelumLunas',
-            'totalNominal'
+            'totalNominal',
+            'tahunAjaranAktif'
         ));
     }
 
@@ -101,7 +124,24 @@ class PembayaranController extends Controller
             $tahunAjaranId = $tahunAjaran ? $tahunAjaran->id_tahun_ajaran : $tahunAjaranList->first()->id_tahun_ajaran;
         }
 
-        $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
+        // Tentukan tahun ajaran untuk query kelas (selalu gunakan semester Ganjil untuk kelas)
+        $tahunAjaranDipilih = TahunAjaran::find($tahunAjaranId);
+        $kelasAjaranIdForQuery = $tahunAjaranId;
+        
+        if ($tahunAjaranDipilih && $tahunAjaranDipilih->semester === 'Genap') {
+            // Jika semester Genap, ambil kelas dari semester Ganjil yang sama tahunnya
+            $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranDipilih->tahun_mulai)
+                ->where('tahun_selesai', $tahunAjaranDipilih->tahun_selesai)
+                ->where('semester', 'Ganjil')
+                ->where('is_archived', false)
+                ->first();
+            
+            if ($semesterGanjil) {
+                $kelasAjaranIdForQuery = $semesterGanjil->id_tahun_ajaran;
+            }
+        }
+
+        $kelasList = Kelas::where('tahun_ajaran_id', $kelasAjaranIdForQuery)
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
             ->get();
@@ -109,10 +149,15 @@ class PembayaranController extends Controller
         // Get siswa list untuk bulk selection
         $siswaList = collect();
         if ($bulan && $tahun) {
-            $query = Siswa::with(['kelas'])
-                ->whereHas('kelas', function($q) use ($tahunAjaranId) {
-                    $q->where('tahun_ajaran_id', $tahunAjaranId);
-                });
+            $query = Siswa::query()
+                ->whereHas('kelasHistory', function($q) use ($kelasAjaranIdForQuery) {
+                    $q->where('siswa_kelas.tahun_ajaran_id', $kelasAjaranIdForQuery)
+                      ->where('siswa_kelas.status', 'Aktif');
+                })
+                ->with(['kelasHistory' => function($q) use ($kelasAjaranIdForQuery) {
+                    $q->where('siswa_kelas.tahun_ajaran_id', $kelasAjaranIdForQuery)
+                      ->where('siswa_kelas.status', 'Aktif');
+                }]);
 
             // Filter berdasarkan status pembayaran
             if ($statusFilter === 'sudah') {
@@ -330,4 +375,64 @@ class PembayaranController extends Controller
         // TODO: Implement export to Excel/PDF
         return back()->with('info', 'Fitur export akan segera tersedia');
     }
+    
+    /**
+     * Rekap SPP per tahun ajaran menggunakan Stored Procedure
+     */
+    public function rekapPerTahunAjaran($tahunAjaranId)
+    {
+        $tahunAjaran = TahunAjaran::findOrFail($tahunAjaranId);
+        
+        // Ambil rekap menggunakan sp_rekap_spp_tahun
+        $rekapSiswa = DB::select('CALL sp_rekap_spp_tahun(?)', [$tahunAjaranId]);
+        
+        // Hitung total keseluruhan
+        $totalPendapatan = collect($rekapSiswa)->sum('total_bayar');
+        $siswaLunas = collect($rekapSiswa)->where('bulan_belum_lunas', 0)->count();
+        $siswaBelumLunas = collect($rekapSiswa)->where('bulan_belum_lunas', '>', 0)->count();
+        
+        return view('Admin.rekap_spp_tahun', compact(
+            'rekapSiswa',
+            'tahunAjaran',
+            'totalPendapatan',
+            'siswaLunas',
+            'siswaBelumLunas'
+        ));
+    }
+
+    /**
+     * Cetak rekap pembayaran per siswa dengan detail bulan
+     */
+    public function cetakPerSiswa($tahunAjaranId, $siswaId)
+    {
+        $tahunAjaran = TahunAjaran::findOrFail($tahunAjaranId);
+        $siswa = Siswa::with(['kelasHistory' => function($q) {
+            $q->where('siswa_kelas.status', 'Aktif');
+        }])->findOrFail($siswaId);
+        
+        // Ambil semua pembayaran siswa untuk tahun ajaran ini
+        $pembayaranList = PembayaranSpp::where('siswa_id', $siswaId)
+            ->where('tahun_ajaran_id', $tahunAjaranId)
+            ->orderBy('tahun')
+            ->orderBy('bulan')
+            ->get();
+        
+        // Hitung statistik
+        $totalLunas = $pembayaranList->where('status', 'Lunas')->count();
+        $totalBelumLunas = $pembayaranList->where('status', 'Belum Lunas')->count();
+        $totalBayar = $pembayaranList->where('status', 'Lunas')->sum('jumlah_bayar');
+        $totalTagihan = $pembayaranList->sum('jumlah_bayar');
+        
+        return view('Admin.cetak_spp_siswa', compact(
+            'tahunAjaran',
+            'siswa',
+            'pembayaranList',
+            'totalLunas',
+            'totalBelumLunas',
+            'totalBayar',
+            'totalTagihan'
+        ));
+    }
 }
+
+
