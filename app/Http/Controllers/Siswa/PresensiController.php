@@ -82,6 +82,7 @@ class PresensiController extends Controller
             ->select(
                 'pertemuan.*',
                 'detail_absensi.status_kehadiran',
+                'detail_absensi.keterangan',
                 'detail_absensi.dicatat_pada'
             )
             ->orderBy('pertemuan.nomor_pertemuan')

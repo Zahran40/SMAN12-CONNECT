@@ -92,6 +92,7 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('/presensi/slot-tersedia/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'getSlotTersedia'])->name('slot_tersedia');
     Route::get('/presensi/{pertemuan_id}', [App\Http\Controllers\Guru\PresensiController::class, 'detail'])->name('detail_presensi');
     Route::post('/presensi/{pertemuan_id}/update', [App\Http\Controllers\Guru\PresensiController::class, 'updateStatus'])->name('update_status_presensi');
+    Route::put('/presensi/{pertemuan_id}/update-waktu', [App\Http\Controllers\Guru\PresensiController::class, 'updateWaktu'])->name('update_waktu_pertemuan');
     Route::post('/presensi/{pertemuan_id}/submit', [App\Http\Controllers\Guru\PresensiController::class, 'submit'])->name('submit_presensi');
     Route::post('/presensi/{pertemuan_id}/unlock', [App\Http\Controllers\Guru\PresensiController::class, 'unlock'])->name('unlock_presensi');
     Route::post('/presensi/buat-pertemuan/{jadwal_id}', [App\Http\Controllers\Guru\PresensiController::class, 'buatPertemuan'])->name('buat_pertemuan');

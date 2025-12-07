@@ -145,7 +145,7 @@ class PresensiController extends Controller
         }
 
         // Update or create absensi
-        DetailAbsensi::updateOrCreate(
+        $absensi = DetailAbsensi::updateOrCreate(
             [
                 'pertemuan_id' => $pertemuanId,
                 'siswa_id' => $validated['siswa_id']
@@ -210,6 +210,41 @@ class PresensiController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Absensi berhasil dibuka kembali');
+    }
+
+    /**
+     * Update waktu/tanggal pertemuan
+     */
+    public function updateWaktu(Request $request, $pertemuanId)
+    {
+        $user = Auth::user();
+        $guru = Guru::where('user_id', $user->id)->firstOrFail();
+        
+        $pertemuan = Pertemuan::with('jadwal')->findOrFail($pertemuanId);
+
+        // Cek akses
+        if ($pertemuan->jadwal->guru_id !== $guru->id_guru && $user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $validated = $request->validate([
+            'tanggal_pertemuan' => 'required|date',
+            'jam_absen_buka' => 'required|date_format:H:i',
+            'jam_absen_tutup' => 'required|date_format:H:i|after:jam_absen_buka',
+        ]);
+
+        // Update pertemuan
+        $pertemuan->update([
+            'tanggal_pertemuan' => $validated['tanggal_pertemuan'],
+            'tanggal_absen_dibuka' => $validated['tanggal_pertemuan'],
+            'tanggal_absen_ditutup' => $validated['tanggal_pertemuan'],
+            'jam_absen_buka' => $validated['jam_absen_buka'],
+            'jam_absen_tutup' => $validated['jam_absen_tutup'],
+            'waktu_absen_dibuka' => $validated['tanggal_pertemuan'] . ' ' . $validated['jam_absen_buka'],
+            'waktu_absen_ditutup' => $validated['tanggal_pertemuan'] . ' ' . $validated['jam_absen_tutup'],
+        ]);
+
+        return redirect()->back()->with('success', 'Waktu pertemuan berhasil diperbarui');
     }
 
     /**
