@@ -118,10 +118,16 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             @if($pertemuan && $pertemuan->tanggal_pertemuan)
-                                <a href="{{ route('guru.detail_presensi', $pertemuan->id_pertemuan) }}" 
-                                   class="inline-block px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition-colors">
-                                    Kelola Presensi
-                                </a>
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('guru.detail_presensi', $pertemuan->id_pertemuan) }}" 
+                                       class="inline-block px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition-colors">
+                                         Kelola Presensi
+                                    </a>
+                                    <button onclick="openEditModal({{ $pertemuan->id_pertemuan }}, '{{ $pertemuan->tanggal_pertemuan }}', '{{ $pertemuan->jam_absen_buka }}', '{{ $pertemuan->jam_absen_tutup }}')"
+                                            class="inline-block px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition-colors">
+                                         Edit Waktu
+                                    </button>
+                                </div>
                             @else
                                 <button disabled class="inline-block px-4 py-2 bg-slate-300 text-slate-500 text-sm font-semibold rounded-lg cursor-not-allowed">
                                     Belum Terisi
@@ -135,7 +141,7 @@
     </div>
 
     <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6">
-        <h3 class="text-lg font-bold text-blue-900 mb-3"> Informasi</h3>
+        <h3 class="text-lg font-bold text-blue-900 mb-3">📌 Informasi</h3>
         <ul class="space-y-2 text-sm text-blue-800">
             <li>• <strong>16 Slot Pertemuan</strong>: Setiap mata pelajaran memiliki 16 slot pertemuan yang bisa Anda isi sesuai kebutuhan</li>
             <li>• <strong>Pilih Nomor</strong>: Saat membuat pertemuan baru, pilih nomor slot mana yang ingin diisi (1-16)</li>
@@ -143,6 +149,72 @@
             <li>• <strong>Status "-" </strong>: Pertemuan yang belum terisi akan ditandai dengan "-" sampai Anda membuatnya</li>
         </ul>
     </div>
+
+    <!-- Modal Edit Waktu Pertemuan -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6 border-b border-slate-200">
+                <h3 class="text-xl font-bold text-slate-800"> Edit Waktu Pertemuan</h3>
+            </div>
+            
+            <form id="editForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Pertemuan</label>
+                        <input type="date" name="tanggal_pertemuan" id="edit_tanggal" required
+                               class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Buka Absensi</label>
+                        <input type="time" name="jam_absen_buka" id="edit_jam_buka" required
+                               class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Jam Tutup Absensi</label>
+                        <input type="time" name="jam_absen_tutup" id="edit_jam_tutup" required
+                               class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div class="p-6 pt-0 flex gap-3">
+                    <button type="button" onclick="closeEditModal()" 
+                            class="flex-1 px-4 py-2.5 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">
+                     Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(pertemuanId, tanggal, jamBuka, jamTutup) {
+            document.getElementById('editModal').classList.remove('hidden');
+            document.getElementById('editForm').action = `/guru/presensi/${pertemuanId}/update-waktu`;
+            document.getElementById('edit_tanggal').value = tanggal;
+            document.getElementById('edit_jam_buka').value = jamBuka ? jamBuka.substring(0, 5) : '';
+            document.getElementById('edit_jam_tutup').value = jamTutup ? jamTutup.substring(0, 5) : '';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+    </script>
 
 @endsection
 

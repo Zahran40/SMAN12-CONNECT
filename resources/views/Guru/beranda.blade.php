@@ -24,7 +24,7 @@
     <!-- Pengumuman Aktif -->
     @if(isset($pengumuman) && count($pengumuman) > 0)
     <section class="mb-6 sm:mb-8">
-        <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">📢 Pengumuman Terbaru</h3>
+        <h3 class="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4"> Pengumuman Terbaru</h3>
         <div class="space-y-3">
             @foreach($pengumuman as $item)
                 <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm">
@@ -36,10 +36,9 @@
                         </div>
                         <div class="ml-3 flex-1">
                             <h4 class="text-sm font-bold text-blue-800">{{ $item->judul }}</h4>
-                            <p class="text-sm text-blue-700 mt-1">{{ $item->isi }}</p>
+                            <p class="text-sm text-blue-700 mt-1">{{ $item->isi_pengumuman }}</p>
                             <p class="text-xs text-blue-600 mt-2">
-                                <span class="font-medium">Target:</span> {{ $item->target_role }} • 
-                                <span class="font-medium">Tanggal:</span> {{ \Carbon\Carbon::parse($item->tanggal_publikasi)->format('d M Y') }}
+                                <span class="font-medium">Tanggal:</span> {{ \Carbon\Carbon::parse($item->tgl_publikasi)->format('d M Y') }}
                             </p>
                         </div>
                     </div>

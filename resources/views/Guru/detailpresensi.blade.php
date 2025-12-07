@@ -132,20 +132,6 @@
     </div>
 
     {{-- Peta Lokasi Siswa --}}
-    @php
-        $siswaWithLocation = $siswaList->filter(fn($s) => $s->latitude && $s->longitude);
-    @endphp
-    
-    @if($siswaWithLocation->count() > 0)
-    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-slate-800">Peta Lokasi Kehadiran</h3>
-            <span class="text-sm text-slate-500">{{ $siswaWithLocation->count() }} siswa dengan lokasi</span>
-        </div>
-        <div id="presensiMap"></div>
-    </div>
-    @endif
-
     {{-- Daftar Siswa --}}
     <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
         <h3 class="text-xl font-bold text-slate-800 mb-4 sm:mb-6">Daftar Kehadiran Siswa</h3>
@@ -233,12 +219,12 @@
                                 @if($pertemuan->canEditAbsensi(auth()->user()))
                                     <button 
                                         @click="showModal = true; currentSiswa = {{ $siswa->id_siswa }}; currentStatus = '{{ $siswa->status_kehadiran ?? 'Hadir' }}'; currentKeterangan = '{{ $siswa->keterangan ?? '' }}'"
-                                        class="bg-blue-500 text-white px-4 py-1.5 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
                                     >
                                         {{ $siswa->status_kehadiran ? 'Ubah' : 'Set Status' }}
                                     </button>
                                 @else
-                                    <span class="text-xs text-gray-400">Terkunci</span>
+                                    <span class="text-sm text-slate-400">Terkunci</span>
                                 @endif
                             </td>
                         </tr>
@@ -316,116 +302,16 @@
 
 </div>
 
+</div>
+
 <style>
     [x-cloak] { display: none !important; }
 </style>
 
 @push('scripts')
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if there are students with location
-    @if($siswaWithLocation->count() > 0)
-    
-    const siswaLocations = [
-        @foreach($siswaWithLocation as $siswa)
-        {
-            lat: {{ $siswa->latitude }},
-            lng: {{ $siswa->longitude }},
-            nama: "{{ $siswa->nama_lengkap }}",
-            nisn: "{{ $siswa->nisn }}",
-            status: "{{ $siswa->status_kehadiran }}",
-            waktu: "{{ $siswa->dicatat_pada ? \Carbon\Carbon::parse($siswa->dicatat_pada)->format('H:i') : '-' }}",
-            alamat: "{{ $siswa->alamat_lengkap ?? 'Tidak ada alamat' }}"
-        },
-        @endforeach
-    ];
-    
-    // Calculate center point (average of all locations)
-    const centerLat = siswaLocations.reduce((sum, loc) => sum + loc.lat, 0) / siswaLocations.length;
-    const centerLng = siswaLocations.reduce((sum, loc) => sum + loc.lng, 0) / siswaLocations.length;
-    
-    // Initialize map
-    const map = new google.maps.Map(document.getElementById('presensiMap'), {
-        center: { lat: centerLat, lng: centerLng },
-        zoom: 13,
-        mapTypeControl: true,
-        streetViewControl: false,
-    });
-    
-    // Define marker colors based on status
-    const statusColors = {
-        'Hadir': '#10b981',   // green
-        'Sakit': '#f59e0b',   // yellow
-        'Izin': '#3b82f6',    // blue
-        'Alfa': '#ef4444'     // red
-    };
-    
-    // Add markers for each student
-    siswaLocations.forEach(siswa => {
-        const markerColor = statusColors[siswa.status] || '#6b7280';
-        
-        // Create custom marker icon with color
-        const markerIcon = {
-            path: google.maps.SymbolPath.CIRCLE,
-            fillColor: markerColor,
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 2,
-            scale: 8
-        };
-        
-        const marker = new google.maps.Marker({
-            position: { lat: siswa.lat, lng: siswa.lng },
-            map: map,
-            title: siswa.nama,
-            icon: markerIcon,
-            animation: google.maps.Animation.DROP
-        });
-        
-        // Create info window
-        const statusBadges = {
-            'Hadir': '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">Hadir</span>',
-            'Sakit': '<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-medium">Sakit</span>',
-            'Izin': '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium">Izin</span>',
-            'Alfa': '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium">Alfa</span>'
-        };
-        
-        const infoContent = `
-            <div class="map-info-window">
-                <h4>${siswa.nama}</h4>
-                <p>NIS: ${siswa.nisn}</p>
-                <p>Status: ${statusBadges[siswa.status] || siswa.status}</p>
-                <p>Waktu: ${siswa.waktu}</p>
-                <p class="mt-2" style="font-size: 11px; line-height: 1.3;">${siswa.alamat}</p>
-            </div>
-        `;
-        
-        const infoWindow = new google.maps.InfoWindow({
-            content: infoContent
-        });
-        
-        marker.addListener('click', function() {
-            infoWindow.open(map, marker);
-        });
-    });
-    
-    // Adjust zoom to fit all markers
-    if (siswaLocations.length > 1) {
-        const bounds = new google.maps.LatLngBounds();
-        siswaLocations.forEach(loc => {
-            bounds.extend({ lat: loc.lat, lng: loc.lng });
-        });
-        map.fitBounds(bounds);
-        
-        // Prevent too much zoom in
-        const listener = google.maps.event.addListener(map, "idle", function() {
-            if (map.getZoom() > 16) map.setZoom(16);
-            google.maps.event.removeListener(listener);
-        });
-    }
-    
-    @endif
+    // No map initialization needed
 });
 </script>
 @endpush

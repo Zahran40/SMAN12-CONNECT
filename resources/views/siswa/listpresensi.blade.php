@@ -34,7 +34,7 @@
                         <div>
                             <div class="flex items-center gap-3 mb-1">
                                 <h3 class="text-lg font-bold text-slate-800">Pertemuan {{ $pertemuan->nomor_pertemuan }}</h3>
-                                @if($pertemuan->status_kehadiran)
+                                @if($pertemuan->status_kehadiran === 'Hadir')
                                     <span class="px-2.5 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-md">
                                         Sudah Absen
                                     </span>
@@ -84,10 +84,23 @@
                         @endphp
 
                         @if($pertemuan->status_kehadiran)
-                            <div class="text-right md:text-center px-4 py-2 bg-slate-50 rounded-lg border border-slate-100">
-                                <p class="text-xs text-slate-400 mb-1">Dicatat pada</p>
-                                <p class="text-sm font-bold text-slate-700">
-                                    {{ \Carbon\Carbon::parse($pertemuan->dicatat_pada)->format('H:i') }}
+                            @php
+                                $statusColors = [
+                                    'Hadir' => 'bg-green-50 border-green-200 text-green-700',
+                                    'Sakit' => 'bg-yellow-50 border-yellow-200 text-yellow-700',
+                                    'Izin' => 'bg-blue-50 border-blue-200 text-blue-700',
+                                    'Alfa' => 'bg-red-50 border-red-200 text-red-700',
+                                ];
+                                $colorClass = $statusColors[$pertemuan->status_kehadiran] ?? 'bg-slate-50 border-slate-200 text-slate-700';
+                            @endphp
+                            <div class="text-right md:text-center px-4 py-3 rounded-lg border {{ $colorClass }}">
+                                <p class="text-xs font-medium mb-1">Status Kehadiran</p>
+                                <p class="text-sm font-bold mb-1">{{ $pertemuan->status_kehadiran }}</p>
+                                @if($pertemuan->keterangan)
+                                    <p class="text-xs italic mt-2">"{{ $pertemuan->keterangan }}"</p>
+                                @endif
+                                <p class="text-xs mt-2 opacity-75">
+                                    {{ \Carbon\Carbon::parse($pertemuan->dicatat_pada)->format('H:i, d M Y') }}
                                 </p>
                             </div>
                         @elseif($isOpen)
@@ -388,7 +401,6 @@ async function submitAbsensi() {
         const data = await response.json();
         
         if (data.success) {
-            alert('✅ Presensi berhasil dicatat!');
             closeAbsensiModal();
             // Reload halaman untuk update status
             window.location.reload();
