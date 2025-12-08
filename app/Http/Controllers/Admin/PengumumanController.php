@@ -26,8 +26,7 @@ class PengumumanController extends Controller
     {
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
-            'hari' => 'nullable|string',
-            'tanggal' => 'nullable|date',
+            'tanggal' => 'required|date',
             'isi' => 'required|string',
             'target_role' => 'required|in:Semua,guru,siswa',
             'file_lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
@@ -35,11 +34,6 @@ class PengumumanController extends Controller
 
         DB::beginTransaction();
         try {
-            // Use tanggal from form or current date
-            $tanggal = $validated['tanggal'] ?? now()->format('Y-m-d');
-            // Use hari from form or auto detect from date
-            $hari = $validated['hari'] ?? \Carbon\Carbon::parse($tanggal)->translatedFormat('l');
-
             $filePath = null;
             if ($request->hasFile('file_lampiran')) {
                 $file = $request->file('file_lampiran');
@@ -50,8 +44,8 @@ class PengumumanController extends Controller
             Pengumuman::create([
                 'judul' => $validated['judul'],
                 'isi_pengumuman' => $validated['isi'],
-                'tgl_publikasi' => $tanggal,
-                'hari' => $hari,
+                'tgl_publikasi' => $validated['tanggal'],
+                // 'hari' field dihapus - auto-generate dari tgl_publikasi
                 'target_role' => $validated['target_role'],
                 'author_id' => Auth::id(),
                 'tanggal_dibuat' => now(),
@@ -80,14 +74,6 @@ class PengumumanController extends Controller
         try {
             $pengumuman = Pengumuman::findOrFail($id);
 
-            $updateData = [
-                'judul' => $validated['judul'],
-                'isi_pengumuman' => $validated['isi'],
-                'tgl_publikasi' => now()->format('Y-m-d'),
-                'hari' => now()->translatedFormat('l'),
-                'status' => $validated['status'],
-            ];
-
             if ($request->hasFile('file_lampiran')) {
                 // Delete old file
                 if ($pengumuman->file_lampiran && Storage::disk('public')->exists($pengumuman->file_lampiran)) {
@@ -102,7 +88,7 @@ class PengumumanController extends Controller
             $pengumuman->judul = $validated['judul'];
             $pengumuman->isi_pengumuman = $validated['isi'];
             $pengumuman->tgl_publikasi = now()->format('Y-m-d');
-            $pengumuman->hari = now()->translatedFormat('l');
+            // 'hari' field dihapus - auto-generate dari tgl_publikasi
             $pengumuman->status = $validated['status'];
             $pengumuman->save();
 
