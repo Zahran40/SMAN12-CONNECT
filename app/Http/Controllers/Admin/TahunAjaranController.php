@@ -476,6 +476,7 @@ class TahunAjaranController extends Controller
                 $siswa = $siswaKelas->siswa;
                 $kelasLama = $siswaKelas->kelas;
                 $tingkatLama = $kelasLama->tingkat;
+                $namaKelasLama = $kelasLama->nama_kelas;
 
                 // Tentukan tingkat baru (support angka dan romawi)
                 $tingkatBaru = null;
@@ -497,21 +498,23 @@ class TahunAjaranController extends Controller
                     continue; // Skip tingkat yang tidak dikenali
                 }
 
-                // Mapping jurusan lama ke baru (IPA → MIPA, IPS tetap IPS)
-                $jurusanLama = $kelasLama->jurusan;
-                $jurusanBaru = $jurusanLama;
-                
-                // Normalisasi nama jurusan
-                if (strtoupper($jurusanLama) == 'IPA') {
-                    $jurusanBaru = 'MIPA';
-                } elseif (strtoupper($jurusanLama) == 'IPS') {
-                    $jurusanBaru = 'IPS';
+                // Ekstrak nomor kelas dari nama kelas lama (X-E1 → 1, XI-F5 → 5)
+                preg_match('/(\d+)$/', $namaKelasLama, $matches);
+                $nomorKelas = $matches[1] ?? '1';
+
+                // Tentukan nama kelas baru berdasarkan tingkat
+                $namaKelasBaru = null;
+                if ($tingkatBaru == '11') {
+                    // X-E1 → XI-F1, X-E2 → XI-F2, dst
+                    $namaKelasBaru = "XI-F{$nomorKelas}";
+                } elseif ($tingkatBaru == '12') {
+                    // XI-F1 → XII-F1, XI-F2 → XII-F2, dst
+                    $namaKelasBaru = "XII-F{$nomorKelas}";
                 }
 
-                // Cari kelas baru dengan tingkat dan jurusan yang sesuai
+                // Cari kelas baru berdasarkan nama kelas yang spesifik
                 $kelasBaru = Kelas::where('tahun_ajaran_id', $tahunBaruId)
-                    ->where('tingkat', $tingkatBaru)
-                    ->where('jurusan', $jurusanBaru)
+                    ->where('nama_kelas', $namaKelasBaru)
                     ->first();
 
                 if (!$kelasBaru) {
