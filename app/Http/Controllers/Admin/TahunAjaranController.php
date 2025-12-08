@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\TahunAjaran;
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\SiswaKelas;
 use App\Models\Guru;
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class TahunAjaranController extends Controller
 {
@@ -424,6 +426,147 @@ class TahunAjaranController extends Controller
         }
         
         return view('Admin.tahunAjaranArsip', compact('tahunAjaranArsip'));
+    }
+
+    /**
+     * Proses kenaikan kelas otomatis dari tahun ajaran lama ke baru
+     * Logika: X → XI, XI → XII, XII → Lulus (status tidak aktif)
+     */
+    public function naikkanKelas(Request $request)
+    {
+        $request->validate([
+            'tahun_ajaran_lama_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
+            'tahun_ajaran_baru_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
+        ]);
+
+        $tahunLamaId = $request->tahun_ajaran_lama_id;
+        $tahunBaruId = $request->tahun_ajaran_baru_id;
+
+        try {
+            DB::beginTransaction();
+
+            $tahunLama = TahunAjaran::findOrFail($tahunLamaId);
+            $tahunBaru = TahunAjaran::findOrFail($tahunBaruId);
+
+            // Validasi: tahun baru harus semester Ganjil (karena kelas dibuat di Ganjil)
+            if ($tahunBaru->semester !== 'Ganjil') {
+                return back()->with('error', 'Kenaikan kelas hanya bisa ke semester Ganjil tahun ajaran baru!');
+            }
+
+            // Validasi: tahun baru harus lebih besar
+            if ($tahunBaru->tahun_mulai <= $tahunLama->tahun_mulai) {
+                return back()->with('error', 'Tahun ajaran baru harus lebih tinggi dari tahun ajaran lama!');
+            }
+
+            $stats = [
+                'naik_X_ke_XI' => 0,
+                'naik_XI_ke_XII' => 0,
+                'lulus_XII' => 0,
+                'tidak_ada_kelas_baru' => 0,
+                'sudah_ada' => 0,
+            ];
+
+            // Ambil semua siswa aktif di tahun ajaran lama
+            $siswaKelasLama = SiswaKelas::where('tahun_ajaran_id', $tahunLamaId)
+                ->where('status', 'Aktif')
+                ->with(['siswa', 'kelas'])
+                ->get();
+
+            foreach ($siswaKelasLama as $siswaKelas) {
+                $siswa = $siswaKelas->siswa;
+                $kelasLama = $siswaKelas->kelas;
+                $tingkatLama = $kelasLama->tingkat;
+
+                // Tentukan tingkat baru (support angka dan romawi)
+                $tingkatBaru = null;
+                if ($tingkatLama == '10' || $tingkatLama == 'X') {
+                    $tingkatBaru = '11';
+                    $stats['naik_X_ke_XI']++;
+                } elseif ($tingkatLama == '11' || $tingkatLama == 'XI') {
+                    $tingkatBaru = '12';
+                    $stats['naik_XI_ke_XII']++;
+                } elseif ($tingkatLama == '12' || $tingkatLama == 'XII') {
+                    // Siswa kelas XII → Lulus
+                    $siswaKelas->update([
+                        'status' => 'Lulus',
+                        'tanggal_keluar' => now(),
+                    ]);
+                    $stats['lulus_XII']++;
+                    continue;
+                } else {
+                    continue; // Skip tingkat yang tidak dikenali
+                }
+
+                // Mapping jurusan lama ke baru (IPA → MIPA, IPS tetap IPS)
+                $jurusanLama = $kelasLama->jurusan;
+                $jurusanBaru = $jurusanLama;
+                
+                // Normalisasi nama jurusan
+                if (strtoupper($jurusanLama) == 'IPA') {
+                    $jurusanBaru = 'MIPA';
+                } elseif (strtoupper($jurusanLama) == 'IPS') {
+                    $jurusanBaru = 'IPS';
+                }
+
+                // Cari kelas baru dengan tingkat dan jurusan yang sesuai
+                $kelasBaru = Kelas::where('tahun_ajaran_id', $tahunBaruId)
+                    ->where('tingkat', $tingkatBaru)
+                    ->where('jurusan', $jurusanBaru)
+                    ->first();
+
+                if (!$kelasBaru) {
+                    $stats['tidak_ada_kelas_baru']++;
+                    continue;
+                }
+
+                // Cek apakah siswa sudah ada di tahun ajaran baru
+                $sudahAda = SiswaKelas::where('siswa_id', $siswa->id_siswa)
+                    ->where('tahun_ajaran_id', $tahunBaruId)
+                    ->exists();
+
+                if ($sudahAda) {
+                    $stats['sudah_ada']++;
+                    continue;
+                }
+
+                // Nonaktifkan siswa di kelas lama (status Pindah karena naik kelas)
+                $siswaKelas->update([
+                    'status' => 'Pindah',
+                    'tanggal_keluar' => now(),
+                ]);
+
+                // Tambahkan siswa ke kelas baru
+                SiswaKelas::create([
+                    'siswa_id' => $siswa->id_siswa,
+                    'kelas_id' => $kelasBaru->id_kelas,
+                    'tahun_ajaran_id' => $tahunBaruId,
+                    'tanggal_masuk' => now(),
+                    'status' => 'Aktif',
+                ]);
+
+                // Update kolom kelas_id di tabel siswa (untuk kompatibilitas)
+                $siswa->update(['kelas_id' => $kelasBaru->id_kelas]);
+            }
+
+            DB::commit();
+
+            $message = "Kenaikan kelas berhasil! ";
+            $message .= "X→XI: {$stats['naik_X_ke_XI']}, XI→XII: {$stats['naik_XI_ke_XII']}, XII→Lulus: {$stats['lulus_XII']}";
+            
+            if ($stats['tidak_ada_kelas_baru'] > 0) {
+                $message .= ". {$stats['tidak_ada_kelas_baru']} siswa tidak dinaikkan (kelas baru tidak ditemukan)";
+            }
+            
+            if ($stats['sudah_ada'] > 0) {
+                $message .= ". {$stats['sudah_ada']} siswa sudah ada di tahun ajaran baru (dilewati)";
+            }
+
+            return back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menaikkan kelas: ' . $e->getMessage());
+        }
     }
 }
 
