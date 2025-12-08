@@ -156,6 +156,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::delete('/tahun-ajaran/{tahunMulai}/{tahunSelesai}', [TahunAjaranController::class, 'destroyYear'])->name('tahun-ajaran.destroy-year');
     // Unarsipkan tahun ajaran (restore dari arsip)
     Route::post('/tahun-ajaran/{tahunMulai}/{tahunSelesai}/unarchive', [TahunAjaranController::class, 'unarchiveYear'])->name('tahun-ajaran.unarchive-year');
+    // Kenaikan kelas otomatis
+    Route::post('/tahun-ajaran/naik-kelas', [TahunAjaranController::class, 'naikkanKelas'])->name('tahun-ajaran.naik-kelas');
 
     // KELAS ROUTES
     Route::get('/kelas', [App\Http\Controllers\Admin\KelasController::class, 'all'])->name('kelas.all');

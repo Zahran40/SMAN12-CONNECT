@@ -25,6 +25,31 @@
                 </svg>
                 <span>Arsip</span>
             </a>
+
+            {{-- Tombol Kenaikan Kelas --}}
+            @php
+                // Ambil tahun ajaran ganjil yang aktif
+                $tahunAktifGanjil = null;
+                $tahunSebelumnya = null;
+                
+                foreach ($tahunAjaran as $ta) {
+                    if ($ta->ganjil && $ta->ganjil->status === 'Aktif' && !$tahunAktifGanjil) {
+                        $tahunAktifGanjil = $ta;
+                    }
+                    if ($ta->ganjil && $ta->ganjil->status === 'Tidak Aktif' && !$tahunSebelumnya) {
+                        $tahunSebelumnya = $ta;
+                    }
+                }
+            @endphp
+
+            @if($tahunAktifGanjil && $tahunSebelumnya)
+            <button onclick="openModalNaikKelas()" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <span>Naikkan Kelas</span>
+            </button>
+            @endif
             
             {{-- Tombol Tambah --}}
             <a href="{{ route('admin.tahun-ajaran.create') }}" class="w-full sm:w-auto bg-blue-400 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors">
@@ -269,5 +294,80 @@
     </div>
     @endforelse
 </div>
+
+{{-- Modal Kenaikan Kelas --}}
+<div id="modalNaikKelas" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-11/12 sm:w-96 max-w-md">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="bg-green-100 p-3 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Kenaikan Kelas Otomatis</h3>
+        </div>
+
+        @if($tahunAktifGanjil && $tahunSebelumnya)
+        <div class="mb-6">
+            <p class="text-sm text-gray-700 mb-3">Naikkan semua siswa dari:</p>
+            <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-3 mb-2">
+                <p class="text-sm font-semibold text-blue-800">📚 {{ $tahunSebelumnya->tahun_mulai }}/{{ $tahunSebelumnya->tahun_selesai }}</p>
+                <p class="text-xs text-blue-600">Tahun Ajaran Lama</p>
+            </div>
+            <div class="text-center my-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 mx-auto" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="bg-green-50 border-2 border-green-300 rounded-lg p-3">
+                <p class="text-sm font-semibold text-green-800">🎓 {{ $tahunAktifGanjil->tahun_mulai }}/{{ $tahunAktifGanjil->tahun_selesai }}</p>
+                <p class="text-xs text-green-600">Tahun Ajaran Baru (Semester Ganjil)</p>
+            </div>
+        </div>
+
+        <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-3 mb-4">
+            <p class="text-xs text-yellow-800 font-medium mb-2">⚠️ Proses ini akan:</p>
+            <ul class="text-xs text-yellow-700 space-y-1 list-disc list-inside">
+                <li>Kelas X → Naik ke Kelas XI</li>
+                <li>Kelas XI → Naik ke Kelas XII</li>
+                <li>Kelas XII → Status Lulus (tidak aktif)</li>
+            </ul>
+        </div>
+
+        <form id="formNaikKelas" action="{{ route('admin.tahun-ajaran.naik-kelas') }}" method="POST">
+            @csrf
+            <input type="hidden" name="tahun_ajaran_lama_id" value="{{ $tahunSebelumnya->ganjil->id_tahun_ajaran ?? '' }}">
+            <input type="hidden" name="tahun_ajaran_baru_id" value="{{ $tahunAktifGanjil->ganjil->id_tahun_ajaran ?? '' }}">
+
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModalNaikKelas()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    Proses
+                </button>
+            </div>
+        </form>
+        @endif
+    </div>
+</div>
+
+<script>
+function openModalNaikKelas() {
+    document.getElementById('modalNaikKelas').classList.remove('hidden');
+}
+
+function closeModalNaikKelas() {
+    document.getElementById('modalNaikKelas').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('modalNaikKelas')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModalNaikKelas();
+    }
+});
+</script>
+
 @endsection
 
