@@ -100,6 +100,7 @@ class NaikkanKelasCommand extends Command
 
                 // Parse tingkat dari nama kelas (10/X, 11/XI, 12/XII)
                 $tingkatLama = $kelasLama->tingkat;
+                $namaKelasLama = $kelasLama->nama_kelas;
                 
                 // Tentukan tingkat baru (support angka dan romawi)
                 $tingkatBaru = null;
@@ -120,26 +121,28 @@ class NaikkanKelasCommand extends Command
                     continue;
                 }
 
-                // Mapping jurusan lama ke baru (IPA → MIPA, IPS tetap IPS)
-                $jurusanLama = $kelasLama->jurusan;
-                $jurusanBaru = $jurusanLama;
-                
-                // Normalisasi nama jurusan
-                if (strtoupper($jurusanLama) == 'IPA') {
-                    $jurusanBaru = 'MIPA';
-                } elseif (strtoupper($jurusanLama) == 'IPS') {
-                    $jurusanBaru = 'IPS';
+                // Ekstrak nomor kelas dari nama kelas lama (X-E1 → 1, XI-F5 → 5)
+                preg_match('/(\d+)$/', $namaKelasLama, $matches);
+                $nomorKelas = $matches[1] ?? '1';
+
+                // Tentukan nama kelas baru berdasarkan tingkat
+                $namaKelasBaru = null;
+                if ($tingkatBaru == '11') {
+                    // X-E1 → XI-F1, X-E2 → XI-F2, dst
+                    $namaKelasBaru = "XI-F{$nomorKelas}";
+                } elseif ($tingkatBaru == '12') {
+                    // XI-F1 → XII-F1, XI-F2 → XII-F2, dst
+                    $namaKelasBaru = "XII-F{$nomorKelas}";
                 }
 
-                // Cari kelas baru dengan tingkat dan jurusan yang sesuai
+                // Cari kelas baru berdasarkan nama kelas yang spesifik
                 $kelasBaru = Kelas::where('tahun_ajaran_id', $tahunBaruId)
-                    ->where('tingkat', $tingkatBaru)
-                    ->where('jurusan', $jurusanBaru)
+                    ->where('nama_kelas', $namaKelasBaru)
                     ->first();
 
                 if (!$kelasBaru) {
                     // Tidak ada kelas baru yang sesuai
-                    $this->warn("\nKelas baru tidak ditemukan untuk: {$siswa->nama_lengkap} ({$kelasLama->nama_kelas} → {$tingkatBaru}-{$kelasLama->jurusan})");
+                    $this->warn("\nKelas baru tidak ditemukan untuk: {$siswa->nama_lengkap} ({$namaKelasLama} → {$namaKelasBaru})");
                     $stats['tidak_ada_kelas_baru']++;
                     $progressBar->advance();
                     continue;

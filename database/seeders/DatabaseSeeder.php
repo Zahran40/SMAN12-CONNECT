@@ -49,15 +49,14 @@ class DatabaseSeeder extends Seeder
         
         $this->command->info("✅ Tahun ajaran aktif: {$tahunAjaranAktif->tahun_mulai}/{$tahunAjaranAktif->tahun_selesai} {$tahunAjaranAktif->semester}");
 
-        // Ambil kelas X-MIPA-1 untuk siswa testing
+        // Ambil kelas X-E1 untuk siswa testing
         $kelasX1 = Kelas::where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
-            ->where('nama_kelas', 'X-MIPA-1')
+            ->where('nama_kelas', 'X-E1')
             ->where('tingkat', '10')
-            ->where('jurusan', 'MIPA')
             ->first();
 
         if (!$kelasX1) {
-            $this->command->error("❌ Kelas X-MIPA-1 tidak ditemukan!");
+            $this->command->error("❌ Kelas X-E1 tidak ditemukan!");
             return;
         }
 
@@ -171,7 +170,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
         
-        $this->command->info("✅ Siswa: {$siswa->email} (NIS: 12345, Kelas: X-1 IPA)");
+        $this->command->info("✅ Siswa: {$siswa->email} (NIS: 12345, Kelas: X-E1)");
 
         // ============================================
         // 4️⃣ MATA PELAJARAN, JADWAL & PERTEMUAN
@@ -218,7 +217,7 @@ class DatabaseSeeder extends Seeder
                 'jam_mulai' => '08:00',
                 'jam_selesai' => '09:30',
             ]);
-            $this->command->info("✅ Jadwal: Matematika - X-1 IPA → Observer create 16 pertemuan");
+            $this->command->info("✅ Jadwal: Matematika - X-E1 → Observer create 16 pertemuan");
         } else {
             $jadwalMat = $jadwalMatExists;
             $this->command->info("ℹ️ Jadwal Matematika sudah ada");
@@ -238,7 +237,7 @@ class DatabaseSeeder extends Seeder
                 'jam_mulai' => '08:00',
                 'jam_selesai' => '09:30',
             ]);
-            $this->command->info("✅ Jadwal: Fisika - X-1 IPA → Observer create 16 pertemuan");
+            $this->command->info("✅ Jadwal: Fisika - X-E1 → Observer create 16 pertemuan");
         } else {
             $jadwalFis = $jadwalFisExists;
             $this->command->info("ℹ️ Jadwal Fisika sudah ada");
