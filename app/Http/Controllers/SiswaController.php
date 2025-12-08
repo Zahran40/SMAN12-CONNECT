@@ -119,10 +119,7 @@ class SiswaController extends Controller
         ]);
         $totalSppDibayar = $result[0]->total ?? 0;
         
-        // Ambil pengumuman aktif menggunakan sp_get_pengumuman_aktif
-        $pengumuman = DB::select('CALL sp_get_pengumuman_aktif(?)', ['siswa']);
-        
-        return view('siswa.beranda', compact('siswa', 'kelasNama', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari', 'dashboardStats', 'totalSppDibayar', 'pengumuman'));
+        return view('siswa.beranda', compact('siswa', 'kelasNama', 'presensiAktif', 'hariIni', 'allDays', 'jadwalPerHari', 'dashboardStats', 'totalSppDibayar'));
     }
     
     public function profil()
