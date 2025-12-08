@@ -439,25 +439,8 @@ class MateriController extends Controller
      */
     public function pengumuman()
     {
-        // Query langsung tanpa stored procedure
-        $pengumuman = DB::table('pengumuman as p')
-            ->join('users as u', 'p.author_id', '=', 'u.id')
-            ->select(
-                'p.id_pengumuman',
-                'p.judul',
-                'p.isi_pengumuman',
-                'p.tgl_publikasi',
-                'p.hari',
-                'p.file_lampiran',
-                'u.name as author_name',
-                'u.role as author_role'
-            )
-            ->where(function($query) {
-                $query->where('p.target_role', 'guru')
-                      ->orWhere('p.target_role', 'Semua');
-            })
-            ->orderBy('p.tgl_publikasi', 'desc')
-            ->get();
+        // Gunakan stored procedure untuk performa lebih baik
+        $pengumuman = DB::select('CALL sp_get_pengumuman_aktif(?)', ['guru']);
         
         return view('Guru.pengumuman', compact('pengumuman'));
     }
