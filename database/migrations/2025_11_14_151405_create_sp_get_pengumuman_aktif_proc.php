@@ -12,9 +12,10 @@ BEGIN
          p.judul,
          p.isi_pengumuman,
          p.tgl_publikasi,
-         p.hari,
+         DAYNAME(p.tgl_publikasi) AS hari,
          p.target_role,
          p.file_lampiran,
+         p.status,
          u.name AS author_name,
          u.role AS author_role
   FROM pengumuman p
