@@ -83,7 +83,7 @@ class RaportController extends Controller
             ->orderBy('semester', 'asc')
             ->get();
         
-        return view('Siswa.nilai', compact('tahunAjaranWithKelas', 'allTahunAjaran', 'selectedTahunAjaranId'));
+        return view('siswa.nilai', compact('tahunAjaranWithKelas', 'allTahunAjaran', 'selectedTahunAjaranId'));
     }
     
     /**
@@ -106,7 +106,7 @@ class RaportController extends Controller
             ->where('tahun_ajaran_id', $tahunAjaran)
             ->first();
         
-        return view('Siswa.detailRaport', compact('mataPelajaran', 'raport', 'tahunAjaranLabel'));
+        return view('siswa.detailRaport', compact('mataPelajaran', 'raport', 'tahunAjaranLabel'));
     }
 
     /**
@@ -237,7 +237,7 @@ class RaportController extends Controller
         
         $namaKelas = $kelasData->nama_kelas ?? null;
         
-        return view('Siswa.detailRaport', compact('raports', 'rataRata', 'tahunAjaranLabel', 'semester', 'tahunAjaranList', 'tahunAjaranId', 'namaKelas'));
+        return view('siswa.detailRaport', compact('raports', 'rataRata', 'tahunAjaranLabel', 'semester', 'tahunAjaranList', 'tahunAjaranId', 'namaKelas'));
     }
     
     /**

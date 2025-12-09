@@ -61,7 +61,7 @@ class PresensiController extends Controller
         
         $jadwalList = $query->orderBy('hari')->orderBy('jam_mulai')->get();
 
-        return view('guru.presensi', compact('jadwalList', 'guru', 'hariFilter', 'daftarHari'));
+        return view('Guru.presensi', compact('jadwalList', 'guru', 'hariFilter', 'daftarHari'));
     }
 
     /**
@@ -105,7 +105,7 @@ class PresensiController extends Controller
             ->orderBy('s.nama_lengkap')
             ->get();
 
-        return view('guru.detailpresensi', compact('pertemuan', 'siswaList', 'guru'));
+        return view('Guru.detailpresensi', compact('pertemuan', 'siswaList', 'guru'));
     }
 
     /**
@@ -327,7 +327,7 @@ class PresensiController extends Controller
             $slotPertemuan[$i] = $pertemuanTerisi->get($i);
         }
 
-        return view('guru.listpertemuan', compact('jadwal', 'slotPertemuan', 'guru'));
+        return view('Guru.listpertemuan', compact('jadwal', 'slotPertemuan', 'guru'));
     }
 
     /**
