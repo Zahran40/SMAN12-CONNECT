@@ -56,42 +56,50 @@
         </div>
 
         <!-- Statistik Nilai -->
-        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Kelas Siswa -->
-            <div class="p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
-                <div class="flex justify-between items-center">
+       <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div class="relative overflow-hidden rounded-xl bg-green-50 bg-gradient-to-br from-green-500 to-green-700 shadow-md text-white p-4">
+                <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white opacity-10 blur-xl"></div>
+                
+                <div class="relative z-10 flex justify-between items-center">
                     <div>
-                        <h4 class="text-sm font-semibold text-green-800 mb-1">Kelas</h4>
-                        <p class="text-2xl font-bold text-green-700">{{ $namaKelas ?? 'Belum ada kelas' }}</p>
-                        <p class="text-xs text-green-700 mt-1">Tahun Ajaran {{ $tahunAjaranLabel }}</p>
+                        <p class="text-green-500 text-xs font-semibold tracking-wide uppercase">Kelas Saat Ini</p>
+                        <h4 class="text-2xl font-bold text-green-500 mt-1">{{ $namaKelas ?? '-' }}</h4>
+                        <div class="mt-2 inline-flex items-center bg-white bg-opacity-20 px-2 py-0.5 rounded text-[10px] font-medium border text-green-500 border-white border-opacity-10">
+                            <span>TA: {{ $tahunAjaranLabel }}</span>
+                        </div>
                     </div>
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="p-2 bg-green-500 bg-opacity-20 rounded-lg shadow-sm border border-white border-opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </div>
                 </div>
             </div>
             
-            <!-- Rata-rata Nilai Semester Ini -->
-            <div class="p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
-                <div class="flex justify-between items-center">
+            <div class="relative overflow-hidden rounded-xl bg-blue-50 bg-gradient-to-br from-blue-500 to-blue-700 shadow-md text-white p-4">
+                <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white opacity-10 blur-xl"></div>
+
+                <div class="relative z-10 flex justify-between items-center">
                     <div>
-                        <h4 class="text-sm font-semibold text-blue-800 mb-1">Rata-rata Raport Semester {{ $semester }}</h4>
-                        <p class="text-3xl font-bold text-blue-700">{{ number_format($rataRata, 2) }}</p>
-                        <p class="text-xs text-blue-700 mt-1">Semua mata pelajaran</p>
+                        <p class="text-blue-500 text-xs font-semibold tracking-wide uppercase">Rata-rata Semester {{ $semester }}</p>
+                        <h4 class="text-3xl font-bold text-blue-500 mt-1">{{ number_format($rataRata, 2) }}</h4>
+                        <p class="text-[10px] text-blue-500 opacity-90 mt-1">
+                            Semua Mata Pelajaran
+                        </p>
                     </div>
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="p-2 bg-blue-500 bg-opacity-20 rounded-lg shadow-sm border border-white border-opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                     </div>
                 </div>
             </div>
+
         </div>
 
         <div class="mt-6 flex justify-end">
-            <button onclick="cetakRaport()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-lg transition-colors flex items-center space-x-2">
+            <button onclick="cetakRaport()" class="bg-emerald-500 hover:bg-emerald-700 text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-lg transition-colors flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
