@@ -100,6 +100,26 @@ class PengumumanController extends Controller
         }
     }
 
+    public function toggleStatus($id)
+    {
+        DB::beginTransaction();
+        try {
+            $pengumuman = Pengumuman::findOrFail($id);
+            
+            // Toggle status
+            $pengumuman->status = ($pengumuman->status === 'aktif') ? 'nonaktif' : 'aktif';
+            $pengumuman->save();
+
+            DB::commit();
+            
+            $statusText = $pengumuman->status === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
+            return redirect()->route('admin.pengumuman')->with('success', "Pengumuman berhasil {$statusText}!");
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Gagal mengubah status pengumuman: ' . $e->getMessage());
+        }
+    }
+
     public function destroy($id)
     {
         DB::beginTransaction();

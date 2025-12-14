@@ -92,8 +92,6 @@
                         <option value="">Semua</option>
                         <option value="raport" {{ request('jenis') == 'raport' ? 'selected' : '' }}>Raport</option>
                         <option value="pembayaran_spp" {{ request('jenis') == 'pembayaran_spp' ? 'selected' : '' }}>Pembayaran SPP</option>
-                        <option value="absensi" {{ request('jenis') == 'absensi' ? 'selected' : '' }}>Absensi</option>
-                        <option value="tugas" {{ request('jenis') == 'tugas' ? 'selected' : '' }}>Tugas</option>
                     </select>
                 </div>
 
