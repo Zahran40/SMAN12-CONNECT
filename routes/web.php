@@ -226,6 +226,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman');
     Route::get('/pengumuman/create', [PengumumanController::class, 'create'])->name('pengumuman.create');
     Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
+    Route::patch('/pengumuman/{id}/toggle', [PengumumanController::class, 'toggleStatus'])->name('pengumuman.toggle');
     Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
