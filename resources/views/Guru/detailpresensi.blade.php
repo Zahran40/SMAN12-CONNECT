@@ -111,18 +111,32 @@
                             ✓ Sudah Di-submit
                         </span>
                         @if(auth()->user()->role === 'admin')
-                            <form action="{{ route('guru.unlock_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin membuka kembali absensi ini?')">
+                            <form id="unlock-presensi-{{ $pertemuan->id_pertemuan }}" action="{{ route('guru.unlock_presensi', $pertemuan->id_pertemuan) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-200">
+                                <button type="button" onclick="showConfirmModal({
+                                    title: '🔓 Buka Kembali Absensi',
+                                    message: 'Absensi yang sudah di-submit akan dibuka kembali dan bisa diubah.',
+                                    question: 'Yakin ingin membuka kembali absensi ini?',
+                                    confirmText: 'Ya, Buka Kembali',
+                                    confirmClass: 'flex-1 bg-yellow-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-yellow-700 transition',
+                                    onConfirm: () => document.getElementById('unlock-presensi-{{ $pertemuan->id_pertemuan }}').submit()
+                                })" class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-200">
                                      Buka Kembali
                                 </button>
                             </form>
                         @endif
                     </div>
                 @else
-                    <form action="{{ route('guru.submit_presensi', $pertemuan->id_pertemuan) }}" method="POST" onsubmit="return confirm('Yakin ingin submit? Data akan terkunci.')">
+                    <form id="submit-presensi-{{ $pertemuan->id_pertemuan }}" action="{{ route('guru.submit_presensi', $pertemuan->id_pertemuan) }}" method="POST">
                         @csrf
-                        <button type="submit" class="bg-blue-500 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-blue-600 transition-colors font-medium w-full sm:w-auto">
+                        <button type="button" onclick="showConfirmModal({
+                            title: '🔒 Lock Presensi',
+                            message: 'Data presensi akan dikunci secara PERMANEN. Data tidak dapat diubah lagi setelah di-submit.',
+                            question: 'Yakin ingin submit dan lock presensi?',
+                            confirmText: 'Ya, Lock Presensi',
+                            confirmClass: 'flex-1 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition',
+                            onConfirm: () => document.getElementById('submit-presensi-{{ $pertemuan->id_pertemuan }}').submit()
+                        })" class="bg-blue-500 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full hover:bg-blue-600 transition-colors font-medium w-full sm:w-auto">
                             Submit & Lock Presensi
                         </button>
                     </form>

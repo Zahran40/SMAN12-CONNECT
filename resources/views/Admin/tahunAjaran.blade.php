@@ -72,10 +72,16 @@
 
             <div class="flex items-center gap-2">
                 @if(isset($ta->can_delete) && $ta->can_delete)
-                    <form action="{{ route('admin.tahun-ajaran.destroy-year', [$ta->tahun_mulai, $ta->tahun_selesai]) }}" method="POST" onsubmit="return confirm('Yakin ingin mengarsipkan tahun ajaran {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }}? Tahun ajaran akan disembunyikan dari daftar, tapi data kelas, siswa, dan raport tetap tersimpan.')">
+                    <form id="arsip-form-{{ $ta->tahun_mulai }}-{{ $ta->tahun_selesai }}" action="{{ route('admin.tahun-ajaran.destroy-year', [$ta->tahun_mulai, $ta->tahun_selesai]) }}" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <button type="button" onclick="showConfirmModal({
+                            title: '⚠️ Arsipkan Tahun Ajaran',
+                            message: 'Tahun ajaran {{ $ta->tahun_mulai }}/{{ $ta->tahun_selesai }} akan disembunyikan dari daftar, tapi data kelas, siswa, dan raport tetap tersimpan.',
+                            question: 'Yakin ingin mengarsipkan tahun ajaran ini?',
+                            confirmText: 'Ya, Arsipkan',
+                            onConfirm: () => document.getElementById('arsip-form-{{ $ta->tahun_mulai }}-{{ $ta->tahun_selesai }}').submit()
+                        })" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
                             </svg>
@@ -189,9 +195,16 @@
                     </p>
                     <div class="flex gap-3 justify-center flex-wrap">
                         @if($ta->ganjil)
-                        <form action="{{ route('admin.kelas.generate', $ta->ganjil->id_tahun_ajaran) }}" method="POST" onsubmit="return confirm('Generate 30 kelas standar?\n\nKelas yang akan dibuat:\n• X-MIPA 1-5, X-IPS 1-5\n• XI-MIPA 1-5, XI-IPS 1-5\n• XII-MIPA 1-5, XII-IPS 1-5\n\nTotal: 30 kelas')" class="inline-block">
+                        <form id="generate-kelas-form-{{ $ta->ganjil->id_tahun_ajaran }}" action="{{ route('admin.kelas.generate', $ta->ganjil->id_tahun_ajaran) }}" method="POST" class="inline-block">
                             @csrf
-                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-bold transition-colors shadow-sm">
+                            <button type="button" onclick="showConfirmModal({
+                                title: '🏫 Generate 30 Kelas Standar',
+                                message: 'Kelas yang akan dibuat:\n\u2022 X-MIPA 1-5, X-IPS 1-5\n\u2022 XI-MIPA 1-5, XI-IPS 1-5\n\u2022 XII-MIPA 1-5, XII-IPS 1-5\n\nTotal: 30 kelas',
+                                question: 'Lanjutkan generate kelas?',
+                                confirmText: 'Ya, Generate',
+                                confirmClass: 'flex-1 bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition',
+                                onConfirm: () => document.getElementById('generate-kelas-form-{{ $ta->ganjil->id_tahun_ajaran }}').submit()
+                            })" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-bold transition-colors shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
                                 </svg>
