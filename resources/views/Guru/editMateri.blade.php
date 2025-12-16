@@ -35,7 +35,13 @@
                         Pertemuan {{ $item->pertemuan->pertemuan_ke }}
                     </div>
                 </div>
-                <button type="button" onclick="if(confirm('Apakah Anda yakin ingin menghapus materi ini?')) document.getElementById('delete-form').submit()" class="flex items-center space-x-2 bg-red-500 text-white font-bold text-lg px-4 py-2 sm:px-6 sm:py-3 rounded-full hover:bg-red-600 transition-colors shadow-md shadow-red-200" data-delete-confirm>
+                <button type="button" onclick="showConfirmModal({
+                    title: '⚠️ Hapus Materi',
+                    message: 'Materi ini akan dihapus secara permanen dari pertemuan {{ $item->pertemuan->pertemuan_ke }}.',
+                    question: 'Yakin ingin menghapus materi ini?',
+                    confirmText: 'Ya, Hapus',
+                    onConfirm: () => document.getElementById('delete-form').submit()
+                })" class="flex items-center space-x-2 bg-red-500 text-white font-bold text-lg px-4 py-2 sm:px-6 sm:py-3 rounded-full hover:bg-red-600 transition-colors shadow-md shadow-red-200" data-delete-confirm>
                     <img src="{{ asset('images/material-symbols_delete.png') }}" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.49 1.478l-.56-.095q-.53-.103-1.073-.178c-1.312-.178-2.654-.227-4.005-.227-1.35 0-2.693.05-4.005.227q-.542.075-1.073.178c-.186.036-.375.068-.56.095a.75.75 0 0 1-.49-1.478c1.287-.175 2.594-.346 3.878-.512v-.227c0-1.121.884-2.017 2.005-2.017h3.89c1.12 0 2.005.896 2.005 2.017ZM15.65 7.658a.75.75 0 0 0-.992.123l-1.418 1.419-1.418-1.419a.75.75 0 1 0-1.062 1.062l1.419 1.418-1.419 1.418a.75.75 0 1 0 1.062 1.062l1.418-1.419 1.418 1.419a.75.75 0 1 0 1.062-1.062l-1.419-1.418 1.419-1.418a.75.75 0 0 0-.123-.992Z" clip-rule="evenodd" />
                         <path d="M4.574 9.566c.032-.573.52-1.016 1.095-1.016h12.662c.575 0 1.063.443 1.095 1.016l.333 10.232c.056 1.73-1.324 3.202-3.055 3.202H7.296c-1.73 0-3.111-1.472-3.055-3.202l.333-10.232Z" />
