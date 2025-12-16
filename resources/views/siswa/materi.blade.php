@@ -6,12 +6,6 @@
 
     <h2 class="text-2xl sm:text-3xl font-bold text-blue-500 mb-4 sm:mb-6">Materi Kelas</h2>
 
-    @if(session('success'))
-        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6 text-sm sm:text-base">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
         @forelse($jadwalPelajaran as $jadwal)

@@ -123,7 +123,7 @@
                         </button>
                         <!-- Tombol Lock (hanya muncul jika nilai sudah ada) -->
                         @if($raport && ($raport->nilai_uts || $raport->nilai_uas))
-                        <button type="button" onclick="if(confirm('⚠️ PERHATIAN!\n\nSetelah di-lock, nilai TIDAK DAPAT diubah lagi (PERMANEN).\n\nApakah Anda yakin ingin mengunci nilai ini?')) document.getElementById('lockFormS2').submit()" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition-colors w-full sm:w-auto flex items-center justify-center gap-2">
+                        <button type="button" onclick="showLockModalS2()" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md transition-colors w-full sm:w-auto flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
                             </svg>
@@ -145,6 +145,46 @@
         @endif
 
     </div>
+
+    <!-- Modal Konfirmasi Lock Nilai -->
+    @if($raport && !$raport->is_locked && ($raport->nilai_uts || $raport->nilai_uas))
+    <div id="lock-modal-s2" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-4 sm:mb-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <svg class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">⚠️ PERHATIAN!</h3>
+                <p class="text-sm text-slate-600">Setelah di-lock, nilai TIDAK DAPAT diubah lagi</p>
+            </div>
+
+            <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-4 sm:mb-6">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                    </svg>
+                    <div>
+                        <p class="text-sm font-semibold text-red-800 mb-1">Nilai akan dikunci PERMANEN</p>
+                        <p class="text-xs text-red-700">Nilai tidak dapat diubah lagi. Pastikan semua nilai sudah benar sebelum melanjutkan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-center text-sm text-slate-700 mb-6">Apakah Anda yakin ingin mengunci nilai ini?</p>
+
+            <div class="flex gap-3">
+                <button onclick="closeLockModalS2()" class="flex-1 bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-300 transition-colors">
+                    Batal
+                </button>
+                <button onclick="confirmLockS2()" class="flex-1 bg-red-500 text-white font-semibold py-2.5 rounded-lg hover:bg-red-600 transition-colors">
+                    Ya, Lock Nilai
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 
 @endsection
 
@@ -235,6 +275,27 @@
                 }
             }
         });
+    });
+
+    // Modal Lock Nilai Functions
+    function showLockModalS2() {
+        document.getElementById('lock-modal-s2').classList.remove('hidden');
+    }
+
+    function closeLockModalS2() {
+        document.getElementById('lock-modal-s2').classList.add('hidden');
+    }
+
+    function confirmLockS2() {
+        document.getElementById('lockFormS2').submit();
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('lock-modal-s2');
+        if (event.target === modal) {
+            closeLockModalS2();
+        }
     });
 </script>
 @endpush

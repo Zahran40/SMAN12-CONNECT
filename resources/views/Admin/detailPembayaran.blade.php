@@ -12,18 +12,6 @@
         <h1 class="text-2xl font-bold text-blue-700">Detail Pembayaran SPP</h1>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-            {{ session('error') }}
-        </div>
-    @endif
-
    
     <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-blue-100 relative space-y-4 sm:space-y-6">
 

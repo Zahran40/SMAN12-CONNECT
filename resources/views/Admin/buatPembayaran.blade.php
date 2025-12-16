@@ -44,13 +44,6 @@
         </div>
     @endif
 
-    @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r shadow-sm">
-            <p class="font-bold">Berhasil</p>
-            <p>{{ session('success') }}</p>
-        </div>
-    @endif
-
     <!-- STEP 1: Filter Siswa -->
     <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
         <h2 class="text-lg font-bold text-slate-700 mb-4">Step 1: Filter Siswa</h2>

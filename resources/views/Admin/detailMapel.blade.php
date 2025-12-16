@@ -12,19 +12,6 @@
         <h1 class="text-2xl font-bold text-blue-700">Detail Mata Pelajaran</h1>
     </div>
 
-    {{-- Success/Error Messages --}}
-    @if(session('success'))
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg">
-        <p class="font-medium">{{ session('success') }}</p>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
-        <p class="font-medium">{{ session('error') }}</p>
-    </div>
-    @endif
-
     <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center space-x-4 sm:space-x-6">
             <div class="w-24 h-24 bg-blue-100 rounded-2xl flex items-center justify-center">
