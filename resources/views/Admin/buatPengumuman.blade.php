@@ -13,18 +13,6 @@
         <h1 class="text-2xl font-bold text-blue-700">Membuat Pengumuman</h1>
     </div>
 
-    @if(session('success'))
-        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
-            {{ session('error') }}
-        </div>
-    @endif
-
     @if($errors->any())
         <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
             <ul class="list-disc list-inside">

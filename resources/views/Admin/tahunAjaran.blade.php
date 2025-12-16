@@ -61,18 +61,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
-            {{ session('error') }}
-        </div>
-    @endif
-
 
     @forelse($tahunAjaran as $index => $ta)
     <div class="bg-white rounded-2xl shadow p-5 {{ $index < count($tahunAjaran) - 1 ? 'mb-6' : '' }}">

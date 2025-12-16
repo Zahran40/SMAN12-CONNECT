@@ -10,18 +10,6 @@
         </a>
         <h2 class="text-xl sm:text-2xl md:text-2xl sm:text-3xl font-bold text-blue-500">{{ $jadwal->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }}</h2>
     </div>
-
-    @if(session('success'))
-        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
-            {{ session('error') }}
-        </div>
-    @endif
     
     @if($errors->any())
         <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">

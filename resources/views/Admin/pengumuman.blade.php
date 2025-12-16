@@ -17,18 +17,6 @@
             </a>
         </div>
 
-        @if(session('success'))
-            <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-                {{ session('error') }}
-            </div>
-        @endif
-
         <div class="space-y-6">
             @forelse($pengumuman as $item)
             <div class="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 {{ $item->status === 'aktif' ? 'border-blue-300' : 'border-slate-300' }} shadow-sm relative {{ $item->status === 'nonaktif' ? 'opacity-60' : '' }}">

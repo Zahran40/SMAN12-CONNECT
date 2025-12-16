@@ -11,18 +11,6 @@
         <h2 class="text-3xl font-bold text-blue-500">{{ $tagihan->nama_tagihan }}</h2>
     </div>
 
-    @if(session('success'))
-        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-            {{ session('error') }}
-        </div>
-    @endif
-
     <div class="bg-white rounded-xl shadow-lg border-2 border-blue-300 p-4 sm:p-6 md:p-8">
         
         <div class="mb-8">

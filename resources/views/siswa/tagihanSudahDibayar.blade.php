@@ -6,12 +6,6 @@
         <h2 class="text-3xl font-bold text-blue-500">Tagihan Uang Sekolah</h2>
     </div>
 
-    @if(session('success'))
-        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="flex space-x-4 mb-4 sm:mb-6">
         <a href="{{ route('siswa.tagihan') }}" class="bg-white text-slate-600 font-medium px-6 py-2 rounded-lg text-sm border border-slate-300 hover:bg-slate-50">
             Belum Dibayar

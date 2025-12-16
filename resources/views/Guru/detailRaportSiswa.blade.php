@@ -11,13 +11,6 @@
         </h2>
     </div>
 
-    {{-- Success Message --}}
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6 text-sm sm:text-base">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border-2 border-blue-400">
         <div class="mb-6 sm:mb-8">
             <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">Daftar Siswa Anda</h3>

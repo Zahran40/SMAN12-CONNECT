@@ -20,17 +20,6 @@
 
         <div class="p-6 space-y-4">
 
-            @if(session('success'))
-                <div class="mb-4 bg-green-50 text-green-700 px-4 py-2 rounded text-sm border border-green-200">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 bg-red-50 text-red-700 px-4 py-2 rounded text-sm border border-red-200">
-                    {{ session('error') }}
-                </div>
-            @endif
-
             <div class="space-y-3 text-sm md:text-base">
                 
                 <div class="flex items-start">
