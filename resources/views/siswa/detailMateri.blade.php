@@ -10,6 +10,18 @@
         </a>
         <h2 class="text-xl sm:text-2xl md:text-2xl sm:text-3xl font-bold text-blue-500">{{ $jadwal->mataPelajaran->nama_mapel ?? 'Mata Pelajaran' }}</h2>
     </div>
+
+    @if(session('success'))
+        <div class="alert-auto-hide bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
+            {{ session('error') }}
+        </div>
+    @endif
     
     @if($errors->any())
         <div class="alert-auto-hide bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6">
@@ -443,7 +455,7 @@
     <div class="tab-content-siswa hidden bg-white rounded-b-xl border-2 border-t-0 border-blue-200 shadow-lg p-6" id="tab-siswa-tugas">
         <div class="space-y-4">
             @forelse($allTugasSiswa as $tugas)
-            <div class="bg-white rounded-xl shadow-md p-5 border-l-4 {{ $tugas->status_pengumpulan == 'Belum Dikumpulkan' ? 'border-red-400' : ($tugas->status_pengumpulan == 'Tepat Waktu' ? 'border-green-400' : 'border-yellow-400') }}">
+            <div class="bg-white rounded-xl shadow-md p-5 border-2 {{ $tugas->status_pengumpulan == 'Belum Dikumpulkan' ? 'border-red-400' : ($tugas->status_pengumpulan == 'Tepat Waktu' ? 'border-green-400' : 'border-yellow-400') }}">
                 <div class="flex justify-between items-start">
                     <div class="flex-1">
                         <div class="flex items-center space-x-3 mb-2">
@@ -499,7 +511,7 @@
                                         </div>
                                         @if($tugas->komentar_guru)
                                         <div class="bg-white rounded-md p-3 border-l-4 border-blue-400 mt-2">
-                                            <p class="text-xs font-semibold text-blue-700 mb-1">💬 Feedback dari Guru:</p>
+                                            <p class="text-xs font-semibold text-blue-700 mb-1"> Feedback dari Guru:</p>
                                             <p class="text-sm text-gray-800 leading-relaxed">{{ $tugas->komentar_guru }}</p>
                                         </div>
                                         @endif
