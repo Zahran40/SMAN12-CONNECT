@@ -76,10 +76,10 @@
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-b-2 border-gray-300">NIS</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-800 uppercase tracking-wider border-b-2 border-gray-300">Nama Siswa</th>
                         <th class="px-6 py-4 text-center text-xs font-bold text-gray-800 uppercase tracking-wider border-b-2 border-gray-300">Total Pertemuan</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-green-600 border-b-2 border-green-700">Hadir</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-yellow-600 border-b-2 border-yellow-700">Izin</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-blue-600 border-b-2 border-blue-700">Sakit</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-red-600 border-b-2 border-red-700">Alfa</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-green-500 border-b-2 border-green-500">Hadir</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-yellow-500 border-b-2 border-yellow-500">Izin</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-blue-500 border-b-2 border-blue-500">Sakit</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-red-500 border-b-2 border-red-500">Alfa</th>
                         <th class="px-6 py-4 text-center text-xs font-bold text-gray-800 uppercase tracking-wider border-b-2 border-gray-300">Persentase Kehadiran</th>
                     </tr>
                 </thead>
