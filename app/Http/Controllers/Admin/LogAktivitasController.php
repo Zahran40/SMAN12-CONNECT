@@ -26,6 +26,11 @@ class LogAktivitasController extends Controller
             $query->where('role', $request->role);
         }
 
+        // Filter berdasarkan IP Address
+        if ($request->filled('ip')) {
+            $query->where('ip_address', $request->ip);
+        }
+
         // Filter berdasarkan tanggal
         if ($request->filled('dari') && $request->filled('sampai')) {
             $query->whereBetween('waktu', [
@@ -34,9 +39,12 @@ class LogAktivitasController extends Controller
             ]);
         }
 
-        // Filter berdasarkan search (deskripsi)
+        // Filter berdasarkan search (deskripsi atau IP)
         if ($request->filled('search')) {
-            $query->where('deskripsi', 'like', '%' . $request->search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('deskripsi', 'like', '%' . $request->search . '%')
+                  ->orWhere('ip_address', 'like', '%' . $request->search . '%');
+            });
         }
 
         $logs = $query->paginate(50);
@@ -61,7 +69,14 @@ class LogAktivitasController extends Controller
             ->get()
             ->pluck('total', 'role');
 
-        return view('Admin.logAktivitas', compact('logs', 'statistik', 'aktivitasPerJenis', 'aktivitasPerRole'));
+        // Get unique IP addresses untuk filter
+        $ipAddresses = LogAktivitas::select('ip_address')
+            ->distinct()
+            ->whereNotNull('ip_address')
+            ->orderBy('ip_address')
+            ->pluck('ip_address');
+
+        return view('Admin.logAktivitas', compact('logs', 'statistik', 'aktivitasPerJenis', 'aktivitasPerRole', 'ipAddresses'));
     }
 
     /**
@@ -93,6 +108,9 @@ class LogAktivitasController extends Controller
         if ($request->filled('role')) {
             $query->where('role', $request->role);
         }
+        if ($request->filled('ip')) {
+            $query->where('ip_address', $request->ip);
+        }
         if ($request->filled('dari') && $request->filled('sampai')) {
             $query->whereBetween('waktu', [
                 $request->dari . ' 00:00:00',
@@ -100,7 +118,10 @@ class LogAktivitasController extends Controller
             ]);
         }
         if ($request->filled('search')) {
-            $query->where('deskripsi', 'like', '%' . $request->search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('deskripsi', 'like', '%' . $request->search . '%')
+                  ->orWhere('ip_address', 'like', '%' . $request->search . '%');
+            });
         }
 
         $logs = $query->get();
@@ -115,7 +136,7 @@ class LogAktivitasController extends Controller
             $file = fopen('php://output', 'w');
             
             // Header CSV
-            fputcsv($file, ['Waktu', 'Jenis Aktivitas', 'Deskripsi', 'User', 'Role', 'Tabel', 'ID Referensi', 'Aksi', 'IP Address']);
+            fputcsv($file, ['Waktu', 'Jenis Aktivitas', 'Deskripsi', 'User', 'Role', 'Tabel', 'ID Referensi', 'Aksi', 'IP Address', 'User Agent']);
 
             // Data
             foreach ($logs as $log) {
@@ -128,7 +149,8 @@ class LogAktivitasController extends Controller
                     $log->nama_tabel,
                     $log->id_referensi,
                     $log->aksi,
-                    $log->ip_address
+                    $log->ip_address ?? '-',
+                    $log->user_agent ?? '-'
                 ]);
             }
 

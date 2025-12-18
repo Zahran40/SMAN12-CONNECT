@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
             'guru.jadwal.access' => \App\Http\Middleware\CheckGuruJadwalAccess::class,
             'siswa.jadwal.access' => \App\Http\Middleware\CheckSiswaJadwalAccess::class,
+            'log.activity' => \App\Http\Middleware\LogUserActivity::class,
         ]);
 
         // 2. Global Middleware untuk set database connection berdasarkan role
