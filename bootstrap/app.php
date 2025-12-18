@@ -23,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // 2. Global Middleware untuk set database connection berdasarkan role
         $middleware->append(\App\Http\Middleware\SetDatabaseConnection::class);
+        
+        // 2b. Global Middleware untuk set session variables MySQL (untuk trigger logging)
+        $middleware->append(\App\Http\Middleware\SetDatabaseSession::class);
 
         // 3. MATIKAN CSRF KHUSUS MIDTRANS
         // Sesuaikan dengan route yang ada di api.php

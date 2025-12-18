@@ -90,12 +90,11 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Aktivitas</label>
                     <select name="jenis" class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200">
                         <option value="">Semua</option>
-                        <option value="raport" {{ request('jenis') == 'raport' ? 'selected' : '' }}>Raport</option>
-                        <option value="pembayaran_spp" {{ request('jenis') == 'pembayaran_spp' ? 'selected' : '' }}>Pembayaran SPP</option>
-                        <option value="input nilai" {{ request('jenis') == 'input nilai' ? 'selected' : '' }}>Input Nilai</option>
-                        <option value="update nilai" {{ request('jenis') == 'update nilai' ? 'selected' : '' }}>Update Nilai</option>
-                        <option value="buat tagihan spp" {{ request('jenis') == 'buat tagihan spp' ? 'selected' : '' }}>Buat Tagihan SPP</option>
-                        <option value="update pembayaran spp" {{ request('jenis') == 'update pembayaran spp' ? 'selected' : '' }}>Update Pembayaran SPP</option>
+                        @foreach($jenisAktivitas ?? [] as $jenis)
+                            <option value="{{ $jenis }}" {{ request('jenis') == $jenis ? 'selected' : '' }}>
+                                {{ ucwords(str_replace('_', ' ', $jenis)) }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -104,10 +103,11 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
                     <select name="role" class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200">
                         <option value="">Semua</option>
-                        <option value="guru" {{ request('role') == 'guru' ? 'selected' : '' }}>Guru</option>
-                        <option value="siswa" {{ request('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
-                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="sistem" {{ request('role') == 'sistem' ? 'selected' : '' }}>Sistem</option>
+                        @foreach($roles ?? [] as $role)
+                            <option value="{{ $role }}" {{ request('role') == $role ? 'selected' : '' }}>
+                                {{ ucfirst($role) }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 

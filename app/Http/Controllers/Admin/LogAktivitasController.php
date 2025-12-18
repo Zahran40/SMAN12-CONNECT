@@ -75,8 +75,22 @@ class LogAktivitasController extends Controller
             ->whereNotNull('ip_address')
             ->orderBy('ip_address')
             ->pluck('ip_address');
+        
+        // Get unique jenis aktivitas untuk filter
+        $jenisAktivitas = LogAktivitas::select('jenis_aktivitas')
+            ->distinct()
+            ->whereNotNull('jenis_aktivitas')
+            ->orderBy('jenis_aktivitas')
+            ->pluck('jenis_aktivitas');
+        
+        // Get unique roles untuk filter
+        $roles = LogAktivitas::select('role')
+            ->distinct()
+            ->whereNotNull('role')
+            ->orderBy('role')
+            ->pluck('role');
 
-        return view('Admin.logAktivitas', compact('logs', 'statistik', 'aktivitasPerJenis', 'aktivitasPerRole', 'ipAddresses'));
+        return view('Admin.logAktivitas', compact('logs', 'statistik', 'aktivitasPerJenis', 'aktivitasPerRole', 'ipAddresses', 'jenisAktivitas', 'roles'));
     }
 
     /**
