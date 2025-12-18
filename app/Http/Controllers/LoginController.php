@@ -62,8 +62,24 @@ class LoginController extends Controller
             // Update last login
             $user->update(['last_login' => now()]);
 
+            // Log login dengan IP address menggunakan helper
+            if (function_exists('log_login')) {
+                log_login($user, true);
+            }
+
             // Redirect berdasarkan role
             return $this->redirectBasedOnRole($user);
+        }
+
+        // Log login gagal dengan IP address menggunakan helper
+        if (function_exists('log_activity')) {
+            log_activity(
+                'Login Gagal',
+                "Percobaan login gagal untuk identifier: {$identifier} dari IP " . $request->ip(),
+                'users',
+                $user->id ?? null,
+                'LOGIN_FAILED'
+            );
         }
 
         return back()->withErrors([
@@ -130,12 +146,14 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        // Log logout sebelum logout (dengan check function exists)
+        if (function_exists('log_logout')) {
+            log_logout();
+        }
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect('/')->with('success', 'Anda telah berhasil logout');
-    }
+        return redirect('/')->with('success', 'Anda telah berhasil logout');    }
 }
-
-    

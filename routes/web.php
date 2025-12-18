@@ -244,6 +244,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/log-aktivitas', [App\Http\Controllers\Admin\LogAktivitasController::class, 'index'])->name('log-aktivitas.index');
     Route::post('/log-aktivitas/cleanup', [App\Http\Controllers\Admin\LogAktivitasController::class, 'cleanup'])->name('log-aktivitas.cleanup');
     Route::get('/log-aktivitas/export', [App\Http\Controllers\Admin\LogAktivitasController::class, 'export'])->name('log-aktivitas.export');
+    
+    // TEST LOG (untuk testing IP address logging)
+    Route::get('/test-log', [App\Http\Controllers\Admin\TestLogController::class, 'testLog'])->name('test-log');
 
     // Legacy routes untuk compatibility (redirect ke yang baru)
     Route::get('/tahun-ajaran-old', function() {
@@ -262,5 +265,4 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
         return redirect()->route('admin.data-master.guru.create');
     });
 });
-
 

@@ -84,7 +84,7 @@
     {{-- Filter & Action Buttons --}}
     <div class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-4 sm:mb-6">
         <form method="GET" action="{{ route('admin.log-aktivitas.index') }}" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                 {{-- Filter Jenis Aktivitas --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Aktivitas</label>
@@ -92,6 +92,10 @@
                         <option value="">Semua</option>
                         <option value="raport" {{ request('jenis') == 'raport' ? 'selected' : '' }}>Raport</option>
                         <option value="pembayaran_spp" {{ request('jenis') == 'pembayaran_spp' ? 'selected' : '' }}>Pembayaran SPP</option>
+                        <option value="input nilai" {{ request('jenis') == 'input nilai' ? 'selected' : '' }}>Input Nilai</option>
+                        <option value="update nilai" {{ request('jenis') == 'update nilai' ? 'selected' : '' }}>Update Nilai</option>
+                        <option value="buat tagihan spp" {{ request('jenis') == 'buat tagihan spp' ? 'selected' : '' }}>Buat Tagihan SPP</option>
+                        <option value="update pembayaran spp" {{ request('jenis') == 'update pembayaran spp' ? 'selected' : '' }}>Update Pembayaran SPP</option>
                     </select>
                 </div>
 
@@ -104,6 +108,19 @@
                         <option value="siswa" {{ request('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
                         <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                         <option value="sistem" {{ request('role') == 'sistem' ? 'selected' : '' }}>Sistem</option>
+                    </select>
+                </div>
+
+                {{-- Filter IP Address --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">IP Address</label>
+                    <select name="ip" class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200">
+                        <option value="">Semua IP</option>
+                        @foreach($ipAddresses ?? [] as $ip)
+                            <option value="{{ $ip }}" {{ request('ip') == $ip ? 'selected' : '' }}>
+                                {{ $ip }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -122,7 +139,7 @@
                 {{-- Search --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Cari</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari deskripsi..." class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari deskripsi/IP..." class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200">
                 </div>
             </div>
 
@@ -223,8 +240,17 @@
                                     {{ ucfirst($log->aksi) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-600">
-                                {{ $log->ip_address ?? '-' }}
+                            <td class="px-4 py-3 text-sm">
+                                @if($log->ip_address)
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                        </svg>
+                                        <span class="font-mono text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">{{ $log->ip_address }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 text-xs">-</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
