@@ -220,35 +220,9 @@ class RaportController extends Controller
                 Log::info('Nilai tugas dihitung via query fallback', ['nilai_tugas' => $nilaiTugas]);
             }
             
-            // Hitung nilai akhir
-            $nilaiAkhir = null;
-            $nilaiHuruf = null;
-            
-            if ($nilaiTugas !== null && $request->nilai_uts !== null && $request->nilai_uas !== null) {
-                $nilaiAkhir = ($nilaiTugas * 0.3) + ($request->nilai_uts * 0.3) + ($request->nilai_uas * 0.4);
-                
-                // Hitung grade menggunakan FUNCTION (sesuai konsep MSBD)
-                try {
-                    $gradeResult = DB::select('SELECT fn_convert_grade_letter(?) as grade', [$nilaiAkhir]);
-                    $nilaiHuruf = $gradeResult[0]->grade;
-                    Log::info('Nilai huruf dihitung via Function', ['nilai_huruf' => $nilaiHuruf]);
-                } catch (\Exception $e) {
-                    Log::warning('Function gagal, gunakan fallback', ['error' => $e->getMessage()]);
-                    // Fallback: hitung manual jika Function error
-                    if ($nilaiAkhir >= 90) $nilaiHuruf = 'A';
-                    elseif ($nilaiAkhir >= 80) $nilaiHuruf = 'B';
-                    elseif ($nilaiAkhir >= 70) $nilaiHuruf = 'C';
-                    elseif ($nilaiAkhir >= 60) $nilaiHuruf = 'D';
-                    else $nilaiHuruf = 'E';
-                    Log::info('Nilai huruf dihitung via fallback', ['nilai_huruf' => $nilaiHuruf]);
-                }
-                
-                Log::info('Nilai akhir dihitung', ['nilai_akhir' => $nilaiAkhir, 'nilai_huruf' => $nilaiHuruf]);
-            }
-            
             Log::info('Mulai updateOrCreate');
             
-            // Simpan ke database
+            // Simpan ke database (nilai_akhir dan nilai_huruf akan dihitung otomatis via accessor)
             $raport = Raport::updateOrCreate(
                 [
                     'siswa_id' => $siswaId,
@@ -260,19 +234,20 @@ class RaportController extends Controller
                     'nilai_tugas' => $nilaiTugas,
                     'nilai_uts' => $request->nilai_uts,
                     'nilai_uas' => $request->nilai_uas,
-                    'nilai_akhir' => $nilaiAkhir,
-                    'nilai_huruf' => $nilaiHuruf,
                     'deskripsi' => $request->deskripsi,
                 ]
             );
+            
+            // Refresh model untuk mendapatkan computed attributes
+            $raport->refresh();
             
             Log::info('Nilai berhasil disimpan:', [
                 'id_nilai' => $raport->id_nilai,
                 'nilai_tugas' => $raport->nilai_tugas,
                 'nilai_uts' => $raport->nilai_uts,
                 'nilai_uas' => $raport->nilai_uas,
-                'nilai_akhir' => $raport->nilai_akhir,
-                'nilai_huruf' => $raport->nilai_huruf
+                'nilai_akhir' => $raport->nilai_akhir, // Computed via function
+                'nilai_huruf' => $raport->nilai_huruf // Computed via function
             ]);
             
             return redirect()->back()->with('success', 'Nilai berhasil disimpan!');
