@@ -18,6 +18,8 @@ return new class extends Migration
             $table->boolean('is_active')->nullable()->default(true);
             $table->boolean('must_change_password')->nullable()->default(true);
             $table->string('db_user', 100)->nullable();
+            $table->string('fcm_token', 255)->nullable()->comment('Token Firebase untuk Push Notification');
+            $table->string('ttd_digital', 255)->nullable()->comment('Path gambar Tanda Tangan Digital');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
         });

@@ -5,20 +5,14 @@
 @section('content')
 <div class="max-w-7xl mx-auto">
     <!-- Welcome Section -->
-    <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-2xl p-8 mb-6 text-white shadow-lg">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}! 🎓</h1>
-                <p class="text-indigo-100 text-lg">Dashboard Executive - SMAN 12 Medan</p>
-                <p class="text-indigo-50 text-sm mt-2">Monitoring dan analytics sistem akademik sekolah</p>
-            </div>
-            <div class="hidden md:block">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-24 h-24 text-indigo-300">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-                </svg>
-            </div>
+    <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-2xl p-8 text-white shadow-lg">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">Welcome - Beranda Kepala Sekolah</h1>
+            <p class="text-indigo-100 text-lg">Dashboard Executive - SMAN 12 Medan</p>
         </div>
     </div>
+</div>
+@endsection
 
     <!-- Statistik Overview -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
