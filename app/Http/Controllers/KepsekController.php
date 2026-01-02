@@ -26,4 +26,39 @@ class KepsekController extends Controller
         
         return view('Kepsek.beranda', compact('stats', 'tahunAjaranAktif'));
     }
+
+    public function laporanAkademikGlobal()
+    {
+        return view('Kepsek.laporan-akademik-global');
+    }
+
+    public function monitoringPresensi()
+    {
+        return view('Kepsek.monitoring-presensi');
+    }
+
+    public function laporanKeuangan()
+    {
+        return view('Kepsek.laporan-keuangan');
+    }
+
+    public function analisisTrending()
+    {
+        return view('Kepsek.analisis-trending');
+    }
+
+    public function exportReports()
+    {
+        return view('Kepsek.export-reports');
+    }
+
+    public function evaluasiKinerjaGuru()
+    {
+        return view('Kepsek.evaluasi-kinerja-guru');
+    }
+
+    public function manajemenPengumuman()
+    {
+        return view('Kepsek.manajemen-pengumuman');
+    }
 }
