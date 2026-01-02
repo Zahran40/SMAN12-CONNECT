@@ -31,4 +31,44 @@ class BendaharaController extends Controller
         
         return view('Bendahara.beranda', compact('stats'));
     }
+
+    public function manajemenTagihanSpp()
+    {
+        return view('Bendahara.manajemen-tagihan-spp');
+    }
+
+    public function verifikasiPembayaran()
+    {
+        return view('Bendahara.verifikasi-pembayaran');
+    }
+
+    public function tunggakanReminder()
+    {
+        return view('Bendahara.tunggakan-reminder');
+    }
+
+    public function rekonsiliasiBankbank()
+    {
+        return view('Bendahara.rekonsiliasi-bank');
+    }
+
+    public function rekapPembayaran()
+    {
+        return view('Bendahara.rekap-pembayaran');
+    }
+
+    public function multiPaymentMethod()
+    {
+        return view('Bendahara.multi-payment-method');
+    }
+
+    public function refundManagement()
+    {
+        return view('Bendahara.refund-management');
+    }
+
+    public function manajemenDiskonBeasiswa()
+    {
+        return view('Bendahara.manajemen-diskon-beasiswa');
+    }
 }

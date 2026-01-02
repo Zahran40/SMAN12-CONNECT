@@ -269,11 +269,14 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
 Route::prefix('orangtua')->middleware(['auth', 'role:orangtua'])->name('orangtua.')->group(function () {
     Route::get('/beranda', [App\Http\Controllers\OrangTuaController::class, 'beranda'])->name('beranda');
-    
-    // Fitur monitoring akan ditambahkan di masa mendatang
-    // Route::get('/presensi-anak', [...]);
-    // Route::get('/nilai-anak', [...]);
-    // Route::get('/pembayaran', [...]);
+    Route::get('/presensi-realtime', [App\Http\Controllers\OrangTuaController::class, 'presensiRealtime'])->name('presensi-realtime');
+    Route::get('/monitoring-nilai', [App\Http\Controllers\OrangTuaController::class, 'monitoringNilai'])->name('monitoring-nilai');
+    Route::get('/jadwal-pelajaran', [App\Http\Controllers\OrangTuaController::class, 'jadwalPelajaran'])->name('jadwal-pelajaran');
+    Route::get('/detail-tugas-materi', [App\Http\Controllers\OrangTuaController::class, 'detailTugasMateri'])->name('detail-tugas-materi');
+    Route::get('/laporan-perilaku', [App\Http\Controllers\OrangTuaController::class, 'laporanPerilaku'])->name('laporan-perilaku');
+    Route::get('/riwayat-pembayaran-spp', [App\Http\Controllers\OrangTuaController::class, 'riwayatPembayaranSpp'])->name('riwayat-pembayaran-spp');
+    Route::get('/perizinan-online', [App\Http\Controllers\OrangTuaController::class, 'perizinanOnline'])->name('perizinan-online');
+    Route::get('/notifikasi-pengumuman', [App\Http\Controllers\OrangTuaController::class, 'notifikasiPengumuman'])->name('notifikasi-pengumuman');
 });
 
 // ============================================
@@ -282,11 +285,13 @@ Route::prefix('orangtua')->middleware(['auth', 'role:orangtua'])->name('orangtua
 
 Route::prefix('kepsek')->middleware(['auth', 'role:kepsek'])->name('kepsek.')->group(function () {
     Route::get('/beranda', [App\Http\Controllers\KepsekController::class, 'beranda'])->name('beranda');
-    
-    // Fitur analytics akan ditambahkan di masa mendatang
-    // Route::get('/laporan-akademik', [...]);
-    // Route::get('/monitoring-presensi', [...]);
-    // Route::get('/laporan-keuangan', [...]);
+    Route::get('/laporan-akademik-global', [App\Http\Controllers\KepsekController::class, 'laporanAkademikGlobal'])->name('laporan-akademik-global');
+    Route::get('/monitoring-presensi', [App\Http\Controllers\KepsekController::class, 'monitoringPresensi'])->name('monitoring-presensi');
+    Route::get('/laporan-keuangan', [App\Http\Controllers\KepsekController::class, 'laporanKeuangan'])->name('laporan-keuangan');
+    Route::get('/analisis-trending', [App\Http\Controllers\KepsekController::class, 'analisisTrending'])->name('analisis-trending');
+    Route::get('/export-reports', [App\Http\Controllers\KepsekController::class, 'exportReports'])->name('export-reports');
+    Route::get('/evaluasi-kinerja-guru', [App\Http\Controllers\KepsekController::class, 'evaluasiKinerjaGuru'])->name('evaluasi-kinerja-guru');
+    Route::get('/manajemen-pengumuman', [App\Http\Controllers\KepsekController::class, 'manajemenPengumuman'])->name('manajemen-pengumuman');
 });
 
 // ============================================
@@ -295,11 +300,13 @@ Route::prefix('kepsek')->middleware(['auth', 'role:kepsek'])->name('kepsek.')->g
 
 Route::prefix('bendahara')->middleware(['auth', 'role:bendahara'])->name('bendahara.')->group(function () {
     Route::get('/beranda', [App\Http\Controllers\BendaharaController::class, 'beranda'])->name('beranda');
-    
-    // Fitur keuangan akan ditambahkan di masa mendatang
-    // Route::get('/tagihan', [...]);
-    // Route::get('/verifikasi-pembayaran', [...]);
-    // Route::get('/rekap-pembayaran', [...]);
-    // Route::get('/export-excel', [...]);
+    Route::get('/manajemen-tagihan-spp', [App\Http\Controllers\BendaharaController::class, 'manajemenTagihanSpp'])->name('manajemen-tagihan-spp');
+    Route::get('/verifikasi-pembayaran', [App\Http\Controllers\BendaharaController::class, 'verifikasiPembayaran'])->name('verifikasi-pembayaran');
+    Route::get('/tunggakan-reminder', [App\Http\Controllers\BendaharaController::class, 'tunggakanReminder'])->name('tunggakan-reminder');
+    Route::get('/rekonsiliasi-bank', [App\Http\Controllers\BendaharaController::class, 'rekonsiliasiBankbank'])->name('rekonsiliasi-bank');
+    Route::get('/rekap-pembayaran', [App\Http\Controllers\BendaharaController::class, 'rekapPembayaran'])->name('rekap-pembayaran');
+    Route::get('/multi-payment-method', [App\Http\Controllers\BendaharaController::class, 'multiPaymentMethod'])->name('multi-payment-method');
+    Route::get('/refund-management', [App\Http\Controllers\BendaharaController::class, 'refundManagement'])->name('refund-management');
+    Route::get('/manajemen-diskon-beasiswa', [App\Http\Controllers\BendaharaController::class, 'manajemenDiskonBeasiswa'])->name('manajemen-diskon-beasiswa');
 });
 
