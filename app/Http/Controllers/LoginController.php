@@ -135,6 +135,15 @@ class LoginController extends Controller
             case 'siswa':
                 return redirect()->intended(route('siswa.beranda'))->with('success', 'Selamat datang, ' . $user->getFullName());
             
+            case 'orangtua':
+                return redirect()->intended(route('orangtua.beranda'))->with('success', 'Selamat datang, ' . $user->name);
+            
+            case 'kepsek':
+                return redirect()->intended(route('kepsek.beranda'))->with('success', 'Selamat datang, ' . $user->name);
+            
+            case 'bendahara':
+                return redirect()->intended(route('bendahara.beranda'))->with('success', 'Selamat datang, ' . $user->name);
+            
             default:
                 Auth::logout();
                 return redirect()->route('login')->with('error', 'Role tidak dikenali');
