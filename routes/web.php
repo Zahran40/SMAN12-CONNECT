@@ -263,4 +263,43 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     });
 });
 
+// ============================================
+// ORANG TUA ROUTES (Protected by role middleware)
+// ============================================
+
+Route::prefix('orangtua')->middleware(['auth', 'role:orangtua'])->name('orangtua.')->group(function () {
+    Route::get('/beranda', [App\Http\Controllers\OrangTuaController::class, 'beranda'])->name('beranda');
+    
+    // Fitur monitoring akan ditambahkan di masa mendatang
+    // Route::get('/presensi-anak', [...]);
+    // Route::get('/nilai-anak', [...]);
+    // Route::get('/pembayaran', [...]);
+});
+
+// ============================================
+// KEPALA SEKOLAH ROUTES (Protected by role middleware)
+// ============================================
+
+Route::prefix('kepsek')->middleware(['auth', 'role:kepsek'])->name('kepsek.')->group(function () {
+    Route::get('/beranda', [App\Http\Controllers\KepsekController::class, 'beranda'])->name('beranda');
+    
+    // Fitur analytics akan ditambahkan di masa mendatang
+    // Route::get('/laporan-akademik', [...]);
+    // Route::get('/monitoring-presensi', [...]);
+    // Route::get('/laporan-keuangan', [...]);
+});
+
+// ============================================
+// BENDAHARA ROUTES (Protected by role middleware)
+// ============================================
+
+Route::prefix('bendahara')->middleware(['auth', 'role:bendahara'])->name('bendahara.')->group(function () {
+    Route::get('/beranda', [App\Http\Controllers\BendaharaController::class, 'beranda'])->name('beranda');
+    
+    // Fitur keuangan akan ditambahkan di masa mendatang
+    // Route::get('/tagihan', [...]);
+    // Route::get('/verifikasi-pembayaran', [...]);
+    // Route::get('/rekap-pembayaran', [...]);
+    // Route::get('/export-excel', [...]);
+});
 

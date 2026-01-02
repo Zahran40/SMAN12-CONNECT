@@ -19,9 +19,6 @@ class Raport extends Model
         'nilai_tugas',
         'nilai_uts',
         'nilai_uas',
-        'nilai_akhir',
-        'nilai_huruf',
-        'is_locked',
         'deskripsi'
     ];
 
@@ -29,9 +26,10 @@ class Raport extends Model
         'nilai_tugas' => 'decimal:2',
         'nilai_uts' => 'decimal:2',
         'nilai_uas' => 'decimal:2',
-        'nilai_akhir' => 'decimal:2',
-        'is_locked' => 'boolean',
     ];
+    
+    // Append computed attributes
+    protected $appends = ['nilai_akhir', 'nilai_huruf'];
 
     /**
      * Relasi ke Siswa
@@ -80,37 +78,53 @@ class Raport extends Model
     }
 
     /**
-     * Hitung nilai akhir berdasarkan bobot:
-     * Tugas 30%, UTS 30%, UAS 40%
+     * Accessor untuk nilai_akhir (computed attribute)
+     * Menghitung nilai akhir menggunakan database function
+     * Formula: 30% Tugas + 30% UTS + 40% UAS
      */
-    public function hitungNilaiAkhir()
+    public function getNilaiAkhirAttribute()
     {
-        if ($this->nilai_tugas !== null && $this->nilai_uts !== null && $this->nilai_uas !== null) {
-            $nilaiAkhir = ($this->nilai_tugas * 0.3) + ($this->nilai_uts * 0.3) + ($this->nilai_uas * 0.4);
-            $this->nilai_akhir = $nilaiAkhir;
-            
-            // Auto-calculate nilai huruf menggunakan function
-            $this->nilai_huruf = DB::select('SELECT fn_convert_grade_letter(?) as grade', [
-                $this->nilai_akhir
-            ])[0]->grade;
-            
-            return $this->nilai_akhir;
-        }
-        return null;
+        // Gunakan function dari database untuk menghitung nilai akhir
+        $result = DB::select('SELECT fn_calculate_nilai_akhir(?, ?, ?) as nilai_akhir', [
+            $this->nilai_tugas,
+            $this->nilai_uts,
+            $this->nilai_uas
+        ]);
+        
+        return $result[0]->nilai_akhir ?? 0;
     }
 
     /**
-     * Tentukan grade berdasarkan nilai akhir menggunakan function
+     * Accessor untuk nilai_huruf (computed attribute)
+     * Mengkonversi nilai akhir ke huruf (A/B/C/D/E) menggunakan database function
+     */
+    public function getNilaiHurufAttribute()
+    {
+        $nilaiAkhir = $this->nilai_akhir;
+        
+        if (!$nilaiAkhir) return '-';
+        
+        // Gunakan function dari database untuk konversi ke huruf
+        $result = DB::select('SELECT fn_convert_grade_letter(?) as grade', [$nilaiAkhir]);
+        
+        return $result[0]->grade ?? '-';
+    }
+    
+    /**
+     * Alias untuk backward compatibility
+     * @deprecated Use getNilaiAkhirAttribute() accessor instead
+     */
+    public function hitungNilaiAkhir()
+    {
+        return $this->nilai_akhir;
+    }
+
+    /**
+     * Accessor untuk grade (alias dari nilai_huruf)
+     * @deprecated Use getNilaiHurufAttribute() instead
      */
     public function getGradeAttribute()
     {
-        if (!$this->nilai_akhir) return '-';
-        
-        // Gunakan function dari database
-        $grade = DB::select('SELECT fn_convert_grade_letter(?) as grade', [
-            $this->nilai_akhir
-        ])[0]->grade;
-        
-        return $grade;
+        return $this->nilai_huruf;
     }
 }
