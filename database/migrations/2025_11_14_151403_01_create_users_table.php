@@ -12,7 +12,7 @@ return new class extends Migration
             $table->string('email', 200)->unique('uk_email');
             $table->string('password');
             $table->rememberToken();
-            $table->enum('role', ['admin', 'guru', 'siswa'])->index('idx_role');
+            $table->enum('role', ['admin', 'guru', 'siswa', 'orangtua', 'kepsek', 'bendahara'])->index('idx_role');
             $table->bigInteger('reference_id')->nullable()->index('idx_reference');
             $table->dateTime('last_login')->nullable();
             $table->boolean('is_active')->nullable()->default(true);
