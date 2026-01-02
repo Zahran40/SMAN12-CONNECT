@@ -1,0 +1,12 @@
+@extends('layouts.kepsek.app')
+
+@section('title', 'Export Reports')
+
+@section('content')
+<div class="max-w-7xl mx-auto">
+    <div class="bg-white rounded-xl shadow-md p-8">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-4">Welcome - Export Reports</h1>
+        <p class="text-slate-600">Halaman ini akan digunakan untuk export laporan dalam format PDF/Excel</p>
+    </div>
+</div>
+@endsection
