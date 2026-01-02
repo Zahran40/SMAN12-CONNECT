@@ -21,8 +21,8 @@ return new class extends Migration
         // Transaksi Keuangan (Pemasukan Non-SPP & Pengeluaran)
         Schema::create('transaksi_sekolah', function (Blueprint $table) {
             $table->id('id_transaksi');
-            $table->unsignedBigInteger('kategori_id');
-            $table->unsignedBigInteger('user_id'); // Siapa yang input (Bendahara)
+            $table->bigInteger('kategori_id')->unsigned();
+            $table->bigInteger('user_id'); // Siapa yang input (Bendahara)
             $table->string('judul_transaksi', 200);
             $table->decimal('jumlah', 15, 2);
             $table->date('tgl_transaksi');

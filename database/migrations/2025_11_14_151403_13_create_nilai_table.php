@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('nilai_akhir', 5)->nullable();
             $table->char('nilai_huruf', 1)->nullable()->comment('Nilai huruf A-E, auto-calculated dari nilai_akhir');
             $table->string('deskripsi', 250)->nullable();
+            $table->boolean('is_locked')->default(false)->comment('Lock nilai agar tidak bisa diubah');
             $table->unique(['tahun_ajaran_id', 'siswa_id', 'mapel_id', 'semester'], 'uk_nilai');
             $table->foreign(['tahun_ajaran_id'], 'fk_nilai_tahun')->references(['id_tahun_ajaran'])->on('tahun_ajaran')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign(['siswa_id'], 'fk_nilai_siswa')->references(['id_siswa'])->on('siswa')->onUpdate('cascade')->onDelete('cascade');

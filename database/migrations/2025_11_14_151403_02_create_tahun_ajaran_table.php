@@ -12,6 +12,7 @@ return new class extends Migration
             $table->year('tahun_selesai');
             $table->enum('semester', ['Ganjil', 'Genap']);
             $table->enum('status', ['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
+            $table->boolean('is_archived')->default(false);
             $table->unique(['tahun_mulai', 'tahun_selesai', 'semester'], 'uk_tahun_semester');
         });
     }
