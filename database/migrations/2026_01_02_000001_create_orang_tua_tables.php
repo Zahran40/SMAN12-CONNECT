@@ -14,7 +14,7 @@ return new class extends Migration
         // Tabel Profil Orang Tua
         Schema::create('orang_tua', function (Blueprint $table) {
             $table->id('id_orang_tua');
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->bigInteger('user_id')->nullable();
             $table->string('nik', 16);
             $table->string('nama_lengkap', 250);
             $table->string('no_telepon', 20);
@@ -32,8 +32,8 @@ return new class extends Migration
         // Tabel Relasi Orang Tua - Siswa
         Schema::create('relasi_ortu_siswa', function (Blueprint $table) {
             $table->id('id_relasi');
-            $table->unsignedBigInteger('orang_tua_id');
-            $table->unsignedBigInteger('siswa_id');
+            $table->bigInteger('orang_tua_id')->unsigned();
+            $table->bigInteger('siswa_id');
             $table->enum('hubungan', ['Ayah', 'Ibu', 'Wali'])->default('Wali');
             $table->boolean('is_active')->default(true);
             

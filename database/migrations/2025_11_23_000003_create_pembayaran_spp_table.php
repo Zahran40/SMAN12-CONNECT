@@ -8,6 +8,7 @@ return new class extends Migration
     {
         Schema::create('pembayaran_spp', function (Blueprint $table) {
             $table->bigInteger('id_pembayaran', true);
+            $table->bigInteger('batch_id')->nullable()->index('idx_batch');
             $table->bigInteger('siswa_id')->index('idx_siswa');
             $table->bigInteger('tahun_ajaran_id')->index('idx_tahun');
             $table->string('nama_tagihan', 250)->nullable();
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->string('bukti_pembayaran')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->unique(['siswa_id', 'tahun_ajaran_id', 'bulan'], 'uk_pembayaran');
+            $table->foreign(['batch_id'], 'fk_pembayaran_batch')->references(['id_batch'])->on('tagihan_batch')->onUpdate('cascade')->onDelete('set null');
             $table->foreign(['siswa_id'], 'fk_pembayaran_siswa')->references(['id_siswa'])->on('siswa')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign(['tahun_ajaran_id'], 'fk_pembayaran_tahun')->references(['id_tahun_ajaran'])->on('tahun_ajaran')->onUpdate('cascade')->onDelete('restrict');
         });

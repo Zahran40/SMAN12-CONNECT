@@ -14,16 +14,16 @@ return new class extends Migration
         // Tabel Perizinan Online (Sakit/Izin/Cuti)
         Schema::create('perizinan', function (Blueprint $table) {
             $table->id('id_izin');
-            $table->unsignedBigInteger('siswa_id');
-            $table->unsignedBigInteger('orang_tua_id'); // Yang mengajukan
-            $table->unsignedBigInteger('tahun_ajaran_id');
+            $table->bigInteger('siswa_id');
+            $table->bigInteger('orang_tua_id')->unsigned(); // Yang mengajukan
+            $table->bigInteger('tahun_ajaran_id');
             $table->enum('jenis_izin', ['Sakit', 'Izin', 'Lainnya']);
             $table->date('tgl_mulai');
             $table->date('tgl_selesai');
             $table->text('keterangan');
             $table->string('file_bukti', 255)->nullable(); // Foto surat dokter/KTP
             $table->enum('status', ['Menunggu', 'Disetujui', 'Ditolak'])->default('Menunggu');
-            $table->unsignedBigInteger('approval_by')->nullable(); // ID Guru/Wali Kelas
+            $table->bigInteger('approval_by')->nullable(); // ID Guru/Wali Kelas
             $table->dateTime('approval_date')->nullable();
             $table->timestamp('created_at')->useCurrent();
             
@@ -41,12 +41,12 @@ return new class extends Migration
         // Tabel Pesan/Konsultasi (Chat)
         Schema::create('pesan', function (Blueprint $table) {
             $table->id('id_pesan');
-            $table->unsignedBigInteger('pengirim_id'); // User ID
-            $table->unsignedBigInteger('penerima_id'); // User ID
+            $table->bigInteger('pengirim_id'); // User ID
+            $table->bigInteger('penerima_id'); // User ID
             $table->string('subjek', 200)->nullable();
             $table->text('isi_pesan');
             $table->string('attachment', 255)->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable(); // Untuk Thread/Reply
+            $table->bigInteger('parent_id')->unsigned()->nullable(); // Untuk Thread/Reply
             $table->boolean('is_read')->default(false);
             $table->timestamp('created_at')->useCurrent();
             
@@ -68,7 +68,7 @@ return new class extends Migration
         // Tabel Notifikasi (Push Notification History)
         Schema::create('notifikasi', function (Blueprint $table) {
             $table->id('id_notifikasi');
-            $table->unsignedBigInteger('user_id');
+            $table->bigInteger('user_id');
             $table->string('judul', 100);
             $table->text('pesan');
             $table->enum('tipe', ['Info', 'Akademik', 'Keuangan', 'Presensi', 'Pesan']);
