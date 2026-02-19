@@ -3,7 +3,7 @@
 @section('title', 'Presensi ' . $jadwal->nama_mapel)
 
 @push('scripts')
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places"></script>
+{{-- OpenStreetMap Nominatim digunakan untuk reverse geocoding (tanpa API key) --}}
 @endpush
 
 @section('content')
@@ -321,25 +321,36 @@ function detectLocation() {
             if (locationCoords) locationCoords.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             if (locationStatus) locationStatus.textContent = '';
             
-            // Reverse geocoding menggunakan Google Maps JavaScript API Geocoder
-            const geocoder = new google.maps.Geocoder();
-            const latlng = { lat: lat, lng: lng };
-            
-            console.log('Geocoding position:', latlng);
-            
-            geocoder.geocode({ location: latlng, language: 'id' }, (results, status) => {
-                console.log('Google Maps Geocoder Response:', { status, results });
+            // Reverse geocoding menggunakan Nominatim (OpenStreetMap) - GRATIS
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=id`, {
+                headers: { 'User-Agent': 'SMAN12-CONNECT/1.0' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Nominatim Response:', data);
                 
-                if (status === 'OK' && results && results.length > 0) {
-                    locationData.alamat_lengkap = results[0].formatted_address;
-                    if (locationAddress) locationAddress.textContent = results[0].formatted_address;
+                if (data && data.display_name) {
+                    locationData.alamat_lengkap = data.display_name;
+                    if (locationAddress) locationAddress.textContent = data.display_name;
                 } else {
-                    console.warn('Geocoding failed. Status:', status);
+                    console.warn('Nominatim: No address found');
                     locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                     if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
                 }
                 
                 // Enable button
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';
+                }
+                if (btnText) btnText.textContent = 'Hadir';
+            })
+            .catch(error => {
+                console.error('Nominatim error:', error);
+                locationData.alamat_lengkap = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                if (locationAddress) locationAddress.textContent = 'Alamat tidak tersedia';
+                
+                // Tetap enable button
                 if (btnSubmit) {
                     btnSubmit.disabled = false;
                     btnSubmit.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 transition-all';

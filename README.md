@@ -180,77 +180,32 @@ MIDTRANS_3DS=true
 
 ---
 
-### 🗺️ Setup Google Maps API (Untuk Absensi GPS)
+### 🗺️ OpenStreetMap + Leaflet.js (Untuk Absensi GPS)
 
-Sistem absensi menggunakan GPS tracking. Ada 2 pilihan:
+Sistem absensi menggunakan **OpenStreetMap (Leaflet.js)** + **Nominatim** untuk peta dan reverse geocoding. **100% GRATIS**, tidak memerlukan API key atau billing account.
 
-#### Pilihan 1: Nominatim OSM (GRATIS, Sudah Aktif) ✅ **RECOMMENDED**
-Sistem sudah menggunakan Nominatim OpenStreetMap secara default.
+#### ✅ Fitur Peta yang Digunakan:
+- **Leaflet.js** — Library peta interaktif (CDN, gratis)
+- **OpenStreetMap Tiles** — Tile peta gratis dari komunitas global
+- **Nominatim** — Reverse geocoding (koordinat → alamat) gratis dari OpenStreetMap
 
-**Keuntungan:**
-- ✅ 100% Gratis, tidak perlu API key
-- ✅ Tidak perlu billing account
-- ✅ Akurasi bagus untuk Indonesia
-- ✅ Sudah langsung bisa dipakai
+#### ✅ Keuntungan:
+- 🆓 100% Gratis, tidak perlu API key
+- 🚫 Tidak perlu billing account / kartu kredit
+- 🌏 Akurasi bagus untuk Indonesia
+- 🚀 Langsung bisa dipakai tanpa setup tambahan
+- 📱 Ringan dan responsif di mobile
 
-**Kekurangan:**
-- Rate limit: 1 request/second
-- Tidak seprestisius Google Maps
+#### ⚠️ Catatan Penting:
+- Rate limit Nominatim: **1 request/detik** (cukup untuk sekolah)
+- User-Agent wajib disertakan saat request ke Nominatim
+- GPS accuracy tergantung dari device user, bukan dari map provider
 
-#### Pilihan 2: Google Maps API (Premium, Opsional)
-
-Jika ingin menggunakan Google Maps (lebih akurat):
-
-**1. Buka Google Cloud Console**
-- https://console.cloud.google.com/
-- Login dengan akun Google Anda
-
-**2. Pilih/Buat Project**
-- Klik dropdown project di bagian atas
-- Buat project baru: `SMAN12-CONNECT`
-
-**3. Enable Geocoding API**
-1. Menu ☰ → **APIs & Services** → **Enabled APIs & services**
-2. Klik **+ ENABLE APIS AND SERVICES**
-3. Cari: **Geocoding API**
-4. Klik dan **ENABLE**
-
-**4. Setup Billing Account (WAJIB!)**
-1. Menu ☰ → **Billing**
-2. Klik **LINK A BILLING ACCOUNT**
-3. Isi informasi billing (kartu kredit untuk verifikasi)
-4. **PENTING:** Google tidak akan charge otomatis
-5. Free tier: $200 credit/bulan atau 28,500 requests
-
-**5. Buat API Key**
-1. **APIs & Services** → **Credentials**
-2. Klik **+ CREATE CREDENTIALS** → **API key**
-3. Copy API key yang dihasilkan
-
-**6. Restrict API Key (Keamanan)**
-1. Klik API key yang baru dibuat
-2. **Application restrictions**: Pilih **HTTP referrers**
-   ```
-   http://localhost/*
-   http://SMAN12-CONNECT.test/*
-   ```
-3. **API restrictions**: Restrict key, centang **Geocoding API**
-4. Klik **SAVE**
-
-**7. Update File .env**
-```env
-GOOGLE_MAPS_API_KEY=your_api_key_here
+#### 🧪 Test Nominatim API:
+Buka URL ini di browser untuk test reverse geocoding:
 ```
-
-**8. Test API Key**
-Buka URL ini di browser:
+https://nominatim.openstreetmap.org/reverse?format=json&lat=3.5952&lon=98.6722&zoom=18&addressdetails=1&accept-language=id
 ```
-https://maps.googleapis.com/maps/api/geocode/json?latlng=3.5952,-98.6722&key=YOUR_API_KEY
-```
-
-**Biaya:**
-- Free tier: $200/bulan (cukup untuk ~28,500 requests)
-- Untuk 1000 siswa absen/bulan = ~$5 (masih dalam free tier)
 
 ---
 
@@ -277,5 +232,5 @@ https://maps.googleapis.com/maps/api/geocode/json?latlng=3.5952,-98.6722&key=YOU
 **Solusi:**
 1. Pastikan browser mengizinkan akses lokasi
 2. Gunakan HTTPS (atau localhost) untuk geolocation API
-3. Jika menggunakan Google Maps, pastikan API key sudah aktif
-4. Default Nominatim OSM sudah cukup akurat untuk Indonesia
+3. Nominatim OSM sudah cukup akurat untuk Indonesia
+4. GPS accuracy tergantung dari device, bukan map provider
