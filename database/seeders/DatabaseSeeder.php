@@ -251,6 +251,12 @@ class DatabaseSeeder extends Seeder
         $this->command->info("ℹ️ Pertemuan untuk absensi TIDAK di-seed (guru yang buat sendiri)");
 
         // ============================================
+        // 4.5️⃣ ROLE BARU (Orang Tua, Kepsek, Bendahara)
+        // ============================================
+        $this->command->info("\n4.5️⃣ Seeding Role Baru (Orang Tua, Kepsek, Bendahara)...");
+        $this->call(RoleBaruSeeder::class);
+
+        // ============================================
         // 5️⃣ SUMMARY
         // ============================================
         $this->command->info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");

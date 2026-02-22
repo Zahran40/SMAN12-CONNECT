@@ -230,15 +230,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 
-    // PEMBAYARAN ROUTES
-    Route::get('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'index'])->name('pembayaran.index');
-    Route::get('/pembayaran/create', [App\Http\Controllers\Admin\PembayaranController::class, 'create'])->name('pembayaran.create');
-    Route::post('/pembayaran', [App\Http\Controllers\Admin\PembayaranController::class, 'store'])->name('pembayaran.store');
-    Route::get('/pembayaran/rekap/{tahunAjaranId}', [App\Http\Controllers\Admin\PembayaranController::class, 'rekapPerTahunAjaran'])->name('pembayaran.rekap');
-    Route::get('/pembayaran/cetak-siswa/{tahunAjaranId}/{siswaId}', [App\Http\Controllers\Admin\PembayaranController::class, 'cetakPerSiswa'])->name('pembayaran.cetak-siswa');
-    Route::get('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'show'])->name('pembayaran.show');
-    Route::put('/pembayaran/{id}/status', [App\Http\Controllers\Admin\PembayaranController::class, 'updateStatus'])->name('pembayaran.update_status');
-    Route::delete('/pembayaran/{id}', [App\Http\Controllers\Admin\PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
+    // PEMBAYARAN ROUTES - Dipindahkan ke role Bendahara (bendahara.pembayaran.*)
 
     // LOG AKTIVITAS ROUTES
     Route::get('/log-aktivitas', [App\Http\Controllers\Admin\LogAktivitasController::class, 'index'])->name('log-aktivitas.index');
@@ -308,5 +300,15 @@ Route::prefix('bendahara')->middleware(['auth', 'role:bendahara'])->name('bendah
     Route::get('/multi-payment-method', [App\Http\Controllers\BendaharaController::class, 'multiPaymentMethod'])->name('multi-payment-method');
     Route::get('/refund-management', [App\Http\Controllers\BendaharaController::class, 'refundManagement'])->name('refund-management');
     Route::get('/manajemen-diskon-beasiswa', [App\Http\Controllers\BendaharaController::class, 'manajemenDiskonBeasiswa'])->name('manajemen-diskon-beasiswa');
+
+    // Pembayaran SPP Routes (mirrored from admin)
+    Route::get('/pembayaran', [App\Http\Controllers\Bendahara\PembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::get('/pembayaran/create', [App\Http\Controllers\Bendahara\PembayaranController::class, 'create'])->name('pembayaran.create');
+    Route::post('/pembayaran', [App\Http\Controllers\Bendahara\PembayaranController::class, 'store'])->name('pembayaran.store');
+    Route::get('/pembayaran/{id}', [App\Http\Controllers\Bendahara\PembayaranController::class, 'show'])->name('pembayaran.show');
+    Route::put('/pembayaran/{id}/status', [App\Http\Controllers\Bendahara\PembayaranController::class, 'updateStatus'])->name('pembayaran.update_status');
+    Route::delete('/pembayaran/{id}', [App\Http\Controllers\Bendahara\PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
+    Route::get('/pembayaran/rekap/{tahunAjaranId}', [App\Http\Controllers\Bendahara\PembayaranController::class, 'rekapPerTahunAjaran'])->name('pembayaran.rekap');
+    Route::get('/pembayaran/cetak-siswa/{tahunAjaranId}/{siswaId}', [App\Http\Controllers\Bendahara\PembayaranController::class, 'cetakPerSiswa'])->name('pembayaran.cetak-siswa');
 });
 

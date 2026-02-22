@@ -1,10 +1,10 @@
-@extends('layouts.admin.app')
+@extends('layouts.bendahara.app')
 
 @section('content')
 <div class="flex flex-col space-y-4 sm:space-y-6">
 
     <div class="flex items-center space-x-4 mb-4 sm:mb-6">
-        <a href="{{ route('admin.pembayaran.index') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
+        <a href="{{ route('bendahara.pembayaran.index') }}" class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors" title="Kembali">
             <img src="{{ asset('images/mingcute_back-fill.png') }}" fill="none" viewBox="0 0 26 26" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </img>
@@ -82,7 +82,7 @@
         </div>
 
         
-        <form id="statusForm" method="POST" action="{{ route('admin.pembayaran.update_status', $pembayaran->id_pembayaran) }}" class="flex items-start space-x-4">
+        <form id="statusForm" method="POST" action="{{ route('bendahara.pembayaran.update_status', $pembayaran->id_pembayaran) }}" class="flex items-start space-x-4">
             @csrf
             @method('PUT')
             <div class="w-1 h-5 bg-yellow-400 rounded-full mt-1"></div>
@@ -109,7 +109,7 @@
 
     <div class="flex justify-between">
         @if($pembayaran->status === 'Belum Lunas')
-        <form method="POST" action="{{ route('admin.pembayaran.destroy', $pembayaran->id_pembayaran) }}" onsubmit="return confirm('Yakin ingin menghapus tagihan ini?')">
+        <form method="POST" action="{{ route('bendahara.pembayaran.destroy', $pembayaran->id_pembayaran) }}" onsubmit="return confirm('Yakin ingin menghapus tagihan ini?')">
             @csrf
             @method('DELETE')
             <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors flex items-center space-x-2 shadow-sm">
@@ -131,5 +131,3 @@
 
 </div>
 @endsection
-
-

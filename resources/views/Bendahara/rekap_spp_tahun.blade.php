@@ -1,4 +1,4 @@
-@extends('layouts.admin.app')
+@extends('layouts.bendahara.app')
 
 @section('content')
 
@@ -8,7 +8,7 @@
                 <h1 class="text-3xl font-bold text-blue-600">Rekap Pembayaran SPP</h1>
                 <p class="text-slate-500 text-sm mt-1">Tahun Ajaran: {{ $tahunAjaran->tahun_mulai }}/{{ $tahunAjaran->tahun_selesai }} - {{ $tahunAjaran->semester }}</p>
             </div>
-            <a href="{{ route('admin.pembayaran.index') }}" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition">
+            <a href="{{ route('bendahara.pembayaran.index') }}" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>
         </div>
@@ -127,7 +127,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <a href="{{ route('admin.pembayaran.cetak-siswa', [$tahunAjaran->id_tahun_ajaran, $rekap->id_siswa]) }}" 
+                                <a href="{{ route('bendahara.pembayaran.cetak-siswa', [$tahunAjaran->id_tahun_ajaran, $rekap->id_siswa]) }}" 
                                    target="_blank"
                                    class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
