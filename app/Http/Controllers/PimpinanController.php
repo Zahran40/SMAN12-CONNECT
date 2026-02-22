@@ -42,8 +42,8 @@ class PimpinanController extends Controller
 
             // KPI Kehadiran Siswa (30 hari terakhir)
             $rekapKehadiranSiswa = DB::table('detail_absensi')
-                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
-                ->where('pertemuan.tanggal', '>=', now()->subDays(30))
+                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
+                ->where('pertemuan.tanggal_pertemuan', '>=', now()->subDays(30))
                 ->select(
                     DB::raw("COUNT(*) as total_pertemuan"),
                     DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir")
@@ -61,7 +61,7 @@ class PimpinanController extends Controller
             })->count();
 
             // KPI Nilai Rata-rata
-            $nilaiRataRata = DB::table('raport')
+            $nilaiRataRata = DB::table('nilai')
                 ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
                 ->avg('nilai_akhir');
 
@@ -150,47 +150,47 @@ class PimpinanController extends Controller
             $tahunAjaranId = $request->input('tahun_ajaran_id');
             $semester = $request->input('semester');
 
-            $query = DB::table('raport')
-                ->join('siswa', 'raport.siswa_id', '=', 'siswa.siswa_id')
+            $query = DB::table('nilai')
+                ->join('siswa', 'nilai.siswa_id', '=', 'siswa.siswa_id')
                 ->join('siswa_kelas', 'siswa.siswa_id', '=', 'siswa_kelas.siswa_id')
                 ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.kelas_id')
-                ->join('mata_pelajaran', 'raport.mapel_id', '=', 'mata_pelajaran.mapel_id');
+                ->join('mata_pelajaran', 'nilai.mapel_id', '=', 'mata_pelajaran.mapel_id');
 
             if ($tahunAjaranId) {
-                $query->where('raport.tahun_ajaran_id', $tahunAjaranId);
+                $query->where('nilai.tahun_ajaran_id', $tahunAjaranId);
             }
 
             if ($semester) {
-                $query->where('raport.semester', $semester);
+                $query->where('nilai.semester', $semester);
             }
 
             $rekapPerKelas = $query->select(
                     'kelas.nama_kelas',
                     'kelas.kelas_id',
-                    DB::raw('COUNT(DISTINCT raport.siswa_id) as jumlah_siswa'),
-                    DB::raw('AVG(raport.nilai_akhir) as rata_rata_nilai'),
-                    DB::raw('MAX(raport.nilai_akhir) as nilai_tertinggi'),
-                    DB::raw('MIN(raport.nilai_akhir) as nilai_terendah')
+                    DB::raw('COUNT(DISTINCT nilai.siswa_id) as jumlah_siswa'),
+                    DB::raw('AVG(nilai.nilai_akhir) as rata_rata_nilai'),
+                    DB::raw('MAX(nilai.nilai_akhir) as nilai_tertinggi'),
+                    DB::raw('MIN(nilai.nilai_akhir) as nilai_terendah')
                 )
                 ->groupBy('kelas.nama_kelas', 'kelas.kelas_id')
                 ->orderBy('kelas.nama_kelas')
                 ->get();
 
             // Rekap per Mata Pelajaran
-            $rekapPerMapel = DB::table('raport')
-                ->join('mata_pelajaran', 'raport.mapel_id', '=', 'mata_pelajaran.mapel_id')
+            $rekapPerMapel = DB::table('nilai')
+                ->join('mata_pelajaran', 'nilai.mapel_id', '=', 'mata_pelajaran.mapel_id')
                 ->when($tahunAjaranId, function($q) use ($tahunAjaranId) {
-                    return $q->where('raport.tahun_ajaran_id', $tahunAjaranId);
+                    return $q->where('nilai.tahun_ajaran_id', $tahunAjaranId);
                 })
                 ->when($semester, function($q) use ($semester) {
-                    return $q->where('raport.semester', $semester);
+                    return $q->where('nilai.semester', $semester);
                 })
                 ->select(
                     'mata_pelajaran.nama_mapel',
-                    DB::raw('COUNT(raport.siswa_id) as jumlah_siswa'),
-                    DB::raw('AVG(raport.nilai_akhir) as rata_rata_nilai'),
-                    DB::raw('MAX(raport.nilai_akhir) as nilai_tertinggi'),
-                    DB::raw('MIN(raport.nilai_akhir) as nilai_terendah')
+                    DB::raw('COUNT(nilai.siswa_id) as jumlah_siswa'),
+                    DB::raw('AVG(nilai.nilai_akhir) as rata_rata_nilai'),
+                    DB::raw('MAX(nilai.nilai_akhir) as nilai_tertinggi'),
+                    DB::raw('MIN(nilai.nilai_akhir) as nilai_terendah')
                 )
                 ->groupBy('mata_pelajaran.nama_mapel')
                 ->orderBy('mata_pelajaran.nama_mapel')
@@ -224,10 +224,10 @@ class PimpinanController extends Controller
             $kelasId = $request->input('kelas_id');
 
             $query = DB::table('detail_absensi')
-                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
+                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
                 ->join('jadwal_pelajaran', 'pertemuan.jadwal_id', '=', 'jadwal_pelajaran.jadwal_id')
                 ->join('kelas', 'jadwal_pelajaran.kelas_id', '=', 'kelas.kelas_id')
-                ->whereBetween('pertemuan.tanggal', [$startDate, $endDate]);
+                ->whereBetween('pertemuan.tanggal_pertemuan', [$startDate, $endDate]);
 
             if ($kelasId) {
                 $query->where('jadwal_pelajaran.kelas_id', $kelasId);
@@ -252,15 +252,15 @@ class PimpinanController extends Controller
 
             // Presensi per hari (grafik)
             $presensiPerHari = DB::table('detail_absensi')
-                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
-                ->whereBetween('pertemuan.tanggal', [$startDate, $endDate])
+                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
+                ->whereBetween('pertemuan.tanggal_pertemuan', [$startDate, $endDate])
                 ->select(
-                    'pertemuan.tanggal',
+                    'pertemuan.tanggal_pertemuan',
                     DB::raw("COUNT(*) as total"),
                     DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir")
                 )
-                ->groupBy('pertemuan.tanggal')
-                ->orderBy('pertemuan.tanggal')
+                ->groupBy('pertemuan.tanggal_pertemuan')
+                ->orderBy('pertemuan.tanggal_pertemuan')
                 ->get()
                 ->map(function($item) {
                     $item->persentase = $item->total > 0 ? round(($item->hadir / $item->total) * 100, 2) : 0;
@@ -489,10 +489,10 @@ class PimpinanController extends Controller
 
             // Trend Kehadiran per Bulan
             $trendKehadiran = DB::table('detail_absensi')
-                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
-                ->whereYear('pertemuan.tanggal', $tahun)
+                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
+                ->whereYear('pertemuan.tanggal_pertemuan', $tahun)
                 ->select(
-                    DB::raw("DATE_FORMAT(pertemuan.tanggal, '%Y-%m') as bulan"),
+                    DB::raw("DATE_FORMAT(pertemuan.tanggal_pertemuan, '%Y-%m') as bulan"),
                     DB::raw("COUNT(*) as total"),
                     DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir")
                 )
@@ -505,15 +505,15 @@ class PimpinanController extends Controller
                 });
 
             // Trend Nilai Rata-rata per Semester
-            $trendNilai = DB::table('raport')
-                ->join('tahun_ajaran', 'raport.tahun_ajaran_id', '=', 'tahun_ajaran.tahun_ajaran_id')
+            $trendNilai = DB::table('nilai')
+                ->join('tahun_ajaran', 'nilai.tahun_ajaran_id', '=', 'tahun_ajaran.tahun_ajaran_id')
                 ->where('tahun_ajaran.tahun_mulai', $tahun)
                 ->select(
-                    'raport.semester',
-                    DB::raw('AVG(raport.nilai_akhir) as rata_rata_nilai')
+                    'nilai.semester',
+                    DB::raw('AVG(nilai.nilai_akhir) as rata_rata_nilai')
                 )
-                ->groupBy('raport.semester')
-                ->orderBy('raport.semester')
+                ->groupBy('nilai.semester')
+                ->orderBy('nilai.semester')
                 ->get();
 
             // Trend Pembayaran per Bulan
@@ -529,13 +529,13 @@ class PimpinanController extends Controller
                 ->get();
 
             // Comparative Analysis - Perbandingan Kelas
-            $comparativeKelas = DB::table('raport')
-                ->join('siswa', 'raport.siswa_id', '=', 'siswa.siswa_id')
+            $comparativeKelas = DB::table('nilai')
+                ->join('siswa', 'nilai.siswa_id', '=', 'siswa.siswa_id')
                 ->join('siswa_kelas', 'siswa.siswa_id', '=', 'siswa_kelas.siswa_id')
                 ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.kelas_id')
                 ->select(
                     'kelas.nama_kelas',
-                    DB::raw('AVG(raport.nilai_akhir) as rata_rata_nilai')
+                    DB::raw('AVG(nilai.nilai_akhir) as rata_rata_nilai')
                 )
                 ->groupBy('kelas.nama_kelas')
                 ->orderBy('rata_rata_nilai', 'desc')

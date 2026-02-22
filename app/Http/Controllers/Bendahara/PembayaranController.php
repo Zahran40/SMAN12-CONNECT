@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Bendahara;
 
 use App\Http\Controllers\Controller;
 use App\Models\PembayaranSpp;
@@ -23,9 +23,8 @@ class PembayaranController extends Controller
         $tahunAjaranId = $request->get('tahun_ajaran');
         $semester = $request->get('semester', 'Ganjil');
         $kelasId = $request->get('kelas');
-        $status = $request->get('status'); // 'Lunas' atau 'Belum Lunas'
+        $status = $request->get('status');
 
-        // Default tahun ajaran aktif
         if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
             $tahunAjaran = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
             if ($tahunAjaran) {
@@ -35,13 +34,11 @@ class PembayaranController extends Controller
             }
         }
 
-        // Get kelas list
         $kelasList = Kelas::where('tahun_ajaran_id', $tahunAjaranId)
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
             ->get();
 
-        // Query pembayaran menggunakan view_pembayaran_spp untuk efisiensi
         $query = DB::table('view_pembayaran_spp')
             ->where('id_tahun_ajaran', $tahunAjaranId);
 
@@ -57,7 +54,6 @@ class PembayaranController extends Controller
             ->orderBy('bulan', 'desc')
             ->paginate(20)
             ->through(function($item) {
-                // Convert stdClass dari view menjadi object yang punya struktur seperti Eloquent
                 $pembayaran = new \stdClass();
                 $pembayaran->id_pembayaran = $item->id_pembayaran;
                 $pembayaran->nama_tagihan = $item->nama_tagihan;
@@ -66,18 +62,16 @@ class PembayaranController extends Controller
                 $pembayaran->jumlah_bayar = $item->jumlah_bayar;
                 $pembayaran->status = $item->status;
                 
-                // Buat object siswa
                 $pembayaran->siswa = new \stdClass();
                 $pembayaran->siswa->id_siswa = $item->id_siswa;
                 $pembayaran->siswa->nama_lengkap = $item->nama_siswa;
                 $pembayaran->siswa->nis = $item->nis;
                 $pembayaran->siswa->nisn = $item->nisn;
-                $pembayaran->siswa->nama_kelas = $item->nama_kelas; // Langsung dari view
+                $pembayaran->siswa->nama_kelas = $item->nama_kelas;
                 
                 return $pembayaran;
             });
 
-        // Statistics
         $totalTagihan = PembayaranSpp::where('tahun_ajaran_id', $tahunAjaranId)->count();
         $totalLunas = PembayaranSpp::where('tahun_ajaran_id', $tahunAjaranId)
             ->where('status', 'Lunas')->count();
@@ -87,12 +81,11 @@ class PembayaranController extends Controller
             ->where('status', 'Lunas')
             ->sum('jumlah_bayar');
         
-        // Get tahun ajaran aktif untuk tombol rekap
         $tahunAjaranAktif = TahunAjaran::where('status', 'Aktif')
             ->where('is_archived', false)
             ->first();
 
-        return view('Admin.pembayaran', compact(
+        return view('Bendahara.pembayaran', compact(
             'pembayaranList',
             'tahunAjaranList',
             'tahunAjaranId',
@@ -117,19 +110,17 @@ class PembayaranController extends Controller
         $tahunAjaranId = $request->get('tahun_ajaran');
         $bulan = $request->get('bulan');
         $tahun = $request->get('tahun');
-        $statusFilter = $request->get('status_filter'); // 'sudah' atau 'belum'
+        $statusFilter = $request->get('status_filter');
         
         if (!$tahunAjaranId && $tahunAjaranList->count() > 0) {
             $tahunAjaran = TahunAjaran::where('status', 'Aktif')->where('is_archived', false)->first();
             $tahunAjaranId = $tahunAjaran ? $tahunAjaran->id_tahun_ajaran : $tahunAjaranList->first()->id_tahun_ajaran;
         }
 
-        // Tentukan tahun ajaran untuk query kelas (selalu gunakan semester Ganjil untuk kelas)
         $tahunAjaranDipilih = TahunAjaran::find($tahunAjaranId);
         $kelasAjaranIdForQuery = $tahunAjaranId;
         
         if ($tahunAjaranDipilih && $tahunAjaranDipilih->semester === 'Genap') {
-            // Jika semester Genap, ambil kelas dari semester Ganjil yang sama tahunnya
             $semesterGanjil = TahunAjaran::where('tahun_mulai', $tahunAjaranDipilih->tahun_mulai)
                 ->where('tahun_selesai', $tahunAjaranDipilih->tahun_selesai)
                 ->where('semester', 'Ganjil')
@@ -146,7 +137,6 @@ class PembayaranController extends Controller
             ->orderBy('nama_kelas')
             ->get();
 
-        // Get siswa list untuk bulk selection
         $siswaList = collect();
         if ($bulan && $tahun) {
             $query = Siswa::query()
@@ -159,7 +149,6 @@ class PembayaranController extends Controller
                       ->where('siswa_kelas.status', 'Aktif');
                 }]);
 
-            // Filter berdasarkan status pembayaran
             if ($statusFilter === 'sudah') {
                 $query->whereHas('pembayaranSpp', function($q) use ($bulan, $tahun, $tahunAjaranId) {
                     $q->where('bulan', $bulan)
@@ -169,7 +158,6 @@ class PembayaranController extends Controller
                 });
             } elseif ($statusFilter === 'belum') {
                 $query->where(function($q) use ($bulan, $tahun, $tahunAjaranId) {
-                    // Belum ada tagihan ATAU tagihan belum lunas
                     $q->whereDoesntHave('pembayaranSpp', function($subQ) use ($bulan, $tahun, $tahunAjaranId) {
                         $subQ->where('bulan', $bulan)
                              ->where('tahun', $tahun)
@@ -187,7 +175,7 @@ class PembayaranController extends Controller
             $siswaList = $query->orderBy('nama_lengkap')->get();
         }
 
-        return view('Admin.buatPembayaran', compact(
+        return view('Bendahara.buatPembayaran', compact(
             'tahunAjaranList', 
             'tahunAjaranId', 
             'kelasList',
@@ -225,7 +213,6 @@ class PembayaranController extends Controller
         try {
             DB::beginTransaction();
 
-            // Create batch record untuk audit trail
             $batch = DB::table('tagihan_batch')->insertGetId([
                 'admin_id' => Auth::id(),
                 'tahun_ajaran_id' => $validated['tahun_ajaran_id'],
@@ -239,10 +226,9 @@ class PembayaranController extends Controller
 
             $created = 0;
             $skipped = 0;
-            $skippedSiswa = []; // Track nama siswa yang dilewati
+            $skippedSiswa = [];
 
             foreach ($validated['siswa_ids'] as $siswaId) {
-                // Check if tagihan already exists
                 $exists = PembayaranSpp::where('siswa_id', $siswaId)
                     ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
                     ->where('bulan', $validated['bulan'])
@@ -270,7 +256,6 @@ class PembayaranController extends Controller
                 }
             }
 
-            // Jika semua tagihan sudah ada, rollback
             if ($created === 0) {
                 DB::rollBack();
                 $bulanText = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -289,7 +274,7 @@ class PembayaranController extends Controller
                 $message .= " • {$skipped} tagihan dilewati (sudah ada)";
             }
 
-            return redirect()->route('admin.pembayaran.index')
+            return redirect()->route('bendahara.pembayaran.index')
                 ->with('success', $message)
                 ->with('skipped_siswa', $skippedSiswa);
 
@@ -307,7 +292,7 @@ class PembayaranController extends Controller
         $pembayaran = PembayaranSpp::with(['siswa.kelas', 'tahunAjaran'])
             ->findOrFail($id);
 
-        return view('Admin.detailPembayaran', compact('pembayaran'));
+        return view('Bendahara.detailPembayaran', compact('pembayaran'));
     }
 
     /**
@@ -360,7 +345,7 @@ class PembayaranController extends Controller
 
             $pembayaran->delete();
 
-            return redirect()->route('admin.pembayaran.index')->with('success', 'Tagihan berhasil dihapus');
+            return redirect()->route('bendahara.pembayaran.index')->with('success', 'Tagihan berhasil dihapus');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus tagihan: ' . $e->getMessage());
@@ -368,30 +353,19 @@ class PembayaranController extends Controller
     }
 
     /**
-     * Export laporan pembayaran
-     */
-    public function export(Request $request)
-    {
-        // TODO: Implement export to Excel/PDF
-        return back()->with('info', 'Fitur export akan segera tersedia');
-    }
-    
-    /**
      * Rekap SPP per tahun ajaran menggunakan Stored Procedure
      */
     public function rekapPerTahunAjaran($tahunAjaranId)
     {
         $tahunAjaran = TahunAjaran::findOrFail($tahunAjaranId);
         
-        // Ambil rekap menggunakan sp_rekap_spp_tahun
         $rekapSiswa = DB::select('CALL sp_rekap_spp_tahun(?)', [$tahunAjaranId]);
         
-        // Hitung total keseluruhan
         $totalPendapatan = collect($rekapSiswa)->sum('total_bayar');
         $siswaLunas = collect($rekapSiswa)->where('bulan_belum_lunas', 0)->count();
         $siswaBelumLunas = collect($rekapSiswa)->where('bulan_belum_lunas', '>', 0)->count();
         
-        return view('Admin.rekap_spp_tahun', compact(
+        return view('Bendahara.rekap_spp_tahun', compact(
             'rekapSiswa',
             'tahunAjaran',
             'totalPendapatan',
@@ -410,20 +384,18 @@ class PembayaranController extends Controller
             $q->where('siswa_kelas.status', 'Aktif');
         }])->findOrFail($siswaId);
         
-        // Ambil semua pembayaran siswa untuk tahun ajaran ini
         $pembayaranList = PembayaranSpp::where('siswa_id', $siswaId)
             ->where('tahun_ajaran_id', $tahunAjaranId)
             ->orderBy('tahun')
             ->orderBy('bulan')
             ->get();
         
-        // Hitung statistik
         $totalLunas = $pembayaranList->where('status', 'Lunas')->count();
         $totalBelumLunas = $pembayaranList->where('status', 'Belum Lunas')->count();
         $totalBayar = $pembayaranList->where('status', 'Lunas')->sum('jumlah_bayar');
         $totalTagihan = $pembayaranList->sum('jumlah_bayar');
         
-        return view('Admin.cetak_spp_siswa', compact(
+        return view('Bendahara.cetak_spp_siswa', compact(
             'tahunAjaran',
             'siswa',
             'pembayaranList',
@@ -434,5 +406,3 @@ class PembayaranController extends Controller
         ));
     }
 }
-
-

@@ -35,8 +35,8 @@ class KepsekController extends Controller
 
         // KPI Kehadiran Siswa (30 hari terakhir)
         $rekapKehadiran = DB::table('detail_absensi')
-            ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
-            ->where('pertemuan.tanggal', '>=', now()->subDays(30))
+            ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
+            ->where('pertemuan.tanggal_pertemuan', '>=', now()->subDays(30))
             ->select(
                 DB::raw("COUNT(*) as total"),
                 DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir")
@@ -58,7 +58,7 @@ class KepsekController extends Controller
         // KPI Nilai Rata-rata
         if ($tahunAjaranAktif) {
             $stats['nilai_rata_rata'] = round(
-                DB::table('raport')
+                DB::table('nilai')
                     ->where('tahun_ajaran_id', $tahunAjaranAktif->id_tahun_ajaran)
                     ->avg('nilai_akhir') ?? 0,
                 2
@@ -112,8 +112,8 @@ class KepsekController extends Controller
 
         // Ringkasan kehadiran hari ini
         $kehadiranHariIni = DB::table('detail_absensi')
-            ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
-            ->whereDate('pertemuan.tanggal', today())
+            ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
+            ->whereDate('pertemuan.tanggal_pertemuan', today())
             ->select(
                 DB::raw("COUNT(*) as total"),
                 DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir"),

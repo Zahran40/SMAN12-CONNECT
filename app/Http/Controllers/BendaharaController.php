@@ -245,8 +245,8 @@ class BendaharaController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'siswa_id' => 'required|exists:siswa,siswa_id',
-                'tahun_ajaran_id' => 'required|exists:tahun_ajaran,tahun_ajaran_id',
+                'siswa_id' => 'required|exists:siswa,id_siswa',
+                'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
                 'bulan' => 'required|string',
                 'jumlah_bayar' => 'required|numeric|min:0',
                 'tanggal_jatuh_tempo' => 'required|date',
@@ -320,7 +320,7 @@ class BendaharaController extends Controller
             if ($request->status === 'Lunas') {
                 $pembayaran->tgl_bayar = $request->tgl_bayar;
                 $pembayaran->metode_pembayaran = $request->metode_pembayaran;
-                $pembayaran->bukti_transfer = $request->bukti_transfer;
+                $pembayaran->bukti_pembayaran = $request->bukti_transfer;
             }
             $pembayaran->save();
 
@@ -469,7 +469,7 @@ class BendaharaController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'siswa_ids' => 'required|array',
-                'siswa_ids.*' => 'exists:siswa,siswa_id',
+                'siswa_ids.*' => 'exists:siswa,id_siswa',
                 'jenis_reminder' => 'required|in:Tagihan,Peringatan,Teguran',
                 'channel' => 'required|in:WhatsApp,Email,SMS',
             ]);

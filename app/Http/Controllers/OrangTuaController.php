@@ -145,9 +145,9 @@ class OrangTuaController extends Controller
 
             // Statistik Kehadiran (30 hari terakhir)
             $rekapAbsensi = DB::table('detail_absensi')
-                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
+                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
                 ->where('detail_absensi.siswa_id', $siswaId)
-                ->where('pertemuan.tanggal', '>=', now()->subDays(30))
+                ->where('pertemuan.tanggal_pertemuan', '>=', now()->subDays(30))
                 ->select(
                     DB::raw("COUNT(*) as total_pertemuan"),
                     DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir"),
@@ -195,7 +195,7 @@ class OrangTuaController extends Controller
 
             $data = [
                 'siswa' => [
-                    'id' => $siswa->siswa_id,
+                    'id' => $siswa->id_siswa,
                     'nama' => $siswa->nama_lengkap,
                     'nis' => $siswa->nis,
                     'kelas' => $siswa->kelas ? $siswa->kelas->nama_kelas : null,
@@ -256,21 +256,21 @@ class OrangTuaController extends Controller
             $endDate = $request->input('end_date', now()->format('Y-m-d'));
 
             $presensi = DB::table('detail_absensi')
-                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
+                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
                 ->join('jadwal_pelajaran', 'pertemuan.jadwal_id', '=', 'jadwal_pelajaran.jadwal_id')
                 ->join('mata_pelajaran', 'jadwal_pelajaran.mapel_id', '=', 'mata_pelajaran.mapel_id')
                 ->join('guru', 'jadwal_pelajaran.guru_id', '=', 'guru.guru_id')
                 ->where('detail_absensi.siswa_id', $siswaId)
-                ->whereBetween('pertemuan.tanggal', [$startDate, $endDate])
+                ->whereBetween('pertemuan.tanggal_pertemuan', [$startDate, $endDate])
                 ->select(
                     'detail_absensi.*',
-                    'pertemuan.tanggal',
+                    'pertemuan.tanggal_pertemuan',
                     'pertemuan.waktu_mulai',
                     'pertemuan.waktu_selesai',
                     'mata_pelajaran.nama_mapel',
                     'guru.nama_lengkap as nama_guru'
                 )
-                ->orderBy('pertemuan.tanggal', 'desc')
+                ->orderBy('pertemuan.tanggal_pertemuan', 'desc')
                 ->orderBy('pertemuan.waktu_mulai', 'desc')
                 ->get();
 
@@ -712,7 +712,7 @@ class OrangTuaController extends Controller
             $tahunAjaranId = $request->input('tahun_ajaran_id');
 
             // Nilai per semester
-            $nilaiPerSemester = DB::table('raport')
+            $nilaiPerSemester = DB::table('nilai')
                 ->where('siswa_id', $siswaId)
                 ->when($tahunAjaranId, function($q) use ($tahunAjaranId) {
                     return $q->where('tahun_ajaran_id', $tahunAjaranId);
@@ -724,11 +724,11 @@ class OrangTuaController extends Controller
 
             // Kehadiran per bulan (6 bulan terakhir)
             $kehadiranPerBulan = DB::table('detail_absensi')
-                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.pertemuan_id')
+                ->join('pertemuan', 'detail_absensi.pertemuan_id', '=', 'pertemuan.id_pertemuan')
                 ->where('detail_absensi.siswa_id', $siswaId)
-                ->where('pertemuan.tanggal', '>=', now()->subMonths(6))
+                ->where('pertemuan.tanggal_pertemuan', '>=', now()->subMonths(6))
                 ->select(
-                    DB::raw("DATE_FORMAT(pertemuan.tanggal, '%Y-%m') as bulan"),
+                    DB::raw("DATE_FORMAT(pertemuan.tanggal_pertemuan, '%Y-%m') as bulan"),
                     DB::raw("COUNT(*) as total"),
                     DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir")
                 )

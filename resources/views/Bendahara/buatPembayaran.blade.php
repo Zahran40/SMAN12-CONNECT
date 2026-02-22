@@ -1,10 +1,10 @@
-@extends('layouts.admin.app')
+@extends('layouts.bendahara.app')
 
 @section('content')
 
 <div class="flex flex-col space-y-4 sm:space-y-6 max-w-6xl">
     <div>
-        <a href="{{ route('admin.pembayaran.index') }}" class="text-blue-600 hover:text-blue-800 font-medium mb-4 inline-flex items-center">
+        <a href="{{ route('bendahara.pembayaran.index') }}" class="text-blue-600 hover:text-blue-800 font-medium mb-4 inline-flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
             </svg>
@@ -48,7 +48,7 @@
     <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
         <h2 class="text-lg font-bold text-slate-700 mb-4">Step 1: Filter Siswa</h2>
         
-        <form method="GET" action="{{ route('admin.pembayaran.create') }}" class="space-y-4">
+        <form method="GET" action="{{ route('bendahara.pembayaran.create') }}" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Tahun Ajaran -->
                 <div>
@@ -69,14 +69,12 @@
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Bulan <span class="text-red-500">*</span></label>
                     <select name="bulan" id="bulanSelect" required class="w-full border-2 border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
                         <option value="">Pilih Bulan</option>
-                        <!-- Ganjil: Juli-Desember (7-12) -->
                         <option value="7" data-semester="Ganjil" {{ $bulan == 7 ? 'selected' : '' }}>Juli</option>
                         <option value="8" data-semester="Ganjil" {{ $bulan == 8 ? 'selected' : '' }}>Agustus</option>
                         <option value="9" data-semester="Ganjil" {{ $bulan == 9 ? 'selected' : '' }}>September</option>
                         <option value="10" data-semester="Ganjil" {{ $bulan == 10 ? 'selected' : '' }}>Oktober</option>
                         <option value="11" data-semester="Ganjil" {{ $bulan == 11 ? 'selected' : '' }}>November</option>
                         <option value="12" data-semester="Ganjil" {{ $bulan == 12 ? 'selected' : '' }}>Desember</option>
-                        <!-- Genap: Januari-Juni (1-6) -->
                         <option value="1" data-semester="Genap" {{ $bulan == 1 ? 'selected' : '' }}>Januari</option>
                         <option value="2" data-semester="Genap" {{ $bulan == 2 ? 'selected' : '' }}>Februari</option>
                         <option value="3" data-semester="Genap" {{ $bulan == 3 ? 'selected' : '' }}>Maret</option>
@@ -111,7 +109,7 @@
 
     <!-- STEP 2: Pilih Siswa & Buat Tagihan -->
     @if($bulan && $tahun)
-    <form method="POST" action="{{ route('admin.pembayaran.store') }}" class="bg-white p-4 sm:p-6 rounded-xl shadow-sm space-y-6" id="bulkForm">
+    <form method="POST" action="{{ route('bendahara.pembayaran.store') }}" class="bg-white p-4 sm:p-6 rounded-xl shadow-sm space-y-6" id="bulkForm">
         @csrf
         
         <input type="hidden" name="tahun_ajaran_id" value="{{ $tahunAjaranId }}">
@@ -196,7 +194,7 @@
                     </svg>
                     <span>Buat Tagihan</span>
                 </button>
-                <a href="{{ route('admin.pembayaran.index') }}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-8 py-3 rounded-lg transition-colors">
+                <a href="{{ route('bendahara.pembayaran.index') }}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-8 py-3 rounded-lg transition-colors">
                     Batal
                 </a>
             </div>
@@ -266,19 +264,16 @@ function updateCount() {
     document.getElementById('selectedCountBottom').textContent = checked;
     document.getElementById('totalNominal').textContent = total.toLocaleString('id-ID');
     
-    // Update checkAll status
     const allCheckboxes = document.querySelectorAll('.siswa-checkbox');
     document.getElementById('checkAll').checked = allCheckboxes.length > 0 && checked === allCheckboxes.length;
 }
 
-// Update total when jumlah_bayar changes
 document.addEventListener('DOMContentLoaded', function() {
     const jumlahBayarInput = document.querySelector('input[name="jumlah_bayar"]');
     if (jumlahBayarInput) {
         jumlahBayarInput.addEventListener('input', updateCount);
     }
     
-    // Filter bulan berdasarkan semester
     const tahunAjaranSelect = document.getElementById('tahunAjaranSelect');
     const bulanSelect = document.getElementById('bulanSelect');
     
@@ -286,10 +281,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedOption = tahunAjaranSelect.options[tahunAjaranSelect.selectedIndex];
         const semester = selectedOption.getAttribute('data-semester');
         
-        // Show/hide options based on semester
         Array.from(bulanSelect.options).forEach(option => {
             if (option.value === '') {
-                option.style.display = 'block'; // Always show "Pilih Bulan"
+                option.style.display = 'block';
                 return;
             }
             
@@ -298,7 +292,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 option.style.display = 'block';
             } else {
                 option.style.display = 'none';
-                // Reset selection if currently selected month doesn't match
                 if (option.selected) {
                     bulanSelect.value = '';
                 }
@@ -306,7 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Run filter on page load
     if (tahunAjaranSelect && bulanSelect) {
         filterBulan();
         tahunAjaranSelect.addEventListener('change', filterBulan);
@@ -315,5 +307,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 @endsection
-
-

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard Bendahara') | SMAN 12 Connect</title>
     @vite('resources/css/app.css')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,7 +18,7 @@
 
     <div class="flex flex-col h-screen">
         
-        <header class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white p-2.5 sm:p-3 flex justify-between items-center shadow-lg z-20 relative">
+        <header class="bg-blue-400 text-white p-2.5 sm:p-3 flex justify-between items-center shadow-md z-20 relative">
             <!-- Hamburger Button for Mobile -->
             <button id="hamburger-btn" class="lg:hidden p-2 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Toggle Menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,14 +30,14 @@
                 <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA Negeri 12 Medan" class="h-12 sm:h-14 md:h-16 w-auto object-contain" />
                 <div class="hidden sm:block">
                     <h1 class="text-sm sm:text-base md:text-xl font-semibold">SMA NEGERI 12 MEDAN</h1>
-                    <p class="text-xs text-emerald-100">Portal Bendahara Sekolah</p>
+                    <p class="text-xs text-blue-100">Portal Bendahara Sekolah</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-2 sm:gap-3">
                 <div class="text-right hidden md:block">
                     <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-emerald-100">Bendahara</p>
+                    <p class="text-xs text-blue-100">Bendahara</p>
                 </div>
                 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center text-white shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
