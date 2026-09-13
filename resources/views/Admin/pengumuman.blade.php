@@ -61,31 +61,32 @@
                     </form>
                 </div>
 
-                <div class="text-center mb-4 sm:mb-6">
-                    <div class="flex items-center justify-center gap-2 mb-2">
-                        <h2 class="text-xl font-bold text-slate-800">{{ $item->judul }}</h2>
+                {{-- Header Judul & Badge: Judul rapi, badge Aktif & Role sejajar di tengah sehingga posisinya selalu konsisten di setiap card --}}
+                <div class="text-center pt-8 sm:pt-0 mb-4 sm:mb-6 px-4 sm:px-32 md:px-44">
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-800 mb-2 leading-snug">{{ $item->judul }}</h2>
+                    <div class="flex items-center justify-center gap-2">
                         {{-- Status Badge --}}
                         @if($item->status === 'aktif')
-                            <span class="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                            <span class="inline-block bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full text-xs font-semibold">
                                 Aktif
                             </span>
                         @else
-                            <span class="inline-block bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                            <span class="inline-block bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-semibold">
                                 Nonaktif
                             </span>
                         @endif
-                    </div>
-                    <div class="mt-2">
+
+                        {{-- Target Role Badge --}}
                         @if($item->target_role == 'Semua')
-                            <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            <span class="inline-block bg-blue-100 text-blue-700 px-3 py-0.5 rounded-full text-xs font-semibold">
                                  Untuk Semua (Guru & Siswa)
                             </span>
                         @elseif($item->target_role == 'guru')
-                            <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            <span class="inline-block bg-green-100 text-green-700 px-3 py-0.5 rounded-full text-xs font-semibold">
                                 Khusus Guru
                             </span>
                         @else
-                            <span class="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            <span class="inline-block bg-purple-100 text-purple-700 px-3 py-0.5 rounded-full text-xs font-semibold">
                                  Khusus Siswa
                             </span>
                         @endif

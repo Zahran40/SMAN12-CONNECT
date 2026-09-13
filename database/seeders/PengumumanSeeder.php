@@ -14,7 +14,7 @@ class PengumumanSeeder extends Seeder
         $admin = DB::table('users')->where('role', 'admin')->first();
         
         if (!$admin) {
-            echo "⚠️ Admin user tidak ditemukan. Jalankan DatabaseSeeder terlebih dahulu.\n";
+            echo " Admin user tidak ditemukan. Jalankan DatabaseSeeder terlebih dahulu.\n";
             return;
         }
 

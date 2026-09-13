@@ -204,7 +204,7 @@
                                                     <p class="text-slate-700 mb-1 line-clamp-2">{{ $siswa->alamat_lengkap }}</p>
                                                 @endif
                                                 <p class="text-slate-500 mb-1">{{ $siswa->latitude }}, {{ $siswa->longitude }}</p>
-                                                <a href="https://www.google.com/maps?q={{ $siswa->latitude }},{{ $siswa->longitude }}" 
+                                                <a href="https://www.openstreetmap.org/?mlat={{ $siswa->latitude }}&mlon={{ $siswa->longitude }}#map=17/{{ $siswa->latitude }}/{{ $siswa->longitude }}" 
                                                    target="_blank" 
                                                    class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 mr-1">

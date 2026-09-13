@@ -19,58 +19,66 @@ class RoleBaruSeeder extends Seeder
         $siswaFirst = Siswa::first();
         
         if ($siswaFirst) {
-            User::create([
-                'name' => 'Orang Tua ',
-                'email' => 'orangtua@sman12.com',
-                'password' => Hash::make('orangtua1'),
-                'role' => 'orangtua',
-                'reference_id' => $siswaFirst->id, // Terhubung ke siswa pertama
-                'is_active' => true,
-                'must_change_password' => false,
-            ]);
+            User::firstOrCreate(
+                ['email' => 'orangtua@sman12.com'],
+                [
+                    'name' => 'Orang Tua ',
+                    'password' => Hash::make('orangtua1'),
+                    'role' => 'orangtua',
+                    'reference_id' => $siswaFirst->id_siswa,
+                    'is_active' => true,
+                    'must_change_password' => false,
+                ]
+            );
             
             $this->command->info('✅ Akun Orang Tua berhasil dibuat:');
             $this->command->info('   Email: orangtua@sman12.com');
             $this->command->info('   Password: orangtua1');
             $this->command->info('   Terhubung dengan siswa: ' . $siswaFirst->nama_lengkap);
         } else {
-            $this->command->warn('⚠️  Tidak ada data siswa, akun orangtua dibuat tanpa reference_id');
-            User::create([
-                'name' => 'Orang Tua Demo',
-                'email' => 'orangtua@sman12.com',
-                'password' => Hash::make('orangtua1'),
-                'role' => 'orangtua',
-                'reference_id' => null,
-                'is_active' => true,
-                'must_change_password' => false,
-            ]);
+            $this->command->warn('  Tidak ada data siswa, akun orangtua dibuat tanpa reference_id');
+            User::firstOrCreate(
+                ['email' => 'orangtua@sman12.com'],
+                [
+                    'name' => 'Orang Tua Demo',
+                    'password' => Hash::make('orangtua1'),
+                    'role' => 'orangtua',
+                    'reference_id' => null,
+                    'is_active' => true,
+                    'must_change_password' => false,
+                ]
+            );
         }
 
         // 2. AKUN KEPALA SEKOLAH
-        User::create([
-            'name' => 'Dr. Kepala Sekolah',
-            'email' => 'kepsek@sman12.com',
-            'password' => Hash::make('kepsek1'),
-            'role' => 'kepsek',
-            'reference_id' => null,
-            'is_active' => true,
-            'must_change_password' => false,
-        ]);
+        User::firstOrCreate(
+            ['email' => 'kepsek@sman12.com'],
+            [
+                'name' => 'Dr. Kepala Sekolah',
+                'password' => Hash::make('kepsek1'),
+                'role' => 'kepsek',
+                'reference_id' => null,
+                'is_active' => true,
+                'must_change_password' => false,
+            ]
+        );
         
         $this->command->info('✅ Akun Kepala Sekolah berhasil dibuat:');
         $this->command->info('   Email: kepsek@sman12.com');
         $this->command->info('   Password: kepsek1');
 
         // 3. AKUN BENDAHARA
-        User::create([
-            'name' => 'Bendahara Sekolah',
-            'email' => 'bendahara@sman12.com',
-            'password' => Hash::make('bendahara1'),
-            'role' => 'bendahara',
-            'reference_id' => null,
-            'is_active' => true,
-            'must_change_password' => false,
-        ]);
+        User::firstOrCreate(
+            ['email' => 'bendahara@sman12.com'],
+            [
+                'name' => 'Bendahara Sekolah',
+                'password' => Hash::make('bendahara1'),
+                'role' => 'bendahara',
+                'reference_id' => null,
+                'is_active' => true,
+                'must_change_password' => false,
+            ]
+        );
         
         $this->command->info('✅ Akun Bendahara berhasil dibuat:');
         $this->command->info('   Email: bendahara@sman12.com');
@@ -78,7 +86,7 @@ class RoleBaruSeeder extends Seeder
         
         $this->command->info('');
         $this->command->info('================================================');
-        $this->command->info('🎉 SEEDER ROLE BARU BERHASIL DIJALANKAN!');
+        $this->command->info(' SEEDER ROLE BARU BERHASIL DIJALANKAN!');
         $this->command->info('================================================');
         $this->command->info('Akun yang dibuat:');
         $this->command->info('1. Orang Tua    : orangtua@sman12.com   | Password: orangtua1');

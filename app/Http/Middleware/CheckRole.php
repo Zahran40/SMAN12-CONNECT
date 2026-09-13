@@ -18,6 +18,9 @@ class CheckRole
     {
         // Cek apakah user sudah login
         if (!Auth::check()) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+            }
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu');
         }
 
@@ -26,11 +29,17 @@ class CheckRole
         // Cek apakah user aktif
         if (!$user->is_active) {
             Auth::logout();
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Akun tidak aktif.'], 403);
+            }
             return redirect()->route('login')->with('error', 'Akun Anda tidak aktif. Hubungi administrator.');
         }
 
         // Cek apakah role user sesuai dengan yang diizinkan
         if (!in_array($user->role, $roles)) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Forbidden.'], 403);
+            }
             // Return 404 agar tidak membocorkan info struktur aplikasi
             abort(404);
         }

@@ -27,10 +27,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // 2b. Global Middleware untuk set session variables MySQL (untuk trigger logging)
         $middleware->append(\App\Http\Middleware\SetDatabaseSession::class);
 
-        // 3. MATIKAN CSRF KHUSUS MIDTRANS
-        // Sesuaikan dengan route yang ada di api.php
+        // 3. MATIKAN CSRF KHUSUS MIDTRANS, ORANG TUA, BENDAHARA & PIMPINAN
         $middleware->validateCsrfTokens(except: [
-            'api/payment/midtrans/notification', // <--- INI YANG PALING PENTING (Sesuai api.php)
+            'api/payment/midtrans/notification',
+            'api/orangtua/*',
+            'api/bendahara/*',
+            'api/pimpinan/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
