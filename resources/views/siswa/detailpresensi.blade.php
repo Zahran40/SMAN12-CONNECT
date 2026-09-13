@@ -1,7 +1,7 @@
 @extends('layouts.siswa.app')
 
 @push('scripts')
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}"></script>
+{{-- OpenStreetMap Nominatim digunakan untuk reverse geocoding (tanpa API key) --}}
 @endpush
 
 @section('content')
@@ -93,7 +93,7 @@
                         @if($absensi)
                             {{ $absensi->alamat_lengkap ?? 'Koordinat: ' . $absensi->latitude . ', ' . $absensi->longitude }}
                             <br>
-                            <a href="https://www.google.com/maps?q={{ $absensi->latitude }},{{ $absensi->longitude }}" target="_blank" class="text-blue-600 text-xs hover:underline mt-1 inline-block">Lihat Peta</a>
+                            <a href="https://www.openstreetmap.org/?mlat={{ $absensi->latitude }}&mlon={{ $absensi->longitude }}#map=17/{{ $absensi->latitude }}/{{ $absensi->longitude }}" target="_blank" class="text-blue-600 text-xs hover:underline mt-1 inline-block">Lihat Peta</a>
                         @else
                             <span id="location-status" class="text-slate-400 italic">Mendeteksi lokasi...</span>
                             <p id="location-address" class="mt-1"></p>
@@ -187,31 +187,42 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Function untuk reverse geocoding menggunakan Google Maps Geocoding API
+    // Function untuk reverse geocoding menggunakan Nominatim (OpenStreetMap) - GRATIS
     function reverseGeocode(lat, lng) {
-        console.log('🗺️ Reverse geocoding:', lat, lng);
+        console.log('🗺️ Reverse geocoding via Nominatim:', lat, lng);
         
-        // Gunakan Google Maps JavaScript API Geocoder (sama seperti di beranda)
-        const geocoder = new google.maps.Geocoder();
-        const latlng = { lat: lat, lng: lng };
-        
-        geocoder.geocode({ location: latlng }, (results, status) => {
-            console.log('Geocoder status:', status);
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=id`, {
+            headers: { 'User-Agent': 'SMAN12-CONNECT/1.0' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Nominatim response:', data);
             
-            if (status === 'OK' && results && results[0]) {
-                const address = results[0].formatted_address;
+            if (data && data.display_name) {
+                const address = data.display_name;
                 addressInput.value = address;
                 locationAddress.textContent = address;
                 locationAddress.className = 'text-slate-700 font-medium';
                 console.log('✅ Address:', address);
             } else {
-                console.warn('⚠️ Geocoding failed:', status);
+                console.warn('⚠️ Nominatim: No address found');
                 addressInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
                 locationAddress.textContent = 'Alamat tidak tersedia';
                 locationAddress.className = 'text-slate-500 italic';
             }
             
             // Enable tombol absen
+            btnAbsen.disabled = false;
+            btnAbsen.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 hover:shadow-lg transition-all transform active:scale-95';
+            btnText.textContent = 'Hadir';
+        })
+        .catch(error => {
+            console.error('❌ Nominatim error:', error);
+            addressInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+            locationAddress.textContent = 'Alamat tidak tersedia';
+            locationAddress.className = 'text-slate-500 italic';
+            
+            // Tetap enable tombol absen
             btnAbsen.disabled = false;
             btnAbsen.className = 'px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-md hover:bg-blue-700 hover:shadow-lg transition-all transform active:scale-95';
             btnText.textContent = 'Hadir';

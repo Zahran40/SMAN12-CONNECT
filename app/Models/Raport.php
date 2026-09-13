@@ -84,30 +84,44 @@ class Raport extends Model
      */
     public function getNilaiAkhirAttribute()
     {
-        // Gunakan function dari database untuk menghitung nilai akhir
-        $result = DB::select('SELECT fn_calculate_nilai_akhir(?, ?, ?) as nilai_akhir', [
-            $this->nilai_tugas,
-            $this->nilai_uts,
-            $this->nilai_uas
-        ]);
-        
-        return $result[0]->nilai_akhir ?? 0;
+        if (isset($this->attributes['nilai_akhir']) && $this->attributes['nilai_akhir'] !== null) {
+            return (float) $this->attributes['nilai_akhir'];
+        }
+
+        try {
+            $result = DB::select('SELECT fn_calculate_nilai_akhir(?, ?, ?) as nilai_akhir', [
+                $this->nilai_tugas ?? 0,
+                $this->nilai_uts ?? 0,
+                $this->nilai_uas ?? 0
+            ]);
+            return (float) ($result[0]->nilai_akhir ?? 0);
+        } catch (\Throwable $e) {
+            $tugas = (float) ($this->nilai_tugas ?? 0);
+            $uts = (float) ($this->nilai_uts ?? 0);
+            $uas = (float) ($this->nilai_uas ?? 0);
+            return round(($tugas * 0.3) + ($uts * 0.3) + ($uas * 0.4), 2);
+        }
     }
 
-    /**
-     * Accessor untuk nilai_huruf (computed attribute)
-     * Mengkonversi nilai akhir ke huruf (A/B/C/D/E) menggunakan database function
-     */
     public function getNilaiHurufAttribute()
     {
+        if (isset($this->attributes['nilai_huruf']) && $this->attributes['nilai_huruf'] !== null) {
+            return $this->attributes['nilai_huruf'];
+        }
+
         $nilaiAkhir = $this->nilai_akhir;
-        
         if (!$nilaiAkhir) return '-';
-        
-        // Gunakan function dari database untuk konversi ke huruf
-        $result = DB::select('SELECT fn_convert_grade_letter(?) as grade', [$nilaiAkhir]);
-        
-        return $result[0]->grade ?? '-';
+
+        try {
+            $result = DB::select('SELECT fn_convert_grade_letter(?) as grade', [$nilaiAkhir]);
+            return $result[0]->grade ?? '-';
+        } catch (\Throwable $e) {
+            if ($nilaiAkhir >= 85) return 'A';
+            if ($nilaiAkhir >= 75) return 'B';
+            if ($nilaiAkhir >= 65) return 'C';
+            if ($nilaiAkhir >= 50) return 'D';
+            return 'E';
+        }
     }
     
     /**

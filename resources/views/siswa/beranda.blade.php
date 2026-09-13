@@ -3,6 +3,7 @@
 @section('title', 'Beranda')
 
 @push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <style>
     #map {
         height: 250px;
@@ -211,7 +212,7 @@
         </div>
     </section>
 
-    <!-- Modal Absensi dengan Google Maps -->
+    <!-- Modal Absensi dengan OpenStreetMap (Leaflet.js) -->
     <div id="absenModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
@@ -270,11 +271,11 @@
 @endsection
 
 @push('scripts')
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 let map;
 let marker;
-let geocoder;
+let accuracyCircle;
 let isMapInitialized = false;
 
 function openAbsenModal(pertemuanId, namaMapel) {
@@ -313,15 +314,19 @@ function openAbsenModal(pertemuanId, namaMapel) {
 function closeAbsenModal() {
     document.getElementById('absenModal').classList.add('hidden');
     document.getElementById('absenModal').classList.remove('flex');
+    if (map) {
+        map.remove();
+        map = null;
+    }
     isMapInitialized = false;
 }
 
 function initMap() {
     try {
-        console.log('Initializing map...');
+        console.log('Initializing Leaflet map...');
         
         // Default to Jakarta if geolocation fails
-        const defaultLocation = { lat: -6.2088, lng: 106.8456 };
+        const defaultLocation = [-6.2088, 106.8456];
         
         const mapElement = document.getElementById('map');
         if (!mapElement) {
@@ -329,24 +334,30 @@ function initMap() {
             return;
         }
         
-        map = new google.maps.Map(mapElement, {
-            center: defaultLocation,
-            zoom: 15,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: false,
-        });
+        // Remove previous map instance if exists
+        if (map) {
+            map.remove();
+        }
         
-        marker = new google.maps.Marker({
-            map: map,
+        map = L.map(mapElement, {
+            zoomControl: true,
+            attributionControl: true
+        }).setView(defaultLocation, 15);
+        
+        // OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+        }).addTo(map);
+        
+        // Create marker (hidden initially)
+        marker = L.marker(defaultLocation, {
             draggable: false,
-            animation: google.maps.Animation.DROP,
         });
         
-        geocoder = new google.maps.Geocoder();
         isMapInitialized = true;
         
-        console.log('Map initialized successfully');
+        console.log('Leaflet map initialized successfully');
     } catch (error) {
         console.error('Error initializing map:', error);
         showError('Gagal menginisialisasi peta: ' + error.message);
@@ -376,24 +387,22 @@ function getUserLocation() {
             console.log(`Lat: ${lat}, Lng: ${lng}, Accuracy: ${accuracy}m`);
             
             // Update map
-            const userLocation = { lat: lat, lng: lng };
-            
             if (map && marker) {
-                map.setCenter(userLocation);
-                marker.setPosition(userLocation);
-                marker.setVisible(true);
+                map.setView([lat, lng], 16);
+                marker.setLatLng([lat, lng]).addTo(map);
                 
                 // Add accuracy circle
-                new google.maps.Circle({
-                    strokeColor: '#4285F4',
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
+                if (accuracyCircle) {
+                    map.removeLayer(accuracyCircle);
+                }
+                accuracyCircle = L.circle([lat, lng], {
+                    color: '#4285F4',
                     fillColor: '#4285F4',
                     fillOpacity: 0.15,
-                    map: map,
-                    center: userLocation,
+                    weight: 2,
+                    opacity: 0.8,
                     radius: accuracy
-                });
+                }).addTo(map);
             }
             
             // Store coordinates
@@ -434,7 +443,7 @@ function getUserLocation() {
             // Enable submit button
             document.getElementById('submitBtn').disabled = false;
             
-            // Get address from coordinates
+            // Get address from coordinates using Nominatim (OSM)
             getAddressFromCoordinates(lat, lng, accuracy);
         },
         // Error callback
@@ -518,25 +527,20 @@ function retryGetLocation() {
 }
 
 function getAddressFromCoordinates(lat, lng, accuracy) {
-    console.log('Getting address for coordinates...');
+    console.log('Getting address via Nominatim (OpenStreetMap)...');
     
-    if (!geocoder) {
-        console.error('Geocoder not initialized');
-        // Still allow submission without address
-        document.getElementById('alamat_lengkap').value = `Lat: ${lat}, Lng: ${lng}`;
-        document.getElementById('addressText').textContent = 'Alamat tidak dapat dideteksi';
-        document.getElementById('coordsText').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)} (Akurasi: ±${Math.round(accuracy)}m)`;
-        document.getElementById('locationInfo').classList.remove('hidden');
-        return;
-    }
-    
-    const latlng = { lat: lat, lng: lng };
-    
-    geocoder.geocode({ location: latlng }, (results, status) => {
-        console.log('Geocoding status:', status);
+    // Use Nominatim reverse geocoding (free, no API key needed)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=id`, {
+        headers: {
+            'User-Agent': 'SMAN12-CONNECT/1.0'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Nominatim response:', data);
         
-        if (status === 'OK' && results && results[0]) {
-            const address = results[0].formatted_address;
+        if (data && data.display_name) {
+            const address = data.display_name;
             console.log('Address found:', address);
             
             document.getElementById('alamat_lengkap').value = address;
@@ -544,14 +548,20 @@ function getAddressFromCoordinates(lat, lng, accuracy) {
             document.getElementById('coordsText').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)} (Akurasi: ±${Math.round(accuracy)}m)`;
             document.getElementById('locationInfo').classList.remove('hidden');
         } else {
-            console.warn('Geocoding failed:', status);
-            
-            // If geocoding fails, still show coordinates
+            console.warn('Nominatim: No address found');
             document.getElementById('alamat_lengkap').value = `Lat: ${lat}, Lng: ${lng}`;
             document.getElementById('addressText').textContent = 'Alamat tidak dapat dideteksi';
             document.getElementById('coordsText').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)} (Akurasi: ±${Math.round(accuracy)}m)`;
             document.getElementById('locationInfo').classList.remove('hidden');
         }
+    })
+    .catch(error => {
+        console.error('Nominatim error:', error);
+        // If reverse geocoding fails, still show coordinates
+        document.getElementById('alamat_lengkap').value = `Lat: ${lat}, Lng: ${lng}`;
+        document.getElementById('addressText').textContent = 'Alamat tidak dapat dideteksi';
+        document.getElementById('coordsText').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)} (Akurasi: ±${Math.round(accuracy)}m)`;
+        document.getElementById('locationInfo').classList.remove('hidden');
     });
 }
 
@@ -560,7 +570,7 @@ if (location.protocol !== 'https:' && location.hostname !== 'localhost' && locat
     console.warn('Geolocation requires HTTPS!');
 }
 
-// Log Google Maps API load
-console.log('Google Maps API loaded');
+// Log OpenStreetMap + Leaflet loaded
+console.log('OpenStreetMap (Leaflet.js) loaded');
 </script>
 @endpush

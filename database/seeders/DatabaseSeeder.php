@@ -18,25 +18,25 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        $this->command->info("🌱 MULAI SEEDING DATABASE SMAN12-CONNECT");
+        $this->command->info(" MULAI SEEDING DATABASE SMAN12-CONNECT");
         $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         // ============================================
-        // 1️⃣ TAHUN AJARAN & KELAS (via Observer)
+        // 1. TAHUN AJARAN & KELAS (via Observer)
         // ============================================
-        $this->command->info("\n1️⃣ Seeding Tahun Ajaran & Kelas...");
+        $this->command->info("\n1. Seeding Tahun Ajaran & Kelas...");
         $this->call(TahunAjaranSeeder::class);
 
         // ============================================
-        // 1.5️⃣ SISWA (36 siswa untuk X-E1)
+        // 1.5. SISWA (36 siswa untuk X-E1)
         // ============================================
-        $this->command->info("\n1.5️⃣ Seeding Siswa...");
+        $this->command->info("\n1.5. Seeding Siswa...");
         $this->call(SiswaSeeder::class);
 
         // ============================================
-        // 2️⃣ KELAS X-E1 COMPLETE (Guru Ester + 36 Siswa)
+        // 2. KELAS X-E1 COMPLETE (Guru Ester + 36 Siswa)
         // ============================================
-        $this->command->info("\n2️⃣ Seeding Kelas X-E1 Complete...");
+        $this->command->info("\n2. Seeding Kelas X-E1 Complete...");
         $this->call(KelasXE1CompleteSeeder::class);
 
         // Ambil tahun ajaran aktif untuk digunakan di seeder selanjutnya
@@ -61,9 +61,9 @@ class DatabaseSeeder extends Seeder
         }
 
         // ============================================
-        // 3️⃣ USERS TAMBAHAN (ADMIN & TESTING)
+        // 3. USERS TAMBAHAN (ADMIN & TESTING)
         // ============================================
-        $this->command->info("\n3️⃣ Seeding Users Tambahan...");
+        $this->command->info("\n3. Seeding Users Tambahan...");
 
         // 1. ADMIN (admin2)
         $admin = User::firstOrCreate(
@@ -173,9 +173,9 @@ class DatabaseSeeder extends Seeder
         $this->command->info("✅ Siswa: {$siswa->email} (NIS: 12345, Kelas: X-E1)");
 
         // ============================================
-        // 4️⃣ MATA PELAJARAN, JADWAL & PERTEMUAN
+        // 4. MATA PELAJARAN, JADWAL & PERTEMUAN
         // ============================================
-        $this->command->info("\n4️⃣ Seeding Mata Pelajaran, Jadwal & Pertemuan...");
+        $this->command->info("\n4. Seeding Mata Pelajaran, Jadwal & Pertemuan...");
         
         // Buat Mata Pelajaran
         $mapelMatExists = DB::table('mata_pelajaran')->where('kode_mapel', 'MAT001')->first();
@@ -187,7 +187,7 @@ class DatabaseSeeder extends Seeder
             $this->command->info("✅ Mata Pelajaran: Matematika");
         } else {
             $mapelMat = $mapelMatExists->id_mapel;
-            $this->command->info("ℹ️ Mata Pelajaran: Matematika (sudah ada)");
+            $this->command->info(" Mata Pelajaran: Matematika (sudah ada)");
         }
 
         $mapelFisExists = DB::table('mata_pelajaran')->where('kode_mapel', 'FIS001')->first();
@@ -199,7 +199,7 @@ class DatabaseSeeder extends Seeder
             $this->command->info("✅ Mata Pelajaran: Fisika");
         } else {
             $mapelFis = $mapelFisExists->id_mapel;
-            $this->command->info("ℹ️ Mata Pelajaran: Fisika (sudah ada)");
+            $this->command->info(" Mata Pelajaran: Fisika (sudah ada)");
         }
 
         // Buat Jadwal Pelajaran untuk Kelas X-1 IPA (gunakan Eloquent agar observer trigger)
@@ -220,7 +220,7 @@ class DatabaseSeeder extends Seeder
             $this->command->info("✅ Jadwal: Matematika - X-E1 → Observer create 16 pertemuan");
         } else {
             $jadwalMat = $jadwalMatExists;
-            $this->command->info("ℹ️ Jadwal Matematika sudah ada");
+            $this->command->info(" Jadwal Matematika sudah ada");
         }
 
         $jadwalFisExists = JadwalPelajaran::where('mapel_id', $mapelFis)
@@ -240,30 +240,36 @@ class DatabaseSeeder extends Seeder
             $this->command->info("✅ Jadwal: Fisika - X-E1 → Observer create 16 pertemuan");
         } else {
             $jadwalFis = $jadwalFisExists;
-            $this->command->info("ℹ️ Jadwal Fisika sudah ada");
+            $this->command->info(" Jadwal Fisika sudah ada");
         }
 
         // ============================================
-        // ⚠️ PERTEMUAN TIDAK DI-SEED
+        //  PERTEMUAN TIDAK DI-SEED
         // - Untuk MATERI: Tetap ada pertemuan 1-16 (akan dibuat otomatis dari JadwalPelajaranObserver)
         // - Untuk ABSENSI: Guru yang buat sendiri via form "Buat Pertemuan Baru"
         // ============================================
-        $this->command->info("ℹ️ Pertemuan untuk absensi TIDAK di-seed (guru yang buat sendiri)");
+        $this->command->info(" Pertemuan untuk absensi TIDAK di-seed (guru yang buat sendiri)");
 
         // ============================================
-        // 5️⃣ SUMMARY
+        // 4.5. ROLE BARU (Orang Tua, Kepsek, Bendahara)
+        // ============================================
+        $this->command->info("\n4.5. Seeding Role Baru (Orang Tua, Kepsek, Bendahara)...");
+        $this->call(RoleBaruSeeder::class);
+
+        // ============================================
+        // 5. SUMMARY
         // ============================================
         $this->command->info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        $this->command->info("🎉 SEEDING SELESAI!");
+        $this->command->info(" SEEDING SELESAI!");
         $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        $this->command->info("📊 Total Users: " . User::count());
-        $this->command->info("📅 Total Tahun Ajaran: " . TahunAjaran::count());
-        $this->command->info("📚 Total Kelas: " . Kelas::count());
-        $this->command->info("👨‍🏫 Total Guru: " . DB::table('guru')->count());
-        $this->command->info("👨‍🎓 Total Siswa: " . DB::table('siswa')->count());
-        $this->command->info("📖 Total Mata Pelajaran: " . DB::table('mata_pelajaran')->count());
-        $this->command->info("📅 Total Jadwal: " . DB::table('jadwal_pelajaran')->count());
-        $this->command->info("📝 Total Pertemuan: " . DB::table('pertemuan')->count());
+        $this->command->info(" Total Users: " . User::count());
+        $this->command->info(" Total Tahun Ajaran: " . TahunAjaran::count());
+        $this->command->info(" Total Kelas: " . Kelas::count());
+        $this->command->info(" Total Guru: " . DB::table('guru')->count());
+        $this->command->info(" Total Siswa: " . DB::table('siswa')->count());
+        $this->command->info(" Total Mata Pelajaran: " . DB::table('mata_pelajaran')->count());
+        $this->command->info(" Total Jadwal: " . DB::table('jadwal_pelajaran')->count());
+        $this->command->info(" Total Pertemuan: " . DB::table('pertemuan')->count());
         $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 }

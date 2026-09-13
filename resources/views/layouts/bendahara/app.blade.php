@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard Bendahara') | SMAN 12 Connect</title>
     @vite('resources/css/app.css')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,7 +18,7 @@
 
     <div class="flex flex-col h-screen">
         
-        <header class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white p-2.5 sm:p-3 flex justify-between items-center shadow-lg z-20 relative">
+        <header class="bg-blue-400 text-white p-2.5 sm:p-3 flex justify-between items-center shadow-md z-20 relative">
             <!-- Hamburger Button for Mobile -->
             <button id="hamburger-btn" class="lg:hidden p-2 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Toggle Menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,14 +30,14 @@
                 <img src="{{ asset('images/logo_sman12.png') }}" alt="Logo SMA Negeri 12 Medan" class="h-12 sm:h-14 md:h-16 w-auto object-contain" />
                 <div class="hidden sm:block">
                     <h1 class="text-sm sm:text-base md:text-xl font-semibold">SMA NEGERI 12 MEDAN</h1>
-                    <p class="text-xs text-emerald-100">Portal Bendahara Sekolah</p>
+                    <p class="text-xs text-blue-100">Portal Bendahara Sekolah</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-2 sm:gap-3">
                 <div class="text-right hidden md:block">
                     <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-emerald-100">Bendahara</p>
+                    <p class="text-xs text-blue-100">Bendahara</p>
                 </div>
                 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center text-white shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -54,26 +55,50 @@
                 
                 {{-- Alert Messages --}}
                 @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6 flex items-center justify-between" role="alert">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 sm:mb-6 flex items-start justify-between" role="alert">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 mr-2 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
-                            <span>{{ session('success') }}</span>
+                            <div>
+                                <span>{{ session('success') }}</span>
+                                @if(session('skipped_siswa') && count(session('skipped_siswa')) > 0)
+                                    <div class="mt-2 pt-2 border-t border-green-300 text-xs">
+                                        <p class="font-semibold">Siswa yang dilewati (tagihan sudah ada):</p>
+                                        <ul class="list-disc list-inside space-y-0.5 mt-1">
+                                            @foreach(session('skipped_siswa') as $siswa)
+                                                <li>{{ $siswa }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                        <button onclick="this.parentElement.style.display='none'" class="text-green-700 hover:text-green-900">×</button>
+                        <button onclick="this.parentElement.style.display='none'" class="text-green-700 hover:text-green-900 font-bold ml-4">×</button>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6 flex items-center justify-between" role="alert">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 sm:mb-6 flex items-start justify-between" role="alert">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 mr-2 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                             </svg>
-                            <span>{{ session('error') }}</span>
+                            <div>
+                                <span>{{ session('error') }}</span>
+                                @if(session('skipped_siswa') && count(session('skipped_siswa')) > 0)
+                                    <div class="mt-2 pt-2 border-t border-red-300 text-xs">
+                                        <p class="font-semibold">Daftar siswa yang sudah memiliki tagihan:</p>
+                                        <ul class="list-disc list-inside space-y-0.5 mt-1">
+                                            @foreach(session('skipped_siswa') as $siswa)
+                                                <li>{{ $siswa }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                        <button onclick="this.parentElement.style.display='none'" class="text-red-700 hover:text-red-900">×</button>
+                        <button onclick="this.parentElement.style.display='none'" class="text-red-700 hover:text-red-900 font-bold ml-4">×</button>
                     </div>
                 @endif
 

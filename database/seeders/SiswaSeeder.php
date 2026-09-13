@@ -100,10 +100,10 @@ class SiswaSeeder extends Seeder
         }
 
         $this->command->info("\n========================================");
-        $this->command->info("📊 SUMMARY");
+        $this->command->info(" SUMMARY");
         $this->command->info("========================================");
         $this->command->info("Total Siswa: 36 siswa");
-        $this->command->info("\n📝 LOGIN CREDENTIALS:");
+        $this->command->info("\n LOGIN CREDENTIALS:");
         $this->command->info("Email format: [nama_tanpa_spasi]@siswa.sman12.sch.id");
         $this->command->info("Password: 8 digit (00000001 - 00000036)");
         $this->command->info("\nContoh:");

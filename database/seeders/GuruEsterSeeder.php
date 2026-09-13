@@ -15,7 +15,7 @@ class GuruEsterSeeder extends Seeder
     public function run(): void
     {
         $this->command->info("========================================");
-        $this->command->info("🧑‍🏫 SEEDING GURU & KELAS X-E1");
+        $this->command->info(" SEEDING GURU & KELAS X-E1");
         $this->command->info("========================================\n");
 
         DB::beginTransaction();
@@ -48,7 +48,7 @@ class GuruEsterSeeder extends Seeder
             $existingUser = DB::table('users')->where('email', $email)->first();
             
             if ($existingUser) {
-                $this->command->warn("⚠ User dengan email {$email} sudah ada. Skip pembuatan guru.");
+                $this->command->warn(" User dengan email {$email} sudah ada. Skip pembuatan guru.");
                 DB::commit();
                 return;
             }
@@ -136,23 +136,23 @@ class GuruEsterSeeder extends Seeder
 
                     $this->command->info("✓ {$siswaList->count()} siswa berhasil di-assign ke kelas X-E1");
                 } else {
-                    $this->command->warn("⚠ Tidak ada tahun ajaran aktif. Siswa tidak bisa di-assign ke kelas.");
+                    $this->command->warn(" Tidak ada tahun ajaran aktif. Siswa tidak bisa di-assign ke kelas.");
                 }
             } else {
-                $this->command->warn("⚠ Tidak ada siswa dengan NIS 240001-240036. Jalankan SiswaSeeder terlebih dahulu.");
+                $this->command->warn(" Tidak ada siswa dengan NIS 240001-240036. Jalankan SiswaSeeder terlebih dahulu.");
             }
 
             DB::commit();
 
             // Summary
             $this->command->info("\n========================================");
-            $this->command->info("📊 SUMMARY");
+            $this->command->info(" SUMMARY");
             $this->command->info("========================================");
             $this->command->info("✅ Kelas X-E1 berhasil dibuat/ditemukan");
             $this->command->info("✅ Guru Ester Donna Simanjuntak berhasil dibuat");
             $this->command->info("✅ Guru Ester ditetapkan sebagai wali kelas X-E1");
             $this->command->info("✅ {$siswaList->count()} siswa di-assign ke kelas X-E1");
-            $this->command->info("\n📝 LOGIN CREDENTIALS GURU:");
+            $this->command->info("\n LOGIN CREDENTIALS GURU:");
             $this->command->info("Email: {$email}");
             $this->command->info("Password: {$password}");
             $this->command->info("========================================\n");

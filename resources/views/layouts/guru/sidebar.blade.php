@@ -53,13 +53,29 @@
                                                         </a>
                                                 </li>
                         <li>
-                                                  <a href="{{ route('guru.pengumuman') }}"
-                                                          class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('guru.pengumuman') ? 'bg-blue-100 text-blue-400' : 'text-slate-600 hover:bg-slate-100' }}">
-                                        <img src="{{ asset('images/Vector (1).png') }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.5 1.5 0 0 1 18 21.75H6a1.5 1.5 0 0 1-1.499-1.632Z" />
-                                        </img>
-                                        Pengumuman
-                                </a>
+                            <a href="{{ route('guru.pengumuman') }}"
+                               class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('guru.pengumuman') ? 'bg-blue-100 text-blue-500' : 'text-slate-600 hover:bg-slate-100' }}">
+                                <img src="{{ asset('images/Vector (1).png') }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.5 1.5 0 0 1 18 21.75H6a1.5 1.5 0 0 1-1.499-1.632Z" />
+                                </img>
+                                Pengumuman
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('guru.perizinan') }}"
+                               class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('guru.perizinan*') ? 'bg-blue-100 text-blue-500' : 'text-slate-600 hover:bg-slate-100' }}">
+                                <iconify-icon icon="solar:document-text-bold" class="text-xl mr-3 {{ request()->routeIs('guru.perizinan*') ? 'text-blue-500' : 'text-slate-500' }}"></iconify-icon>
+                                Perizinan Siswa
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('guru.perilaku') }}"
+                               class="flex items-center px-4 py-3 font-medium rounded-lg {{ request()->routeIs('guru.perilaku*') ? 'bg-blue-100 text-blue-500' : 'text-slate-600 hover:bg-slate-100' }}">
+                                <iconify-icon icon="solar:star-fall-minimalistic-bold" class="text-xl mr-3 {{ request()->routeIs('guru.perilaku*') ? 'text-blue-500' : 'text-slate-500' }}"></iconify-icon>
+                                Laporan Perilaku
+                            </a>
                         </li>
 
             </ul>

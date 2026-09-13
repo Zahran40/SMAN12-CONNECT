@@ -92,7 +92,7 @@
         <input id="password" type="password" name="password" required
             class="w-full border border-[#bcd6f6] rounded-lg px-4 py-3 pr-10 text-[16px] focus:ring-2 focus:ring-[#4eaaff] outline-none @error('password') border-red-500 @enderror"
             placeholder="Masukkan password"
-            autocomplete="new-password">
+            autocomplete="current-password">
 
         <button type="button" onclick="togglePasswordField('password', 'eyeIconLogin')" 
             class="absolute inset-y-0 right-0 flex items-center pr-2 cursor-pointer z-10 text-gray-500 hover:text-[#4eaaff] transition-colors">

@@ -24,10 +24,10 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 -- Insert notification untuk siswa
-                INSERT INTO notifikasi (user_id, tipe, judul, pesan, link, created_at)
+                INSERT INTO notifikasi (user_id, tipe, judul, pesan, link_url, created_at)
                 SELECT 
                     u.id,
-                    'Pembayaran',
+                    'Keuangan',
                     'Tagihan SPP Baru',
                     CONCAT('Tagihan SPP bulan ', NEW.bulan, '/', NEW.tahun, ' sebesar Rp ', FORMAT(NEW.jumlah_bayar, 0), ' telah dibuat.'),
                     '/siswa/pembayaran',
@@ -51,10 +51,10 @@ return new class extends Migration
             BEGIN
                 IF OLD.status = 'Belum Lunas' AND NEW.status = 'Lunas' THEN
                     -- Notification untuk siswa
-                    INSERT INTO notifikasi (user_id, tipe, judul, pesan, link, created_at)
+                    INSERT INTO notifikasi (user_id, tipe, judul, pesan, link_url, created_at)
                     SELECT 
                         u.id,
-                        'Pembayaran',
+                        'Keuangan',
                         'Pembayaran Berhasil',
                         CONCAT('Pembayaran SPP bulan ', NEW.bulan, '/', NEW.tahun, ' sebesar Rp ', FORMAT(NEW.jumlah_bayar, 0), ' telah lunas.'),
                         '/siswa/pembayaran',

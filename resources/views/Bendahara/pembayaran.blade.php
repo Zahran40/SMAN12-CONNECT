@@ -1,4 +1,4 @@
-@extends('layouts.admin.app')
+@extends('layouts.bendahara.app')
 
 @section('content')
 
@@ -8,7 +8,7 @@
             <p class="text-slate-500 text-sm mt-1">(Manajemen untuk pembayaran per siswa)</p>
         </div>
         @if(isset($tahunAjaranAktif))
-        <a href="{{ route('admin.pembayaran.rekap', $tahunAjaranAktif->id_tahun_ajaran) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition-all flex items-center space-x-2">
+        <a href="{{ route('bendahara.pembayaran.rekap', $tahunAjaranAktif->id_tahun_ajaran) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition-all flex items-center space-x-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
@@ -16,39 +16,6 @@
         </a>
         @endif
     </div>
-
-    @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r mb-4 sm:mb-6 shadow-sm">
-            <p class="font-bold">Berhasil</p>
-            <p>{{ session('success') }}</p>
-            @if(session('skipped_siswa') && count(session('skipped_siswa')) > 0)
-                <div class="mt-3 pt-3 border-t border-green-300">
-                    <p class="font-semibold text-sm mb-2">Siswa yang dilewati (tagihan sudah ada):</p>
-                    <ul class="text-sm list-disc list-inside space-y-1 ml-2">
-                        @foreach(session('skipped_siswa') as $siswa)
-                            <li>{{ $siswa }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r mb-4 sm:mb-6 shadow-sm">
-            <p class="font-bold">Error</p>
-            <p>{{ session('error') }}</p>
-            @if(session('skipped_siswa') && count(session('skipped_siswa')) > 0)
-                <div class="mt-3 pt-3 border-t border-red-300">
-                    <p class="font-semibold text-sm mb-2">Daftar siswa yang sudah memiliki tagihan:</p>
-                    <ul class="text-sm list-disc list-inside space-y-1 ml-2">
-                        @foreach(session('skipped_siswa') as $siswa)
-                            <li>{{ $siswa }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-        </div>
-    @endif
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div class="bg-white p-4 sm:p-6 rounded-xl border border-blue-400 shadow-sm flex justify-between items-center">
@@ -152,10 +119,10 @@
             </div>
 
             <div class="w-full md:w-auto flex space-x-2">
-                <a href="{{ route('admin.pembayaran.index') }}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm">
+                <a href="{{ route('bendahara.pembayaran.index') }}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm">
                     Reset Filter
                 </a>
-                <a href="{{ route('admin.pembayaran.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm flex items-center">
+                <a href="{{ route('bendahara.pembayaran.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
@@ -252,7 +219,7 @@
                         </td>
 
                         <td class="px-6 py-4 text-sm">
-                            <a href="{{ route('admin.pembayaran.show', $pembayaran->id_pembayaran) }}" class="text-blue-600 hover:text-blue-800 font-medium hover:underline">
+                            <a href="{{ route('bendahara.pembayaran.show', $pembayaran->id_pembayaran) }}" class="text-blue-600 hover:text-blue-800 font-medium hover:underline">
                                 Detail
                             </a>
                         </td>
@@ -282,4 +249,3 @@
     </div>
 
 @endsection
-
