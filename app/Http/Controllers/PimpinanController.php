@@ -151,10 +151,9 @@ class PimpinanController extends Controller
             $semester = $request->input('semester');
 
             $query = DB::table('nilai')
-                ->join('siswa', 'nilai.siswa_id', '=', 'siswa.siswa_id')
-                ->join('siswa_kelas', 'siswa.siswa_id', '=', 'siswa_kelas.siswa_id')
-                ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.kelas_id')
-                ->join('mata_pelajaran', 'nilai.mapel_id', '=', 'mata_pelajaran.mapel_id');
+                ->join('siswa', 'nilai.siswa_id', '=', 'siswa.id_siswa')
+                ->join('kelas', 'siswa.kelas_id', '=', 'kelas.id_kelas')
+                ->join('mata_pelajaran', 'nilai.mapel_id', '=', 'mata_pelajaran.id_mapel');
 
             if ($tahunAjaranId) {
                 $query->where('nilai.tahun_ajaran_id', $tahunAjaranId);
@@ -166,19 +165,19 @@ class PimpinanController extends Controller
 
             $rekapPerKelas = $query->select(
                     'kelas.nama_kelas',
-                    'kelas.kelas_id',
+                    'kelas.id_kelas as kelas_id',
                     DB::raw('COUNT(DISTINCT nilai.siswa_id) as jumlah_siswa'),
                     DB::raw('AVG(nilai.nilai_akhir) as rata_rata_nilai'),
                     DB::raw('MAX(nilai.nilai_akhir) as nilai_tertinggi'),
                     DB::raw('MIN(nilai.nilai_akhir) as nilai_terendah')
                 )
-                ->groupBy('kelas.nama_kelas', 'kelas.kelas_id')
+                ->groupBy('kelas.nama_kelas', 'kelas.id_kelas')
                 ->orderBy('kelas.nama_kelas')
                 ->get();
 
             // Rekap per Mata Pelajaran
             $rekapPerMapel = DB::table('nilai')
-                ->join('mata_pelajaran', 'nilai.mapel_id', '=', 'mata_pelajaran.mapel_id')
+                ->join('mata_pelajaran', 'nilai.mapel_id', '=', 'mata_pelajaran.id_mapel')
                 ->when($tahunAjaranId, function($q) use ($tahunAjaranId) {
                     return $q->where('nilai.tahun_ajaran_id', $tahunAjaranId);
                 })
@@ -293,18 +292,26 @@ class PimpinanController extends Controller
             $tahun = $request->input('tahun', date('Y'));
             $bulan = $request->input('bulan');
 
-            $query = PembayaranSpp::query();
-
-            if ($tahun) {
-                $query->whereYear('tgl_bayar', $tahun);
-            }
-
-            if ($bulan) {
-                $query->whereMonth('tgl_bayar', $bulan);
-            }
-
             // Total Pembayaran per Status
-            $rekapPerStatus = PembayaranSpp::whereYear('created_at', $tahun)
+            $statusQuery = PembayaranSpp::query();
+            if ($tahun) {
+                $statusQuery->where(function($q) use ($tahun) {
+                    $q->whereYear('tgl_bayar', $tahun)
+                      ->orWhere(function($q2) use ($tahun) {
+                          $q2->whereNull('tgl_bayar')->whereYear('created_at', $tahun);
+                      });
+                });
+            }
+            if ($bulan) {
+                $statusQuery->where(function($q) use ($bulan) {
+                    $q->whereMonth('tgl_bayar', $bulan)
+                      ->orWhere(function($q2) use ($bulan) {
+                          $q2->whereNull('tgl_bayar')->whereMonth('created_at', $bulan);
+                      });
+                });
+            }
+
+            $rekapPerStatus = (clone $statusQuery)
                 ->select(
                     'status',
                     DB::raw('COUNT(*) as jumlah_transaksi'),
@@ -313,45 +320,70 @@ class PimpinanController extends Controller
                 ->groupBy('status')
                 ->get();
 
-            // Pembayaran per Bulan
-            $pembayaranPerBulan = PembayaranSpp::where('status', 'Lunas')
+            // Pembayaran per Bulan (12 Bulan Lengkap untuk $tahun)
+            $rawBulan = DB::table('pembayaran_spp')
+                ->where('status', 'Lunas')
+                ->whereNotNull('tgl_bayar')
                 ->whereYear('tgl_bayar', $tahun)
                 ->select(
-                    DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m') as bulan"),
-                    DB::raw('COUNT(*) as jumlah_transaksi'),
-                    DB::raw('SUM(jumlah_bayar) as total_nominal')
+                    DB::raw("MONTH(tgl_bayar) as bulan_num"),
+                    DB::raw("COUNT(*) as jumlah_transaksi"),
+                    DB::raw("SUM(jumlah_bayar) as total_nominal")
                 )
-                ->groupBy('bulan')
-                ->orderBy('bulan')
-                ->get();
+                ->groupBy(DB::raw("MONTH(tgl_bayar)"))
+                ->get()
+                ->keyBy('bulan_num');
+
+            $namaBulanIndo = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+
+            $perBulan = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $item = $rawBulan->get($m);
+                $tot = $item ? (float) $item->total_nominal : 0.0;
+                $cnt = $item ? (int) $item->jumlah_transaksi : 0;
+                $perBulan[] = [
+                    'bulan' => $m,
+                    'nama_bulan' => $namaBulanIndo[$m],
+                    'tahun' => (int) $tahun,
+                    'periode' => sprintf('%04d-%02d', $tahun, $m),
+                    'total' => $tot,
+                    'total_nominal' => $tot,
+                    'pemasukan' => $tot,
+                    'jumlah_transaksi' => $cnt,
+                ];
+            }
 
             // Pembayaran per Kelas
             $pembayaranPerKelas = DB::table('pembayaran_spp')
-                ->join('siswa', 'pembayaran_spp.siswa_id', '=', 'siswa.siswa_id')
-                ->join('siswa_kelas', 'siswa.siswa_id', '=', 'siswa_kelas.siswa_id')
-                ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.kelas_id')
+                ->join('siswa', 'pembayaran_spp.siswa_id', '=', 'siswa.id_siswa')
+                ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id_kelas')
                 ->where('pembayaran_spp.status', 'Lunas')
+                ->whereNotNull('pembayaran_spp.tgl_bayar')
                 ->whereYear('pembayaran_spp.tgl_bayar', $tahun)
                 ->select(
-                    'kelas.nama_kelas',
+                    DB::raw("COALESCE(kelas.nama_kelas, 'Lainnya') as nama_kelas"),
                     DB::raw('COUNT(*) as jumlah_transaksi'),
                     DB::raw('SUM(pembayaran_spp.jumlah_bayar) as total_nominal')
                 )
-                ->groupBy('kelas.nama_kelas')
-                ->orderBy('kelas.nama_kelas')
+                ->groupBy(DB::raw("COALESCE(kelas.nama_kelas, 'Lainnya')"))
+                ->orderBy('nama_kelas')
                 ->get();
 
             // Top 10 Siswa dengan Tunggakan Terbesar
             $tunggakanTerbesar = DB::table('pembayaran_spp')
-                ->join('siswa', 'pembayaran_spp.siswa_id', '=', 'siswa.siswa_id')
+                ->join('siswa', 'pembayaran_spp.siswa_id', '=', 'siswa.id_siswa')
                 ->where('pembayaran_spp.status', 'Belum Lunas')
                 ->select(
-                    'siswa.siswa_id',
+                    'siswa.id_siswa as siswa_id',
                     'siswa.nama_lengkap',
                     'siswa.nis',
                     DB::raw('SUM(pembayaran_spp.jumlah_bayar) as total_tunggakan')
                 )
-                ->groupBy('siswa.siswa_id', 'siswa.nama_lengkap', 'siswa.nis')
+                ->groupBy('siswa.id_siswa', 'siswa.nama_lengkap', 'siswa.nis')
                 ->orderBy('total_tunggakan', 'desc')
                 ->limit(10)
                 ->get();
@@ -359,8 +391,9 @@ class PimpinanController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
+                    'per_bulan' => $perBulan,
+                    'pembayaran_per_bulan' => $perBulan,
                     'rekap_per_status' => $rekapPerStatus,
-                    'pembayaran_per_bulan' => $pembayaranPerBulan,
                     'pembayaran_per_kelas' => $pembayaranPerKelas,
                     'tunggakan_terbesar' => $tunggakanTerbesar,
                 ]
@@ -496,7 +529,7 @@ class PimpinanController extends Controller
                     DB::raw("COUNT(*) as total"),
                     DB::raw("SUM(CASE WHEN detail_absensi.status_kehadiran = 'Hadir' THEN 1 ELSE 0 END) as hadir")
                 )
-                ->groupBy('bulan')
+                ->groupBy(DB::raw("DATE_FORMAT(pertemuan.tanggal_pertemuan, '%Y-%m')"))
                 ->orderBy('bulan')
                 ->get()
                 ->map(function($item) {
@@ -506,7 +539,7 @@ class PimpinanController extends Controller
 
             // Trend Nilai Rata-rata per Semester
             $trendNilai = DB::table('nilai')
-                ->join('tahun_ajaran', 'nilai.tahun_ajaran_id', '=', 'tahun_ajaran.tahun_ajaran_id')
+                ->join('tahun_ajaran', 'nilai.tahun_ajaran_id', '=', 'tahun_ajaran.id_tahun_ajaran')
                 ->where('tahun_ajaran.tahun_mulai', $tahun)
                 ->select(
                     'nilai.semester',
@@ -519,20 +552,20 @@ class PimpinanController extends Controller
             // Trend Pembayaran per Bulan
             $trendPembayaran = DB::table('pembayaran_spp')
                 ->where('status', 'Lunas')
+                ->whereNotNull('tgl_bayar')
                 ->whereYear('tgl_bayar', $tahun)
                 ->select(
                     DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m') as bulan"),
                     DB::raw('SUM(jumlah_bayar) as total_pembayaran')
                 )
-                ->groupBy('bulan')
+                ->groupBy(DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m')"))
                 ->orderBy('bulan')
                 ->get();
 
             // Comparative Analysis - Perbandingan Kelas
             $comparativeKelas = DB::table('nilai')
-                ->join('siswa', 'nilai.siswa_id', '=', 'siswa.siswa_id')
-                ->join('siswa_kelas', 'siswa.siswa_id', '=', 'siswa_kelas.siswa_id')
-                ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.kelas_id')
+                ->join('siswa', 'nilai.siswa_id', '=', 'siswa.id_siswa')
+                ->join('kelas', 'siswa.kelas_id', '=', 'kelas.id_kelas')
                 ->select(
                     'kelas.nama_kelas',
                     DB::raw('AVG(nilai.nilai_akhir) as rata_rata_nilai')

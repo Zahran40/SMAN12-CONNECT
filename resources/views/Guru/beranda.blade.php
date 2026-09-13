@@ -64,20 +64,35 @@
         </div>
         
         @foreach($allDays as $day)
-            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-4 {{ $day != $hariIni ? 'hidden' : '' }}">
+            <div id="jadwal-{{ $day }}" class="day-schedule bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 {{ $day != $hariIni ? 'hidden' : '' }}">
                 @if($jadwalPerHari[$day]->count() > 0)
-                    @foreach($jadwalPerHari[$day] as $jadwal)
-                        <div class="border border-slate-100 rounded-xl p-3 sm:p-4 hover:shadow-md transition-shadow">
-                            <div class="flex items-center text-blue-600 text-xs sm:text-sm font-medium mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1 flex-shrink-0">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
-                                </svg>
-                                {{ substr($jadwal->jam_mulai, 0, 5) }}-{{ substr($jadwal->jam_selesai, 0, 5) }}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($jadwalPerHari[$day] as $jadwal)
+                            <div class="border border-slate-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-md transition-all bg-white flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full">
+                                            Kelas {{ $jadwal->nama_kelas }}
+                                        </span>
+                                        <span class="flex items-center text-xs font-medium text-slate-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 mr-1 text-blue-500">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+                                            </svg>
+                                            {{ substr($jadwal->jam_mulai, 0, 5) }} - {{ substr($jadwal->jam_selesai, 0, 5) }}
+                                        </span>
+                                    </div>
+                                    <h4 class="text-base font-bold text-slate-800 leading-snug line-clamp-2" title="{{ $jadwal->nama_mapel }}">{{ $jadwal->nama_mapel }}</h4>
+                                </div>
+                                <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                                    <span>{{ $jadwal->jumlah_siswa ?? '-' }} Siswa</span>
+                                    <a href="{{ route('guru.detail_materi', $jadwal->id_jadwal) }}" class="text-blue-500 hover:text-blue-700 font-semibold flex items-center">
+                                        Lihat Materi
+                                        <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </a>
+                                </div>
                             </div>
-                            <h4 class="text-base sm:text-lg font-bold text-slate-800">{{ $jadwal->nama_mapel }}</h4>
-                            <p class="text-sm text-slate-500">Kelas {{ $jadwal->nama_kelas }}</p>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 @else
                     <div class="text-center py-8 text-slate-500">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto mb-3 opacity-50">
@@ -114,37 +129,42 @@
 
     <section>
         <h3 class="text-lg sm:text-xl font-bold text-blue-600 mb-4">Mata Pelajaran Saya Hari ini</h3>
-        <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-4">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-4">
             @if($jadwalHariIni->count() > 0)
                 @foreach($jadwalHariIni as $jadwal)
-                    <a href="{{ route('guru.materi', $jadwal->id_jadwal) }}" 
-                       class="border-2 border-blue-300 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-blue-50 transition-colors cursor-pointer block gap-3">
-                        <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
-                            <img src="{{ asset('images/Book (1).png') }}" alt="Ikon Buku" class="w-10 h-10 sm:w-14 sm:h-14 object-contain flex-shrink-0">
+                    <a href="{{ route('guru.detail_materi', $jadwal->id_jadwal) }}" 
+                       class="border-2 border-blue-200 hover:border-blue-400 bg-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-blue-50/50 hover:shadow-md transition-all cursor-pointer block gap-4">
+                        <div class="flex items-center space-x-4 w-full sm:w-auto">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center flex-shrink-0">
+                                <img src="{{ asset('images/Book (1).png') }}" alt="Ikon Buku" class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
+                            </div>
                             
-                            <div>
-                                <h4 class="text-base font-bold text-blue-600">{{ $jadwal->nama_mapel }}</h4>
-                                <p class="text-sm text-slate-500">Kelas {{ $jadwal->nama_kelas }}</p>
-                                <div class="flex items-center text-xs text-slate-400 mt-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
-                                    </svg>
-                                    {{ substr($jadwal->jam_mulai, 0, 5) }} - {{ substr($jadwal->jam_selesai, 0, 5) }}
-                                </div>
-                                <div class="flex items-center text-xs text-slate-400 mt-1">
-                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 mr-1">
-                                        <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.182-.311a3.376 3.376 0 002.246-2.976 60.646 60.646 0 01-9.9-5.86a.75.75 0 010-1.337A60.653 60.653 0 0111.7 2.805z" />
-                                        <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-5.385 2.929.75.75 0 01-.853 0A47.878 47.878 0 008.916 17.2l-.46-.713a.75.75 0 01-.087-.395c.043-1.15.116-2.295.22-3.428l.051-.526.024-.253.038-.396.05-.53c.19-2.048.48-4.076.867-6.076l.003-.015v.001c.464-2.34 1.043-4.64 1.726-6.896.675 2.21 1.25 4.567 1.72 6.915l.002.011.004.02.014.069.063.316.054.275.084.42.107.534c.38 1.886.667 3.825.857 5.823l.004.042.025.255.05.517.054.554.127 1.323.043.444h.002c.015.155.029.31.043.465a.75.75 0 01-.75.82h-.005a.75.75 0 01-.745-.68c-.015-.15-.029-.305-.044-.46v-.002l-.043-.443-.126-1.32-.054-.555-.05-.518-.026-.256-.004-.041a48.836 48.836 0 00-.853-5.787l-.107-.535-.084-.419-.054-.275-.064-.317-.014-.069-.004-.02-.002-.011c-.45-2.275-1.01-4.555-1.668-6.766a60.586 60.586 0 00-1.673 6.748v.002l-.003.015a48.868 48.868 0 00-.863 6.038l-.05.53-.038.397-.024.252-.051.527c-.1 1.11-.172 2.233-.215 3.36l.848 1.314c1.683.586 3.409 1.07 5.166 1.451a.75.75 0 001.114-.605V15.473z" />
-                                    </svg>
-                                    {{ $jadwal->jumlah_siswa }} Siswa
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-base sm:text-lg font-bold text-slate-800 hover:text-blue-600 transition-colors">{{ $jadwal->nama_mapel }}</h4>
+                                <p class="text-sm font-medium text-blue-500">Kelas {{ $jadwal->nama_kelas }}</p>
+                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 mt-1.5">
+                                    <span class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1 text-blue-400">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ substr($jadwal->jam_mulai, 0, 5) }} - {{ substr($jadwal->jam_selesai, 0, 5) }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1 text-blue-400">
+                                            <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                                        </svg>
+                                        {{ $jadwal->jumlah_siswa }} Siswa
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-end sm:justify-start text-blue-400 text-xs sm:text-sm font-medium w-full sm:w-auto">
-                            <span>Pergi</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 sm:w-5 sm:h-5 ml-1 flex-shrink-0">
-                                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                            </svg>
+                        <div class="flex items-center justify-end sm:justify-start w-full sm:w-auto mt-2 sm:mt-0">
+                            <span class="px-4 py-2 bg-blue-50 text-blue-600 font-semibold text-sm rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-1.5">
+                                Kelola Materi
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
                         </div>
                     </a>
                 @endforeach

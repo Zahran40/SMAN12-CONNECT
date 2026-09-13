@@ -16,14 +16,16 @@
     </div>
 
     {{-- Info Siswa --}}
-    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-md p-6 text-white">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
         <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0 border border-blue-100">
+                <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
             </div>
             <div>
-                <h2 class="text-xl font-bold">{{ $siswa->nama_lengkap }}</h2>
-                <p class="text-blue-200 text-sm">{{ $siswa->nis }} &bull; Kelas {{ $siswa->kelas->nama_kelas ?? '-' }}</p>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800">{{ $siswa->nama_lengkap }}</h2>
+                <p class="text-slate-500 text-sm mt-0.5">{{ $siswa->nis }} &bull; Kelas {{ $siswa->kelas->nama_kelas ?? '-' }}</p>
             </div>
         </div>
     </div>

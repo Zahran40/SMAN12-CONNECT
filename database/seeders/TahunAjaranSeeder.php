@@ -31,7 +31,7 @@ class TahunAjaranSeeder extends Seeder
             ]);
             $this->command->info("✅ Tahun Ajaran 2024/2025 Ganjil dibuat → Observer akan create 30 kelas");
         } else {
-            $this->command->info("ℹ️ Tahun Ajaran 2024/2025 Ganjil sudah ada");
+            $this->command->info(" Tahun Ajaran 2024/2025 Ganjil sudah ada");
         }
 
         // 2. Tahun Ajaran 2024/2025 Genap (TIDAK AKTIF - untuk historis)
@@ -49,7 +49,7 @@ class TahunAjaranSeeder extends Seeder
             ]);
             $this->command->info("✅ Tahun Ajaran 2024/2025 Genap dibuat → Observer akan create 30 kelas");
         } else {
-            $this->command->info("ℹ️ Tahun Ajaran 2024/2025 Genap sudah ada");
+            $this->command->info(" Tahun Ajaran 2024/2025 Genap sudah ada");
         }
 
         // 3. Tahun Ajaran 2023/2024 Genap (TIDAK AKTIF - historis)
@@ -67,12 +67,12 @@ class TahunAjaranSeeder extends Seeder
             ]);
             $this->command->info("✅ Tahun Ajaran 2023/2024 Genap dibuat → Observer akan create 30 kelas");
         } else {
-            $this->command->info("ℹ️ Tahun Ajaran 2023/2024 Genap sudah ada");
+            $this->command->info(" Tahun Ajaran 2023/2024 Genap sudah ada");
         }
 
         $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        $this->command->info("📊 Total Tahun Ajaran: " . TahunAjaran::count());
-        $this->command->info("📚 Total Kelas: " . DB::table('kelas')->count());
+        $this->command->info(" Total Tahun Ajaran: " . TahunAjaran::count());
+        $this->command->info(" Total Kelas: " . DB::table('kelas')->count());
         $this->command->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 }

@@ -36,7 +36,7 @@ class RoleBaruSeeder extends Seeder
             $this->command->info('   Password: orangtua1');
             $this->command->info('   Terhubung dengan siswa: ' . $siswaFirst->nama_lengkap);
         } else {
-            $this->command->warn('⚠️  Tidak ada data siswa, akun orangtua dibuat tanpa reference_id');
+            $this->command->warn('  Tidak ada data siswa, akun orangtua dibuat tanpa reference_id');
             User::firstOrCreate(
                 ['email' => 'orangtua@sman12.com'],
                 [
@@ -86,7 +86,7 @@ class RoleBaruSeeder extends Seeder
         
         $this->command->info('');
         $this->command->info('================================================');
-        $this->command->info('🎉 SEEDER ROLE BARU BERHASIL DIJALANKAN!');
+        $this->command->info(' SEEDER ROLE BARU BERHASIL DIJALANKAN!');
         $this->command->info('================================================');
         $this->command->info('Akun yang dibuat:');
         $this->command->info('1. Orang Tua    : orangtua@sman12.com   | Password: orangtua1');

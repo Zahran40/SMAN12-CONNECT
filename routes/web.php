@@ -133,6 +133,16 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('/presensi-mapel-detail', function () {
         return view('Guru.presensiMapelDetail');
     })->name('presensi_mapel_detail');
+
+    // PERIZINAN ONLINE ROUTES (Guru & Wali Kelas)
+    Route::get('/perizinan', [App\Http\Controllers\Guru\PerizinanController::class, 'index'])->name('perizinan');
+    Route::post('/perizinan/{id}/status', [App\Http\Controllers\Guru\PerizinanController::class, 'updateStatus'])->name('perizinan.update_status');
+
+    // LAPORAN PERILAKU SISWA ROUTES (Guru & Wali Kelas)
+    Route::get('/perilaku', [App\Http\Controllers\Guru\PerilakuController::class, 'index'])->name('perilaku');
+    Route::post('/perilaku', [App\Http\Controllers\Guru\PerilakuController::class, 'store'])->name('perilaku.store');
+    Route::post('/perilaku/{id}/status', [App\Http\Controllers\Guru\PerilakuController::class, 'updateStatus'])->name('perilaku.update_status');
+    Route::delete('/perilaku/{id}', [App\Http\Controllers\Guru\PerilakuController::class, 'destroy'])->name('perilaku.destroy');
 });
 
 // ============================================
@@ -260,6 +270,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 // ============================================
 
 Route::prefix('orangtua')->middleware(['auth', 'role:orangtua'])->name('orangtua.')->group(function () {
+    // ---- WEB VIEWS ----
     Route::get('/beranda', [App\Http\Controllers\OrangTuaController::class, 'beranda'])->name('beranda');
     Route::get('/presensi-realtime', [App\Http\Controllers\OrangTuaController::class, 'presensiRealtime'])->name('presensi-realtime');
     Route::get('/monitoring-nilai', [App\Http\Controllers\OrangTuaController::class, 'monitoringNilai'])->name('monitoring-nilai');
@@ -269,6 +280,23 @@ Route::prefix('orangtua')->middleware(['auth', 'role:orangtua'])->name('orangtua
     Route::get('/riwayat-pembayaran-spp', [App\Http\Controllers\OrangTuaController::class, 'riwayatPembayaranSpp'])->name('riwayat-pembayaran-spp');
     Route::get('/perizinan-online', [App\Http\Controllers\OrangTuaController::class, 'perizinanOnline'])->name('perizinan-online');
     Route::get('/notifikasi-pengumuman', [App\Http\Controllers\OrangTuaController::class, 'notifikasiPengumuman'])->name('notifikasi-pengumuman');
+});
+
+// ---- API JSON ENDPOINTS untuk Orang Tua (path: /api/orangtua/...) ----
+// Menggunakan web middleware agar bisa pakai session login biasa
+Route::prefix('api/orangtua')->middleware(['auth', 'role:orangtua'])->name('api.orangtua.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\OrangTuaController::class, 'apiDashboard'])->name('dashboard');
+    Route::get('/presensi', [App\Http\Controllers\OrangTuaController::class, 'apiPresensi'])->name('presensi');
+    Route::get('/nilai', [App\Http\Controllers\OrangTuaController::class, 'apiNilai'])->name('nilai');
+    Route::get('/jadwal', [App\Http\Controllers\OrangTuaController::class, 'apiJadwal'])->name('jadwal');
+    Route::get('/tugas-materi', [App\Http\Controllers\OrangTuaController::class, 'apiTugasMateri'])->name('tugas-materi');
+    Route::get('/pembayaran', [App\Http\Controllers\OrangTuaController::class, 'apiPembayaran'])->name('pembayaran');
+    Route::get('/perilaku', [App\Http\Controllers\OrangTuaController::class, 'apiPerilaku'])->name('perilaku');
+    Route::get('/pengumuman', [App\Http\Controllers\OrangTuaController::class, 'apiPengumuman'])->name('pengumuman');
+    Route::post('/pengumuman/{id}/read', [App\Http\Controllers\OrangTuaController::class, 'apiMarkPengumumanRead'])->name('pengumuman.read');
+    Route::get('/perizinan', [App\Http\Controllers\OrangTuaController::class, 'apiPerizinan'])->name('perizinan');
+    Route::post('/perizinan', [App\Http\Controllers\OrangTuaController::class, 'apiAjukanIzin'])->name('perizinan.ajukan');
+    Route::get('/grafik-perkembangan', [App\Http\Controllers\OrangTuaController::class, 'apiGrafikPerkembangan'])->name('grafik-perkembangan');
 });
 
 // ============================================
@@ -310,5 +338,42 @@ Route::prefix('bendahara')->middleware(['auth', 'role:bendahara'])->name('bendah
     Route::delete('/pembayaran/{id}', [App\Http\Controllers\Bendahara\PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
     Route::get('/pembayaran/rekap/{tahunAjaranId}', [App\Http\Controllers\Bendahara\PembayaranController::class, 'rekapPerTahunAjaran'])->name('pembayaran.rekap');
     Route::get('/pembayaran/cetak-siswa/{tahunAjaranId}/{siswaId}', [App\Http\Controllers\Bendahara\PembayaranController::class, 'cetakPerSiswa'])->name('pembayaran.cetak-siswa');
+});
+
+// ---- API JSON ENDPOINTS untuk Bendahara (path: /api/bendahara/...) ----
+// Menggunakan web middleware agar bisa pakai session login biasa
+Route::prefix('api/bendahara')->middleware(['auth', 'role:bendahara'])->name('api.bendahara.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\BendaharaController::class, 'apiDashboard'])->name('dashboard');
+    Route::get('/tagihan', [App\Http\Controllers\BendaharaController::class, 'apiTagihan'])->name('tagihan');
+    Route::post('/tagihan', [App\Http\Controllers\BendaharaController::class, 'apiCreateTagihan'])->name('tagihan.create');
+    Route::match(['put', 'post'], '/tagihan/{id}/verify', [App\Http\Controllers\BendaharaController::class, 'apiVerifyPembayaran'])->name('tagihan.verify');
+    Route::get('/rekap-pembayaran', [App\Http\Controllers\BendaharaController::class, 'apiRekapPembayaran'])->name('rekap-pembayaran');
+    Route::get('/tunggakan', [App\Http\Controllers\BendaharaController::class, 'apiTunggakan'])->name('tunggakan');
+    Route::post('/send-reminder', [App\Http\Controllers\BendaharaController::class, 'apiSendReminder'])->name('send-reminder');
+    Route::get('/diskon-beasiswa', [App\Http\Controllers\BendaharaController::class, 'apiDiskonBeasiswa'])->name('diskon-beasiswa');
+    Route::post('/diskon-beasiswa', [App\Http\Controllers\BendaharaController::class, 'apiCreateDiskonBeasiswa'])->name('diskon-beasiswa.create');
+    Route::get('/refund', [App\Http\Controllers\BendaharaController::class, 'apiRefund'])->name('refund');
+    Route::match(['put', 'post'], '/refund/{id}/process', [App\Http\Controllers\BendaharaController::class, 'apiProcessRefund'])->name('refund.process');
+    Route::get('/rekonsiliasi', [App\Http\Controllers\BendaharaController::class, 'apiRekonsiliasi'])->name('rekonsiliasi');
+    Route::post('/rekonsiliasi', [App\Http\Controllers\BendaharaController::class, 'apiCreateRekonsiliasi'])->name('rekonsiliasi.create');
+    Route::get('/forecasting', [App\Http\Controllers\BendaharaController::class, 'apiForecasting'])->name('forecasting');
+    Route::get('/revenue-analytics', [App\Http\Controllers\BendaharaController::class, 'apiRevenueAnalytics'])->name('revenue-analytics');
+    Route::post('/generate-qr', [App\Http\Controllers\BendaharaController::class, 'apiGenerateQR'])->name('generate-qr');
+});
+
+// ---- API JSON ENDPOINTS untuk Pimpinan / Kepala Sekolah (path: /api/pimpinan/...) ----
+// Menggunakan web middleware agar bisa pakai session login biasa
+Route::prefix('api/pimpinan')->middleware(['auth', 'role:pimpinan,kepala_sekolah,kepsek'])->name('api.pimpinan.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\PimpinanController::class, 'apiDashboard'])->name('dashboard');
+    Route::get('/laporan-akademik', [App\Http\Controllers\PimpinanController::class, 'apiLaporanAkademik'])->name('laporan-akademik');
+    Route::get('/monitoring-presensi', [App\Http\Controllers\PimpinanController::class, 'apiMonitoringPresensi'])->name('monitoring-presensi');
+    Route::get('/laporan-keuangan', [App\Http\Controllers\PimpinanController::class, 'apiLaporanKeuangan'])->name('laporan-keuangan');
+    Route::get('/evaluasi-guru', [App\Http\Controllers\PimpinanController::class, 'apiEvaluasiGuru'])->name('evaluasi-guru');
+    Route::get('/pengumuman', [App\Http\Controllers\PimpinanController::class, 'apiPengumuman'])->name('pengumuman');
+    Route::put('/pengumuman/{id}/approve', [App\Http\Controllers\PimpinanController::class, 'apiApprovePengumuman'])->name('pengumuman.approve');
+    Route::get('/analisis-trending', [App\Http\Controllers\PimpinanController::class, 'apiAnalisisTrending'])->name('analisis-trending');
+    Route::get('/target-sekolah', [App\Http\Controllers\PimpinanController::class, 'apiTargetSekolah'])->name('target-sekolah');
+    Route::get('/export-reports', [App\Http\Controllers\PimpinanController::class, 'apiExportReports'])->name('export-reports');
+    Route::post('/dokumen/{id}/approve', [App\Http\Controllers\PimpinanController::class, 'apiApproveDokumen'])->name('dokumen.approve');
 });
 

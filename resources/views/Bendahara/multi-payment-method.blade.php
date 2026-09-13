@@ -110,6 +110,22 @@ function loadDashboard() {
             }).join('');
         }
 
+        const formatRupiahShort = v => {
+            if (v >= 1000000000) return 'Rp ' + (v / 1000000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'M';
+            if (v >= 1000000) return 'Rp ' + (v / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'jt';
+            if (v >= 1000) return 'Rp ' + (v / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 }) + 'rb';
+            return 'Rp ' + Number(v).toLocaleString('id-ID');
+        };
+        const monthNamesShort = {
+            '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'Mei', '06': 'Jun',
+            '07': 'Jul', '08': 'Agu', '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Des'
+        };
+        const formatBulanLabel = ym => {
+            if (!ym) return '';
+            const parts = ym.split('-');
+            return parts.length === 2 ? (monthNamesShort[parts[1]] || parts[1]) + ' ' + parts[0].substring(2) : ym;
+        };
+
         // Doughnut chart
         if (metode.length > 0) {
             new Chart(document.getElementById('chartMetode').getContext('2d'), {
@@ -118,7 +134,18 @@ function loadDashboard() {
                     labels: metode.map(m => m.metode_pembayaran || 'Lainnya'),
                     datasets: [{ data: metode.map(m => m.total), backgroundColor: metode.map(m => colors[m.metode_pembayaran] || '#6b7280'), borderWidth: 2, borderColor: '#fff' }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ' ' + ctx.label + ': Rp ' + Number(ctx.raw || 0).toLocaleString('id-ID')
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -128,10 +155,22 @@ function loadDashboard() {
             new Chart(document.getElementById('chartTrend').getContext('2d'), {
                 type: 'line',
                 data: {
-                    labels: grafik.map(g => g.bulan),
-                    datasets: [{ label: 'Pemasukan', data: grafik.map(g => g.total), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 }]
+                    labels: grafik.map(g => formatBulanLabel(g.bulan)),
+                    datasets: [{ label: 'Pemasukan', data: grafik.map(g => g.total), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.3, pointRadius: 4, pointHoverRadius: 6 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'jt' } } }, plugins: { legend: { display: false } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { callback: formatRupiahShort } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ' Pemasukan: Rp ' + Number(ctx.parsed.y).toLocaleString('id-ID')
+                            }
+                        }
+                    }
+                }
             });
         }
     }).catch(() => {

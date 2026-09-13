@@ -84,13 +84,13 @@
                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                 <span class="text-sm font-medium text-slate-700 text-center">Tagihan SPP</span>
             </a>
-            <a href="{{ route('bendahara.verifikasi-pembayaran') }}" class="flex flex-col items-center gap-2 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span class="text-sm font-medium text-slate-700 text-center">Verifikasi</span>
+            <a href="{{ route('bendahara.pembayaran.index') }}" class="flex flex-col items-center gap-2 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span class="text-sm font-medium text-slate-700 text-center">Pembayaran</span>
             </a>
-            <a href="{{ route('bendahara.tunggakan-reminder') }}" class="flex flex-col items-center gap-2 p-4 bg-red-50 rounded-lg hover:bg-red-100 transition">
-                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                <span class="text-sm font-medium text-slate-700 text-center">Tunggakan</span>
+            <a href="{{ route('bendahara.rekonsiliasi-bank') }}" class="flex flex-col items-center gap-2 p-4 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition">
+                <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg>
+                <span class="text-sm font-medium text-slate-700 text-center">Rekonsiliasi</span>
             </a>
             <a href="{{ route('bendahara.rekap-pembayaran') }}" class="flex flex-col items-center gap-2 p-4 bg-amber-50 rounded-lg hover:bg-amber-100 transition">
                 <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -106,8 +106,8 @@
             <p class="text-xl font-bold text-blue-600 mt-1" id="diskonAktif">-</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-            <p class="text-xs font-semibold text-slate-400 uppercase">Refund Pending</p>
-            <p class="text-xl font-bold text-amber-600 mt-1" id="refundPending">-</p>
+            <p class="text-xs font-semibold text-slate-400 uppercase">Siswa Menunggak</p>
+            <p class="text-xl font-bold text-amber-600 mt-1" id="siswaMenunggak">-</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
             <p class="text-xs font-semibold text-slate-400 uppercase">Rekonsiliasi Pending</p>
@@ -131,9 +131,31 @@ document.addEventListener('DOMContentLoaded', function() {
         // Pending tasks
         if (d.pending_tasks) {
             document.getElementById('diskonAktif').textContent = d.pending_tasks.diskon_aktif || 0;
-            document.getElementById('refundPending').textContent = d.pending_tasks.refund_pending || 0;
             document.getElementById('rekonPending').textContent = d.pending_tasks.rekonsiliasi_pending || 0;
         }
+        if (d.tunggakan) {
+            document.getElementById('siswaMenunggak').textContent = (d.tunggakan.jumlah_siswa || 0) + ' Siswa';
+        }
+
+        // Helpers
+        const monthNamesShort = {
+            '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'Mei', '06': 'Jun',
+            '07': 'Jul', '08': 'Agu', '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Des'
+        };
+        const formatBulanLabel = function(ym) {
+            if (!ym) return '';
+            const parts = ym.split('-');
+            if (parts.length === 2) {
+                return (monthNamesShort[parts[1]] || parts[1]) + ' ' + parts[0].substring(2);
+            }
+            return ym;
+        };
+        const formatRupiahShort = function(v) {
+            if (v >= 1000000000) return 'Rp ' + (v / 1000000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'M';
+            if (v >= 1000000) return 'Rp ' + (v / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'jt';
+            if (v >= 1000) return 'Rp ' + (v / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 }) + 'rb';
+            return 'Rp ' + Number(v).toLocaleString('id-ID');
+        };
 
         // Chart Pemasukan
         const grafik = d.grafik_pemasukan || [];
@@ -141,23 +163,40 @@ document.addEventListener('DOMContentLoaded', function() {
             new Chart(document.getElementById('chartPemasukan').getContext('2d'), {
                 type: 'line',
                 data: {
-                    labels: grafik.map(g => g.bulan),
+                    labels: grafik.map(g => formatBulanLabel(g.bulan)),
                     datasets: [{
                         label: 'Pemasukan',
                         data: grafik.map(g => g.total),
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16,185,129,0.1)',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0.3,
                         pointRadius: 4,
+                        pointHoverRadius: 6,
                         pointBackgroundColor: '#10b981'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, ticks: { callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'jt' } } },
-                    plugins: { legend: { display: false } }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: formatRupiahShort
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' Pemasukan: Rp ' + Number(context.parsed.y).toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
@@ -179,7 +218,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw || 0;
+                                    return ' ' + context.label + ': Rp ' + Number(val).toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
