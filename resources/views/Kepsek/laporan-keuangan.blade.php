@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPemasukanBulanan();
 });
 
+let chartPemasukanInstance = null;
+
 function loadPemasukanBulanan() {
     fetch('/api/pimpinan/laporan-keuangan', {
         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
@@ -131,12 +133,16 @@ function loadPemasukanBulanan() {
     })
     .then(r => r.json())
     .then(data => {
-        const items = data.data?.per_bulan || data.per_bulan || [];
+        const items = data.data?.per_bulan || data.data?.pembayaran_per_bulan || data.per_bulan || [];
         const namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-        const labels = items.map(i => namaBulan[(i.bulan || 1) - 1] || i.bulan);
-        const values = items.map(i => i.total || i.pemasukan || 0);
+        const labels = items.map(i => {
+            const m = parseInt(i.bulan, 10);
+            return (m >= 1 && m <= 12) ? namaBulan[m - 1] : (i.nama_bulan || i.bulan);
+        });
+        const values = items.map(i => Number(i.total ?? i.total_nominal ?? i.pemasukan ?? 0));
 
-        new Chart(document.getElementById('chartPemasukanBulanan').getContext('2d'), {
+        if (chartPemasukanInstance) chartPemasukanInstance.destroy();
+        chartPemasukanInstance = new Chart(document.getElementById('chartPemasukanBulanan').getContext('2d'), {
             type: 'line',
             data: {
                 labels: labels,
@@ -146,8 +152,9 @@ function loadPemasukanBulanan() {
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99,102,241,0.1)',
                     fill: true,
-                    tension: 0.4,
+                    tension: 0.3,
                     pointRadius: 4,
+                    pointHoverRadius: 6,
                     pointBackgroundColor: '#6366f1'
                 }]
             },
@@ -157,10 +164,26 @@ function loadPemasukanBulanan() {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { callback: v => 'Rp ' + (v / 1000000).toFixed(0) + 'jt' }
+                        ticks: {
+                            callback: function(v) {
+                                if (v >= 1000000000) return 'Rp ' + (v / 1000000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'M';
+                                if (v >= 1000000) return 'Rp ' + (v / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'jt';
+                                if (v >= 1000) return 'Rp ' + (v / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 }) + 'rb';
+                                return 'Rp ' + Number(v).toLocaleString('id-ID');
+                            }
+                        }
                     }
                 },
-                plugins: { legend: { display: false } }
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' Pemasukan: Rp ' + Number(context.parsed.y).toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -169,11 +192,17 @@ function loadPemasukanBulanan() {
             tbody.innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-slate-400">Belum ada data</td></tr>';
             return;
         }
-        tbody.innerHTML = items.map(i => `<tr class="border-t border-slate-100 hover:bg-slate-50">
-            <td class="px-6 py-3 font-medium">${namaBulan[(i.bulan || 1) - 1] || i.bulan} ${i.tahun || ''}</td>
-            <td class="px-6 py-3 text-right font-semibold text-emerald-600">Rp ${(i.total || i.pemasukan || 0).toLocaleString('id-ID')}</td>
-            <td class="px-6 py-3 text-center">${i.jumlah_transaksi || i.count || '-'}</td>
-        </tr>`).join('');
+        tbody.innerHTML = items.map(i => {
+            const m = parseInt(i.bulan, 10);
+            const labelBulan = (m >= 1 && m <= 12) ? namaBulan[m - 1] : (i.nama_bulan || i.bulan);
+            const nominal = Number(i.total ?? i.total_nominal ?? i.pemasukan ?? 0);
+            const count = i.jumlah_transaksi ?? i.count ?? 0;
+            return `<tr class="border-t border-slate-100 hover:bg-slate-50">
+                <td class="px-6 py-3 font-medium">${i.nama_bulan || labelBulan} ${i.tahun || ''}</td>
+                <td class="px-6 py-3 text-right font-semibold text-emerald-600">Rp ${nominal.toLocaleString('id-ID')}</td>
+                <td class="px-6 py-3 text-center">${count}</td>
+            </tr>`;
+        }).join('');
     })
     .catch(() => {
         document.getElementById('tabelPemasukan').innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Gagal memuat data</td></tr>';

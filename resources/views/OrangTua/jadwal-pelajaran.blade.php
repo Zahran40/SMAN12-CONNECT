@@ -10,11 +10,11 @@
     </div>
 
     {{-- Hari Ini --}}
-    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-md p-6 text-white">
+    <div class="bg-white from-white to-white rounded-xl shadow-md p-6 text-black">
         <h3 class="font-semibold text-lg mb-1">Jadwal Hari Ini</h3>
-        <p class="text-blue-200 text-sm">{{ now()->translatedFormat('l, d F Y') }}</p>
+        <p class="text-black text-sm">{{ now()->translatedFormat('l, d F Y') }}</p>
         <div id="jadwalHariIni" class="mt-4 space-y-2">
-            <div class="animate-pulse text-blue-200">Memuat jadwal...</div>
+            <div class="animate-pulse text-black">Memuat jadwal...</div>
         </div>
     </div>
 

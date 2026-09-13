@@ -27,6 +27,28 @@ class BendaharaController extends Controller
         $this->midtransService = $midtransService;
     }
 
+    protected $monthMap = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ];
+
+    protected function parseMonthToNumber($month)
+    {
+        if (is_numeric($month)) {
+            $m = (int) $month;
+            return ($m >= 1 && $m <= 12) ? $m : (int) date('n');
+        }
+        $reversed = array_change_key_case(array_flip($this->monthMap), CASE_LOWER);
+        $key = strtolower(trim((string) $month));
+        return $reversed[$key] ?? (int) date('n');
+    }
+
+    protected function getMonthName($monthNum)
+    {
+        return $this->monthMap[(int) $monthNum] ?? (string) $monthNum;
+    }
+
     // ==================== WEB ROUTES ====================
     public function beranda()
     {
@@ -104,18 +126,18 @@ class BendaharaController extends Controller
             $bulan = date('m');
 
             // Total Pemasukan Tahun Ini
-            $totalPemasukanTahunIni = PembayaranSpp::where('status', 'Lunas')
+            $totalPemasukanTahunIni = (float) PembayaranSpp::where('status', 'Lunas')
                 ->whereYear('tgl_bayar', $tahun)
                 ->sum('jumlah_bayar');
 
             // Total Pemasukan Bulan Ini
-            $totalPemasukanBulanIni = PembayaranSpp::where('status', 'Lunas')
+            $totalPemasukanBulanIni = (float) PembayaranSpp::where('status', 'Lunas')
                 ->whereYear('tgl_bayar', $tahun)
                 ->whereMonth('tgl_bayar', $bulan)
                 ->sum('jumlah_bayar');
 
             // Total Tunggakan
-            $totalTunggakan = PembayaranSpp::where('status', 'Belum Lunas')
+            $totalTunggakan = (float) PembayaranSpp::where('status', 'Belum Lunas')
                 ->sum('jumlah_bayar');
 
             // Jumlah Siswa Menunggak
@@ -133,24 +155,40 @@ class BendaharaController extends Controller
                 ->whereYear('tgl_bayar', $tahun)
                 ->select('metode_pembayaran', DB::raw('COUNT(*) as jumlah'), DB::raw('SUM(jumlah_bayar) as total'))
                 ->groupBy('metode_pembayaran')
-                ->get();
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'metode_pembayaran' => $item->metode_pembayaran ?: 'Lainnya',
+                        'jumlah' => (int) $item->jumlah,
+                        'total' => (float) $item->total,
+                    ];
+                });
 
-            // Grafik Pemasukan per Bulan (12 bulan terakhir)
-            $grafikPemasukan = PembayaranSpp::where('status', 'Lunas')
-                ->where('tgl_bayar', '>=', now()->subMonths(12))
+            // Grafik Pemasukan per Bulan (12 bulan terakhir lengkap)
+            $startPeriod = now()->subMonths(11)->startOfMonth();
+            $pemasukanRaw = DB::table('pembayaran_spp')
+                ->where('status', 'Lunas')
+                ->whereNotNull('tgl_bayar')
+                ->where('tgl_bayar', '>=', $startPeriod)
                 ->select(
                     DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m') as bulan"),
                     DB::raw('SUM(jumlah_bayar) as total')
                 )
-                ->groupBy('bulan')
-                ->orderBy('bulan')
-                ->get();
+                ->groupBy(DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m')"))
+                ->pluck('total', 'bulan')
+                ->all();
+
+            $grafikPemasukan = [];
+            for ($i = 11; $i >= 0; $i--) {
+                $m = now()->subMonths($i)->format('Y-m');
+                $grafikPemasukan[] = [
+                    'bulan' => $m,
+                    'total' => (float) ($pemasukanRaw[$m] ?? 0),
+                ];
+            }
 
             // Diskon/Beasiswa Aktif
-            $diskonAktif = DiskonBeasiswa::where('status', 'Aktif')
-                ->where('tanggal_mulai', '<=', now())
-                ->where('tanggal_selesai', '>=', now())
-                ->count();
+            $diskonAktif = DiskonBeasiswa::where('status', 'Aktif')->count();
 
             // Refund Pending
             $refundPending = RefundPembayaran::where('status', 'Pending')->count();
@@ -177,7 +215,9 @@ class BendaharaController extends Controller
                 ]
             ];
 
-            LogHelper::log('view', 'Dashboard Bendahara diakses', 'dashboard', null, Auth::id());
+            if (class_exists(LogHelper::class)) {
+                LogHelper::log('view', 'Dashboard Bendahara diakses', 'dashboard', null, Auth::id());
+            }
 
             return response()->json([
                 'success' => true,
@@ -222,7 +262,15 @@ class BendaharaController extends Controller
                 });
             }
 
-            $tagihan = $query->orderBy('created_at', 'desc')->paginate(50);
+            $tagihan = $query->orderBy('id_pembayaran', 'desc')->paginate(50);
+
+            $tagihan->getCollection()->transform(function($t) {
+                $bulanName = $this->getMonthName($t->bulan);
+                $t->nama_bulan = $bulanName;
+                $t->tanggal_jatuh_tempo = '10 ' . $bulanName . ' ' . ($t->tahun ?? date('Y'));
+                $t->bulan = $bulanName; // For clean display in views
+                return $t;
+            });
 
             return response()->json([
                 'success' => true,
@@ -247,29 +295,50 @@ class BendaharaController extends Controller
             $validator = Validator::make($request->all(), [
                 'siswa_id' => 'required|exists:siswa,id_siswa',
                 'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
-                'bulan' => 'required|string',
+                'bulan' => 'required',
                 'jumlah_bayar' => 'required|numeric|min:0',
-                'tanggal_jatuh_tempo' => 'required|date',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validasi gagal: ' . implode(', ', $validator->errors()->all()),
                     'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $bulanNum = $this->parseMonthToNumber($request->bulan);
+            $bulanName = $this->getMonthName($bulanNum);
+            $tahun = (int) ($request->input('tahun') ?: date('Y'));
+
+            $existing = PembayaranSpp::where('siswa_id', $request->siswa_id)
+                ->where('tahun_ajaran_id', $request->tahun_ajaran_id)
+                ->where('bulan', $bulanNum)
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Tagihan untuk siswa ini pada bulan {$bulanName} sudah ada.",
                 ], 422);
             }
 
             $tagihan = PembayaranSpp::create([
                 'siswa_id' => $request->siswa_id,
                 'tahun_ajaran_id' => $request->tahun_ajaran_id,
-                'bulan' => $request->bulan,
+                'nama_tagihan' => 'SPP ' . $bulanName,
+                'bulan' => $bulanNum,
+                'tahun' => $tahun,
                 'jumlah_bayar' => $request->jumlah_bayar,
-                'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
                 'status' => 'Belum Lunas',
             ]);
 
-            LogHelper::log('create', 'Tagihan SPP baru dibuat', 'pembayaran_spp', $tagihan->id_pembayaran, Auth::id());
+            $tagihan->bulan = $bulanName;
+            $tagihan->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo', '10 ' . $bulanName . ' ' . $tahun);
+
+            if (class_exists(LogHelper::class)) {
+                LogHelper::log('create', 'Tagihan SPP baru dibuat', 'pembayaran_spp', $tagihan->id_pembayaran, Auth::id());
+            }
 
             return response()->json([
                 'success' => true,
@@ -303,28 +372,46 @@ class BendaharaController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'status' => 'required|in:Lunas,Belum Lunas',
-                'tgl_bayar' => 'required_if:status,Lunas|date',
-                'metode_pembayaran' => 'required_if:status,Lunas|string',
+                'tgl_bayar' => 'nullable|date',
+                'metode_pembayaran' => 'nullable|string',
                 'bukti_transfer' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validasi gagal: ' . implode(', ', $validator->errors()->all()),
                     'errors' => $validator->errors()
                 ], 422);
             }
 
             $pembayaran->status = $request->status;
             if ($request->status === 'Lunas') {
-                $pembayaran->tgl_bayar = $request->tgl_bayar;
-                $pembayaran->metode_pembayaran = $request->metode_pembayaran;
-                $pembayaran->bukti_pembayaran = $request->bukti_transfer;
+                $pembayaran->tgl_bayar = $request->input('tgl_bayar') ?: now()->format('Y-m-d');
+                $rawMetode = $request->input('metode_pembayaran') ?: 'Tunai';
+                $metodeMap = [
+                    'cash' => 'Tunai',
+                    'tunai' => 'Tunai',
+                    'transfer bank' => 'Transfer',
+                    'transfer' => 'Transfer',
+                    'kartu' => 'Kartu',
+                    'qris' => 'E-Wallet',
+                    'e-wallet' => 'E-Wallet'
+                ];
+                $cleanMetode = strtolower(trim($rawMetode));
+                $pembayaran->metode_pembayaran = $metodeMap[$cleanMetode] ?? 'Tunai';
+
+                if ($request->filled('bukti_transfer')) {
+                    $pembayaran->bukti_pembayaran = $request->bukti_transfer;
+                }
+            } else {
+                $pembayaran->tgl_bayar = null;
             }
             $pembayaran->save();
 
-            LogHelper::log('update', 'Pembayaran diverifikasi', 'pembayaran_spp', $id, Auth::id());
+            if (class_exists(LogHelper::class)) {
+                LogHelper::log('update', 'Pembayaran diverifikasi', 'pembayaran_spp', $id, Auth::id());
+            }
 
             return response()->json([
                 'success' => true,
@@ -353,6 +440,7 @@ class BendaharaController extends Controller
             $tanggal = $request->input('tanggal', date('Y-m-d'));
 
             $data = [];
+            $summary = [];
 
             if ($tipeRekap === 'harian') {
                 $data = PembayaranSpp::where('status', 'Lunas')
@@ -362,7 +450,7 @@ class BendaharaController extends Controller
 
                 $summary = [
                     'total_transaksi' => $data->count(),
-                    'total_nominal' => $data->sum('jumlah_bayar'),
+                    'total_nominal' => (float) $data->sum('jumlah_bayar'),
                 ];
             } elseif ($tipeRekap === 'bulanan') {
                 $data = PembayaranSpp::where('status', 'Lunas')
@@ -373,29 +461,30 @@ class BendaharaController extends Controller
 
                 $summary = [
                     'total_transaksi' => $data->count(),
-                    'total_nominal' => $data->sum('jumlah_bayar'),
+                    'total_nominal' => (float) $data->sum('jumlah_bayar'),
                     'per_metode' => $data->groupBy('metode_pembayaran')->map(function($items) {
                         return [
                             'jumlah' => $items->count(),
-                            'total' => $items->sum('jumlah_bayar')
+                            'total' => (float) $items->sum('jumlah_bayar')
                         ];
                     })
                 ];
             } elseif ($tipeRekap === 'tahunan') {
-                $data = PembayaranSpp::where('status', 'Lunas')
+                $data = DB::table('pembayaran_spp')
+                    ->where('status', 'Lunas')
                     ->whereYear('tgl_bayar', $tahun)
                     ->select(
                         DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m') as bulan"),
                         DB::raw('COUNT(*) as jumlah_transaksi'),
                         DB::raw('SUM(jumlah_bayar) as total_nominal')
                     )
-                    ->groupBy('bulan')
+                    ->groupBy(DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m')"))
                     ->orderBy('bulan')
                     ->get();
 
                 $summary = [
                     'total_transaksi' => $data->sum('jumlah_transaksi'),
-                    'total_nominal' => $data->sum('total_nominal'),
+                    'total_nominal' => (float) $data->sum('total_nominal'),
                 ];
             }
 
@@ -431,18 +520,19 @@ class BendaharaController extends Controller
                 });
             }
 
-            $tunggakan = $query->orderBy('created_at', 'desc')->get();
+            $tunggakan = $query->orderBy('id_pembayaran', 'desc')->get();
 
             // Group by siswa
             $tunggakanPerSiswa = $tunggakan->groupBy('siswa_id')->map(function($items) {
-                $siswa = $items->first()->siswa;
+                $first = $items->first();
+                $siswa = $first ? $first->siswa : null;
                 return [
-                    'siswa_id' => $siswa->siswa_id,
-                    'nama_siswa' => $siswa->nama_lengkap,
-                    'nis' => $siswa->nis,
-                    'kelas' => $siswa->kelas ? $siswa->kelas->nama_kelas : null,
+                    'siswa_id' => $siswa ? $siswa->id_siswa : $first->siswa_id,
+                    'nama_siswa' => $siswa ? $siswa->nama_lengkap : ('Siswa #' . $first->siswa_id),
+                    'nis' => $siswa ? $siswa->nis : '-',
+                    'kelas' => ($siswa && $siswa->kelas) ? $siswa->kelas->nama_kelas : '-',
                     'jumlah_bulan_tunggak' => $items->count(),
-                    'total_tunggakan' => $items->sum('jumlah_bayar'),
+                    'total_tunggakan' => (float) $items->sum('jumlah_bayar'),
                     'detail_tunggakan' => $items
                 ];
             })->values();
@@ -470,21 +560,20 @@ class BendaharaController extends Controller
             $validator = Validator::make($request->all(), [
                 'siswa_ids' => 'required|array',
                 'siswa_ids.*' => 'exists:siswa,id_siswa',
-                'jenis_reminder' => 'required|in:Tagihan,Peringatan,Teguran',
-                'channel' => 'required|in:WhatsApp,Email,SMS',
+                'jenis_reminder' => 'nullable|string',
+                'channel' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validasi gagal: ' . implode(', ', $validator->errors()->all()),
                     'errors' => $validator->errors()
                 ], 422);
             }
 
             $siswaIds = $request->siswa_ids;
-            $jenisReminder = $request->jenis_reminder;
-            $channel = $request->channel;
+            $channel = in_array($request->channel, ['WhatsApp', 'Email', 'SMS', 'Notifikasi App']) ? $request->channel : 'WhatsApp';
 
             $sent = 0;
 
@@ -495,6 +584,8 @@ class BendaharaController extends Controller
 
                 if ($tunggakan->count() > 0) {
                     $totalTunggakan = $tunggakan->sum('jumlah_bayar');
+                    $siswa = Siswa::find($siswaId);
+                    $tujuan = $siswa ? ($siswa->no_telepon ?: ($siswa->email ?: '081234567890')) : '081234567890';
                     
                     $pesan = "Yth. Orang Tua/Wali Siswa,\n\n";
                     $pesan .= "Terdapat tunggakan pembayaran SPP sejumlah Rp " . number_format($totalTunggakan, 0, ',', '.') . "\n";
@@ -507,10 +598,11 @@ class BendaharaController extends Controller
                             'siswa_id' => $siswaId,
                             'pembayaran_id' => $tagihan->id_pembayaran,
                             'metode' => $channel,
-                            'tujuan' => $siswaId,
+                            'tujuan' => $tujuan,
                             'waktu_kirim' => now(),
                             'status' => 'Terkirim',
                             'pesan' => $pesan,
+                            'is_auto' => false,
                             'dikirim_oleh' => Auth::id(),
                         ]);
                     }
@@ -519,7 +611,9 @@ class BendaharaController extends Controller
                 }
             }
 
-            LogHelper::log('create', "Reminder terkirim ke {$sent} siswa", 'payment_reminder', null, Auth::id());
+            if (class_exists(LogHelper::class)) {
+                LogHelper::log('create', "Reminder terkirim ke {$sent} siswa", 'payment_reminder', null, Auth::id());
+            }
 
             return response()->json([
                 'success' => true,
@@ -555,7 +649,7 @@ class BendaharaController extends Controller
                 $query->where('jenis', $jenis);
             }
 
-            $diskon = $query->orderBy('created_at', 'desc')->get();
+            $diskon = $query->orderBy('id_diskon', 'desc')->get();
 
             return response()->json([
                 'success' => true,
@@ -590,7 +684,7 @@ class BendaharaController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validasi gagal: ' . implode(', ', $validator->errors()->all()),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -603,16 +697,18 @@ class BendaharaController extends Controller
                 'tanggal_mulai' => $request->tanggal_mulai,
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'status' => 'Aktif',
-                'deskripsi' => $request->catatan,
+                'deskripsi' => $request->input('catatan') ?: $request->input('deskripsi'),
                 'dibuat_oleh' => Auth::id(),
             ]);
 
             // Attach siswa via pivot if provided
             if ($request->has('siswa_id')) {
-                $diskon->siswa()->attach($request->siswa_id);
+                $diskon->siswa()->sync((array)$request->siswa_id);
             }
 
-            LogHelper::log('create', 'Diskon/Beasiswa baru dibuat', 'diskon_beasiswa', $diskon->id_diskon, Auth::id());
+            if (class_exists(LogHelper::class)) {
+                LogHelper::log('create', 'Diskon/Beasiswa baru dibuat', 'diskon_beasiswa', $diskon->id_diskon, Auth::id());
+            }
 
             return response()->json([
                 'success' => true,
@@ -643,7 +739,7 @@ class BendaharaController extends Controller
                 $query->where('status', $status);
             }
 
-            $refund = $query->orderBy('tanggal_pengajuan', 'desc')->get();
+            $refund = $query->orderBy('id_refund', 'desc')->get();
 
             return response()->json([
                 'success' => true,
@@ -682,7 +778,7 @@ class BendaharaController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validasi gagal: ' . implode(', ', $validator->errors()->all()),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -693,7 +789,9 @@ class BendaharaController extends Controller
             $refund->catatan_bendahara = $request->catatan;
             $refund->save();
 
-            LogHelper::log('update', 'Refund diproses', 'refund_pembayaran', $id, Auth::id());
+            if (class_exists(LogHelper::class)) {
+                LogHelper::log('update', 'Refund diproses', 'refund_pembayaran', $id, Auth::id());
+            }
 
             return response()->json([
                 'success' => true,
@@ -724,7 +822,7 @@ class BendaharaController extends Controller
                 $query->where('status', $status);
             }
 
-            $rekonsiliasi = $query->orderBy('tanggal_rekonsiliasi', 'desc')->get();
+            $rekonsiliasi = $query->orderBy('id_rekonsiliasi', 'desc')->get();
 
             return response()->json([
                 'success' => true,
@@ -758,7 +856,7 @@ class BendaharaController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validasi gagal: ' . implode(', ', $validator->errors()->all()),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -789,7 +887,9 @@ class BendaharaController extends Controller
                 'dibuat_oleh' => Auth::id(),
             ]);
 
-            LogHelper::log('create', 'Rekonsiliasi bank baru dibuat', 'rekonsiliasi_bank', $rekonsiliasi->id_rekonsiliasi, Auth::id());
+            if (class_exists(LogHelper::class)) {
+                LogHelper::log('create', 'Rekonsiliasi bank baru dibuat', 'rekonsiliasi_bank', $rekonsiliasi->id_rekonsiliasi, Auth::id());
+            }
 
             return response()->json([
                 'success' => true,
@@ -812,18 +912,19 @@ class BendaharaController extends Controller
     public function apiForecasting(Request $request)
     {
         try {
-            $bulan = $request->input('bulan', 6);
+            $bulan = (int) $request->input('bulan', 6);
 
-            $rataRataPerBulan = PembayaranSpp::where('status', 'Lunas')
+            $rataRataPerBulan = DB::table('pembayaran_spp')
+                ->where('status', 'Lunas')
                 ->where('tgl_bayar', '>=', now()->subMonths(6))
                 ->select(
                     DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m') as bulan"),
                     DB::raw('SUM(jumlah_bayar) as total')
                 )
-                ->groupBy('bulan')
+                ->groupBy(DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m')"))
                 ->orderBy('bulan')
                 ->get()
-                ->avg('total');
+                ->avg('total') ?? 0;
 
             $proyeksi = [];
             for ($i = 1; $i <= $bulan; $i++) {
@@ -833,7 +934,7 @@ class BendaharaController extends Controller
                 ];
             }
 
-            $tunggakanAktif = PembayaranSpp::where('status', 'Belum Lunas')->sum('jumlah_bayar');
+            $tunggakanAktif = (float) PembayaranSpp::where('status', 'Belum Lunas')->sum('jumlah_bayar');
 
             $data = [
                 'rata_rata_per_bulan' => round($rataRataPerBulan, 2),
@@ -868,27 +969,43 @@ class BendaharaController extends Controller
                 ->whereYear('tgl_bayar', $tahun)
                 ->select('metode_pembayaran', DB::raw('SUM(jumlah_bayar) as total'))
                 ->groupBy('metode_pembayaran')
-                ->get();
+                ->get()
+                ->map(function($m) {
+                    return [
+                        'metode_pembayaran' => $m->metode_pembayaran ?: 'Lainnya',
+                        'total' => (float) $m->total
+                    ];
+                });
 
             $perKelas = DB::table('pembayaran_spp')
-                ->join('siswa', 'pembayaran_spp.siswa_id', '=', 'siswa.siswa_id')
-                ->join('siswa_kelas', 'siswa.siswa_id', '=', 'siswa_kelas.siswa_id')
-                ->join('kelas', 'siswa_kelas.kelas_id', '=', 'kelas.kelas_id')
+                ->join('siswa', 'pembayaran_spp.siswa_id', '=', 'siswa.id_siswa')
+                ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id_kelas')
                 ->where('pembayaran_spp.status', 'Lunas')
                 ->whereYear('pembayaran_spp.tgl_bayar', $tahun)
-                ->select('kelas.nama_kelas', DB::raw('SUM(pembayaran_spp.jumlah_bayar) as total'))
-                ->groupBy('kelas.nama_kelas')
+                ->select(DB::raw("COALESCE(kelas.nama_kelas, 'Lainnya') as nama_kelas"), DB::raw('SUM(pembayaran_spp.jumlah_bayar) as total'))
+                ->groupBy(DB::raw("COALESCE(kelas.nama_kelas, 'Lainnya')"))
                 ->get();
 
-            $trendBulanan = PembayaranSpp::where('status', 'Lunas')
+            $trendRaw = DB::table('pembayaran_spp')
+                ->where('status', 'Lunas')
+                ->whereNotNull('tgl_bayar')
                 ->whereYear('tgl_bayar', $tahun)
                 ->select(
                     DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m') as bulan"),
                     DB::raw('SUM(jumlah_bayar) as total')
                 )
-                ->groupBy('bulan')
-                ->orderBy('bulan')
-                ->get();
+                ->groupBy(DB::raw("DATE_FORMAT(tgl_bayar, '%Y-%m')"))
+                ->pluck('total', 'bulan')
+                ->all();
+
+            $trendBulanan = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $key = sprintf('%s-%02d', $tahun, $m);
+                $trendBulanan[] = [
+                    'bulan' => $key,
+                    'total' => (float) ($trendRaw[$key] ?? 0),
+                ];
+            }
 
             return response()->json([
                 'success' => true,
@@ -921,7 +1038,7 @@ class BendaharaController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validasi gagal: ' . implode(', ', $validator->errors()->all()),
                     'errors' => $validator->errors()
                 ], 422);
             }

@@ -122,13 +122,31 @@ function loadData() {
             // Chart
             chartCont.classList.remove('hidden');
             if (chartInstance) chartInstance.destroy();
+            const formatRupiahShort = v => {
+                if (v >= 1000000000) return 'Rp ' + (v / 1000000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'M';
+                if (v >= 1000000) return 'Rp ' + (v / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + 'jt';
+                if (v >= 1000) return 'Rp ' + (v / 1000).toLocaleString('id-ID', { maximumFractionDigits: 0 }) + 'rb';
+                return 'Rp ' + Number(v).toLocaleString('id-ID');
+            };
             chartInstance = new Chart(document.getElementById('chartRekap').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: items.map(i => i.bulan),
                     datasets: [{ label: 'Pemasukan', data: items.map(i => i.total_nominal), backgroundColor: '#10b981', borderRadius: 6 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'jt' } } }, plugins: { legend: { display: false } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { callback: formatRupiahShort } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ' Pemasukan: Rp ' + Number(ctx.parsed.y).toLocaleString('id-ID')
+                            }
+                        }
+                    }
+                }
             });
         } else {
             chartCont.classList.add('hidden');

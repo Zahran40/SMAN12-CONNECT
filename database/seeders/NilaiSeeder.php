@@ -7,20 +7,20 @@ class NilaiSeeder extends Seeder
 {
     public function run(): void
     {
-        echo "\n🎓 Seeding Nilai Raport (History)...\n";
+        echo "\n Seeding Nilai Raport (History)...\n";
         $siswa = DB::table('siswa')->first();
         if (!$siswa) {
-            echo "⚠️ Tidak ada data siswa. Jalankan DatabaseSeeder terlebih dahulu.\n";
+            echo " Tidak ada data siswa. Jalankan DatabaseSeeder terlebih dahulu.\n";
             return;
         }
         $mataPelajaran = DB::table('mata_pelajaran')->limit(5)->get();
         if ($mataPelajaran->isEmpty()) {
-            echo "⚠️ Tidak ada data mata pelajaran. Jalankan DatabaseSeeder terlebih dahulu.\n";
+            echo " Tidak ada data mata pelajaran. Jalankan DatabaseSeeder terlebih dahulu.\n";
             return;
         }
         $tahunAjaranList = DB::table('tahun_ajaran')->orderBy('tahun_mulai', 'desc')->get();
         if ($tahunAjaranList->count() < 2) {
-            echo "⚠️ Minimal perlu 2 tahun ajaran untuk testing history.\n";
+            echo " Minimal perlu 2 tahun ajaran untuk testing history.\n";
             return;
         }
         $nilaiCount = 0;
@@ -86,13 +86,13 @@ class NilaiSeeder extends Seeder
             ->groupBy('tahun_ajaran.tahun_mulai', 'tahun_ajaran.tahun_selesai', 'tahun_ajaran.semester', 'tahun_ajaran.status')
             ->orderBy('tahun_ajaran.tahun_mulai', 'desc')
             ->get();
-        echo "\n📊 Summary Nilai Raport:\n";
+        echo "\n Summary Nilai Raport:\n";
         echo "┌────────────────────────────────────────────────────────────────┐\n";
         echo "│ Tahun Ajaran      │ Status        │ Mapel │ Rata-rata      │\n";
         echo "├────────────────────────────────────────────────────────────────┤\n";
         foreach ($summary as $item) {
             $tahun = "{$item->tahun_mulai}/{$item->tahun_selesai} {$item->semester}";
-            $status = $item->status == 'Aktif' ? '🟢 Aktif    ' : '⚪ History   ';
+            $status = $item->status == 'Aktif' ? ' Aktif    ' : ' History   ';
             printf("│ %-17s │ %-13s │ %5d │ %14.2f │\n", 
                 $tahun, 
                 $status, 
@@ -101,7 +101,7 @@ class NilaiSeeder extends Seeder
             );
         }
         echo "└────────────────────────────────────────────────────────────────┘\n";
-        echo "\n✨ Data nilai history berhasil dibuat!\n";
-        echo "💡 Siswa dapat melihat nilai dari semua tahun ajaran (aktif & tidak aktif)\n\n";
+        echo "\n Data nilai history berhasil dibuat!\n";
+        echo " Siswa dapat melihat nilai dari semua tahun ajaran (aktif & tidak aktif)\n\n";
     }
 }

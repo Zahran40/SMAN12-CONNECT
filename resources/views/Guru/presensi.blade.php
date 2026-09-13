@@ -43,35 +43,41 @@
                             ->count();
                     @endphp
                     
-                                        <div class="bg-white rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-shadow border-2 border-slate-200">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="inline-block px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
-                                {{ $jadwal->hari }}
-                            </span>
-                        </div>
-                        
-                        <div class="flex justify-center mb-4 sm:mb-6">
-                            <img src="{{ asset('images/Schedule.png') }}" alt="Ikon Presensi" class="w-32 h-32 object-contain">
-                        </div>
-                        
-                        <div class="text-left mb-4 sm:mb-6">
-                            <p class="text-slate-600 mb-1">{{ $jadwal->kelas->nama_kelas }}</p>
-                            <h3 class="text-xl font-bold text-blue-600 mb-2">{{ $jadwal->mataPelajaran->nama_mapel }}</h3>
-                            <p class="text-sm text-slate-500 mb-2">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</p>
-                            <div class="flex items-center text-slate-500 text-sm">
-                                <img src="{{ asset('images/Frame 50.png') }}" alt="Ikon Presensi" class="w-6 h-6 object-contain mr-2">
-                                {{ $jumlahSiswa }} Siswa
+                                        <div class="bg-white rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-shadow border-2 border-slate-200 flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="inline-block px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
+                                    {{ $jadwal->hari }}
+                                </span>
+                            </div>
+                            
+                            <div class="flex justify-center mb-4 sm:mb-6">
+                                <img src="{{ asset('images/Schedule.png') }}" alt="Ikon Presensi" class="w-28 h-28 sm:w-32 sm:h-32 object-contain">
+                            </div>
+                            
+                            <div class="text-left mb-4 sm:mb-6">
+                                <p class="text-slate-600 mb-1 text-sm font-medium">{{ $jadwal->kelas->nama_kelas }}</p>
+                                <div class="h-14 flex items-center mb-2">
+                                    <h3 class="text-lg sm:text-xl font-bold text-blue-600 leading-snug line-clamp-2" title="{{ $jadwal->mataPelajaran->nama_mapel }}">
+                                        {{ $jadwal->mataPelajaran->nama_mapel }}
+                                    </h3>
+                                </div>
+                                <p class="text-sm text-slate-500 mb-2">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</p>
+                                <div class="flex items-center text-slate-500 text-sm">
+                                    <img src="{{ asset('images/Frame 50.png') }}" alt="Ikon Presensi" class="w-5 h-5 sm:w-6 sm:h-6 object-contain mr-2">
+                                    {{ $jumlahSiswa }} Siswa
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="space-y-2">
+                        <div class="space-y-2 mt-auto pt-4">
                             <button onclick="openBuatPertemuanModal({{ $jadwal->id_jadwal }}, '{{ $jadwal->mataPelajaran->nama_mapel }}', '{{ $jadwal->kelas->nama_kelas }}', '{{ $jadwal->hari }}', '{{ $jadwal->jam_mulai }}', '{{ $jadwal->jam_selesai }}')"
-                                    class="w-full bg-green-400 text-white text-center font-bold text-lg py-3 rounded-full hover:bg-green-600 transition-colors">
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white text-center font-bold text-base sm:text-lg py-2.5 sm:py-3 rounded-full transition-colors shadow-sm flex items-center justify-center">
                                  Buat Pertemuan Baru
                             </button>
                             
                             <a href="{{ route('guru.list_pertemuan', $jadwal->id_jadwal) }}" 
-                               class="block w-full bg-blue-400 text-white text-center font-bold text-lg py-3 rounded-full hover:bg-blue-500 transition-colors">
+                               class="block w-full bg-blue-400 hover:bg-blue-500 text-white text-center font-bold text-base sm:text-lg py-2.5 sm:py-3 rounded-full transition-colors shadow-sm flex items-center justify-center">
                                  Lihat Semua Pertemuan (1-16)
                             </a>
                         </div>

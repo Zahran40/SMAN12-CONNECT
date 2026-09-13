@@ -104,8 +104,9 @@ class PembayaranController extends Controller
     /**
      * Form buat tagihan baru dengan bulk selection
      */
-    public function create(Request $request)
+    public function create(Request $request = null)
     {
+        $request = $request ?? request();
         $tahunAjaranList = TahunAjaran::active()->orderBy('tahun_mulai', 'desc')->get();
         $tahunAjaranId = $request->get('tahun_ajaran');
         $bulan = $request->get('bulan');
@@ -256,10 +257,12 @@ class PembayaranController extends Controller
                 }
             }
 
+            $bulanText = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            $namaBulan = $bulanText[$validated['bulan']] ?? ('Bulan ' . $validated['bulan']);
+            $periode = $namaBulan . ' ' . $validated['tahun'];
+
             if ($created === 0) {
                 DB::rollBack();
-                $bulanText = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                $periode = $bulanText[$validated['bulan']] . ' ' . $validated['tahun'];
                 
                 return back()
                     ->with('error', 'Semua siswa yang dipilih sudah memiliki tagihan untuk periode ' . $periode)
@@ -269,7 +272,7 @@ class PembayaranController extends Controller
 
             DB::commit();
 
-            $message = "Berhasil membuat {$created} tagihan (Batch #{$batch})";
+            $message = "Berhasil membuat {$created} tagihan SPP Bulan {$namaBulan} {$validated['tahun']}";
             if ($skipped > 0) {
                 $message .= " • {$skipped} tagihan dilewati (sudah ada)";
             }
