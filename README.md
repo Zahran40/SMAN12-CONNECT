@@ -180,32 +180,32 @@ MIDTRANS_3DS=true
 
 ---
 
-### 🗺️ OpenStreetMap + Leaflet.js (Untuk Absensi GPS)
+### 🗺️ Google Maps Platform (Untuk Absensi GPS)
 
-Sistem absensi menggunakan **OpenStreetMap (Leaflet.js)** + **Nominatim** untuk peta dan reverse geocoding. **100% GRATIS**, tidak memerlukan API key atau billing account.
+Sistem absensi menggunakan **Google Maps Platform** (Maps JavaScript API & Geocoding API) untuk menampilkan peta interaktif serta reverse geocoding lokasi presisi pengguna.
 
-#### ✅ Fitur Peta yang Digunakan:
-- **Leaflet.js** — Library peta interaktif (CDN, gratis)
-- **OpenStreetMap Tiles** — Tile peta gratis dari komunitas global
-- **Nominatim** — Reverse geocoding (koordinat → alamat) gratis dari OpenStreetMap
+#### ✅ Layanan Google Maps yang Digunakan:
+- **Maps JavaScript API** — Menampilkan peta interaktif dan marker lokasi absensi
+- **Geocoding API** — Mengonversi koordinat GPS (latitude & longitude) menjadi alamat lengkap yang terbaca
+- **HTML5 Geolocation API** — Mengambil titik koordinat akurat dari perangkat pengguna
 
-#### ✅ Keuntungan:
-- 🆓 100% Gratis, tidak perlu API key
-- 🚫 Tidak perlu billing account / kartu kredit
-- 🌏 Akurasi bagus untuk Indonesia
-- 🚀 Langsung bisa dipakai tanpa setup tambahan
-- 📱 Ringan dan responsif di mobile
+#### ⚙️ Panduan Setup Google Maps API Key:
+1. Buka [Google Cloud Console](https://console.cloud.google.com/)
+2. Buat proyek baru atau pilih proyek yang sudah ada
+3. Masuk ke menu **APIs & Services** > **Library**
+4. Aktifkan API berikut:
+   - **Maps JavaScript API**
+   - **Geocoding API**
+5. Masuk ke **APIs & Services** > **Credentials**, klik **Create Credentials** > **API Key**
+6. (Disarankan) Lakukan pembatasan API (API Restrictions) untuk keamanan API Key
+7. Tambahkan API Key ke file `.env` (jika diperlukan):
+   ```env
+   GOOGLE_MAPS_API_KEY="your-google-maps-api-key-here"
+   ```
 
 #### ⚠️ Catatan Penting:
-- Rate limit Nominatim: **1 request/detik** (cukup untuk sekolah)
-- User-Agent wajib disertakan saat request ke Nominatim
-- GPS accuracy tergantung dari device user, bukan dari map provider
-
-#### 🧪 Test Nominatim API:
-Buka URL ini di browser untuk test reverse geocoding:
-```
-https://nominatim.openstreetmap.org/reverse?format=json&lat=3.5952&lon=98.6722&zoom=18&addressdetails=1&accept-language=id
-```
+- Pastikan billing account di Google Cloud aktif agar layanan Google Maps dapat berjalan lancar
+- Akurasi titik GPS bergantung pada perangkat pengguna dan izin lokasi pada browser
 
 ---
 
@@ -228,9 +228,9 @@ https://nominatim.openstreetmap.org/reverse?format=json&lat=3.5952&lon=98.6722&z
 2. Jalankan: `php artisan config:clear`
 3. Restart server
 
-### GPS Tracking tidak akurat
+### GPS Tracking / Google Maps Error
 **Solusi:**
-1. Pastikan browser mengizinkan akses lokasi
-2. Gunakan HTTPS (atau localhost) untuk geolocation API
-3. Nominatim OSM sudah cukup akurat untuk Indonesia
-4. GPS accuracy tergantung dari device, bukan map provider
+1. Pastikan Google Maps API Key valid dan API terkait telah diaktifkan di Google Cloud Console
+2. Pastikan browser mengizinkan akses lokasi (*location permission*)
+3. Gunakan HTTPS (atau localhost) untuk geolocation API
+4. Cek console browser untuk error spesifik dari Google Maps (seperti `ApiNotActivatedMapError` atau `BillingNotEnabledMapError`)
