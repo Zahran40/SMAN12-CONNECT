@@ -160,7 +160,7 @@ Konfigurasi Midtrans untuk pembayaran SPP sudah tersedia dalam mode **Sandbox/Te
 
 #### Update File .env
 ```env
-MIDTRANS_MERCHANT_ID="Your_API_MerchantID_Key
+MIDTRANS_MERCHANT_ID="Your_API_MerchantID_Key"
 MIDTRANS_CLIENT_KEY="Your_API_Client_Key"
 MIDTRANS_SERVER_KEY="Your_API_Server_Key"
 MIDTRANS_IS_PRODUCTION=false
